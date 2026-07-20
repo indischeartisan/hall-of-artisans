@@ -1,1 +1,10 @@
 /* Button copy is rendered by React for visual and accessibility parity. */
+
+/* Keep the conservatory artwork clear; the previous white gradients read as smoke. */
+.describe-creation-page .describe-shell {
+  background-image: url("/assets/images/my-artisan-id-conservatory.webp");
+}
+
+.describe-creation-page .dc-hero {
+  background: transparent;
+}

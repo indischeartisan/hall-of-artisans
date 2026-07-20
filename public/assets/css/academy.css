@@ -390,6 +390,48 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   .primary-button, .secondary-button { flex: 1 1 calc(50% - 12px); }
 }
 
+/* Academy review: improve hero-title contrast and use the shared bright inner-panel system. */
+.academy-body #academy-title {
+  color: #163b2a;
+  -webkit-text-stroke: 1px rgba(255, 250, 232, 0.42);
+  text-shadow:
+    0 1px 0 rgba(255, 253, 240, 0.95),
+    0 3px 12px rgba(255, 248, 220, 0.98),
+    0 10px 28px rgba(36, 28, 14, 0.28);
+}
+
+.academy-body .lesson-card.inner-panel {
+  --inner-panel-bg: rgba(255, 250, 238, 0.94);
+  --nested-outer-line-color: rgba(160, 111, 39, 0.72);
+  --nested-line-color: rgba(182, 139, 68, 0.48);
+  border: 0;
+  border-radius: 0;
+  background: var(--inner-panel-bg);
+  overflow: hidden;
+}
+
+.academy-body .lesson-card.inner-panel::before,
+.academy-body .lesson-card.inner-panel::after {
+  display: block;
+  width: auto;
+  height: auto;
+  border: 0;
+}
+
+.academy-body .lesson-card.inner-panel::before {
+  inset: 0;
+}
+
+.academy-body .lesson-card.inner-panel::after {
+  inset: 4px;
+}
+
+.academy-body .lesson-card.inner-panel:hover,
+.academy-body .lesson-card.inner-panel:focus-visible {
+  --inner-panel-bg: rgba(255, 253, 244, 0.98);
+  box-shadow: 0 18px 38px rgba(38, 20, 8, 0.28);
+}
+
 /* Academy refinement pass */
 :root {
   --academy-cream: #fff3db;

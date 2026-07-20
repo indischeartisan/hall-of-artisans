@@ -24,7 +24,7 @@
   function renderCards() {
     const reads = new Set(getSavedReads());
     cardsEl.innerHTML = lessons.map((lesson) => `
-      <button class="lesson-card" data-lesson-id="${lesson.id}" aria-label="Open ${lesson.title}">
+      <button class="lesson-card inner-panel" data-lesson-id="${lesson.id}" aria-label="Open ${lesson.title}">
         <span class="lesson-number">${lesson.number}</span>
         <img class="lesson-icon" src="${lesson.icon}" alt="" />
         <span class="lesson-title">${lesson.title}</span>

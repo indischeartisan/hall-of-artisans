@@ -3,13 +3,14 @@ import GlobalHeader from "../components/GlobalHeader";
 
 const academyStyles = [
   "/assets/css/styles.css?v=17",
-  "/assets/css/academy.css?v=2",
+  "/assets/css/ornate-panel-bright.css?v=1",
+  "/assets/css/academy.css?v=3",
   "/assets/css/header-consistency.css?v=1"
 ];
 
 const academyScripts = [
   "/assets/js/academy-data.js",
-  "/assets/js/academy.js"
+  "/assets/js/academy.js?v=2"
 ];
 
 function loadScript(src: string) {

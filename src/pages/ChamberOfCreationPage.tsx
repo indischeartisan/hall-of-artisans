@@ -69,8 +69,8 @@ export default function ChamberOfCreationPage() {
 
           <div className="creation-grid creation-art-grid" aria-label="Creation modes">
             <a className="creation-art-card creation-art-left creation-art-card-describe" href="/describe-your-creation" aria-label="Describe Your Creation" onClick={openDescribeCreation}>
-              <img className="panel-art panel-art-dark" src="/assets/images/make-card-coming-soon-purple.webp" alt="Coming soon creation mode" />
-              <img className="panel-art panel-art-bright" src="/assets/images/bright-panel-left.webp" alt="" />
+              <img className="panel-art panel-art-dark" src="/assets/images/describe-your-creation-panel.webp" alt="An ornate writing desk with a botanical journal, quill, ink bottle, flowers, and a golden frame." />
+              <img className="panel-art panel-art-bright" src="/assets/images/describe-your-creation-panel.webp" alt="" />
               <span className="creation-art-copy creation-art-title">Describe Your Creation</span>
               <span className="creation-art-copy creation-art-desc">Tell our artisans the feeling,<br />memory, or world you imagine.</span>
               <span className="creation-art-copy creation-art-button-text">Write Your Story</span>

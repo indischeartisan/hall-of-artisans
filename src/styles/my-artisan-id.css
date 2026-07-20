@@ -77,41 +77,12 @@ body.modal-open { overflow:hidden; }
   backdrop-filter: blur(5px) saturate(.82);
 }
 .artisan-modal__dialog {
-  --curve: 11px;
+  --nested-curve: 8px;
+  --inner-panel-bg: rgba(255, 248, 231, .9);
+  --inner-panel-border: rgba(182, 139, 68, .5);
   position: relative;
   padding: clamp(28px, 3.4vw, 42px);
-  background:
-    radial-gradient(circle at 50% -20%, rgba(255,255,255,.9), transparent 52%),
-    linear-gradient(135deg, var(--popup-paper), rgba(244,229,199,.96));
-  border: 0;
-  -webkit-mask:
-    radial-gradient(circle at 0 0, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 0 0/51% 51% no-repeat,
-    radial-gradient(circle at 100% 0, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 100% 0/51% 51% no-repeat,
-    radial-gradient(circle at 100% 100%, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 100% 100%/51% 51% no-repeat,
-    radial-gradient(circle at 0 100%, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 0 100%/51% 51% no-repeat;
-  mask:
-    radial-gradient(circle at 0 0, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 0 0/51% 51% no-repeat,
-    radial-gradient(circle at 100% 0, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 100% 0/51% 51% no-repeat,
-    radial-gradient(circle at 100% 100%, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 100% 100%/51% 51% no-repeat,
-    radial-gradient(circle at 0 100%, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 0 100%/51% 51% no-repeat;
   box-shadow: 0 28px 80px rgba(0,0,0,.34), 0 0 28px rgba(182,139,68,.14);
-}
-.artisan-modal__dialog::before,
-.artisan-modal__dialog::after {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  z-index: 1;
-}
-.artisan-modal__dialog::before {
-  inset: 0;
-  border: 2px solid rgba(182,139,68,.72);
-  outline: 1px solid rgba(182,139,68,.35);
-  outline-offset: -7px;
-}
-.artisan-modal__dialog::after {
-  inset: 13px;
-  border: 1px solid rgba(182,139,68,.22);
 }
 .artisan-modal__dialog > * { position: relative; z-index: 2; }
 .artisan-modal__dialog > .artisan-modal__close {
@@ -145,12 +116,7 @@ body.modal-open { overflow:hidden; }
   background: var(--popup-paper-inner);
   box-shadow: 0 7px 20px rgba(69,47,17,.08);
 }
-.record-item {
-  --nested-curve: 6px;
-  padding: 20px 22px;
-  outline: 1px solid rgba(182,139,68,.55);
-  outline-offset: -1px;
-}
+.record-item { --nested-curve: 6px; padding: 20px 22px; }
 .record-item::after,
 .modal-detail::after,
 .inline-confirm::after,
@@ -169,7 +135,7 @@ body.modal-open { overflow:hidden; }
 .modal-notice > * { position: relative; z-index: 1; }
 .modal-detail { padding: 26px 24px; outline: 1px solid rgba(182,139,68,.55); }
 .inline-confirm { padding: 18px; outline: 1px solid rgba(155,93,62,.34); background: rgba(250,239,222,.92); }
-.modal-empty, .modal-notice { padding: 20px; outline: 1px solid rgba(182,139,68,.45); }
+.modal-empty, .modal-notice { padding: 20px; }
 .record-actions a,
 .record-actions button,
 .detail-back,
@@ -180,6 +146,5 @@ body.modal-open { overflow:hidden; }
 }
 @media (max-width: 620px) {
   .artisan-modal__dialog { padding: 25px 16px; }
-  .artisan-modal__dialog::after { inset: 8px; }
   .record-item, .modal-detail { padding: 18px 16px; }
 }
