@@ -1,0 +1,225 @@
+:root{--archive-ink:#352313;--archive-gold:#aa762d;--archive-line:rgba(170,118,45,.5);--archive-paper:#fbf4e5;--archive-green:#173c25}
+.hall-archive-body{min-height:100vh;color:var(--archive-ink);background:#f5ead3}
+.hall-archive-body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.55;background:radial-gradient(circle at 50% 20%,#fffdf7 0,transparent 52%),repeating-linear-gradient(0deg,rgba(98,63,22,.018) 0 1px,transparent 1px 4px)}
+.hall-archive-shell{position:relative;z-index:1;min-height:100vh;padding:90px clamp(20px,7.2vw,112px) 18px;background:linear-gradient(rgba(255,252,243,.82),rgba(248,238,216,.9));box-shadow:inset 0 0 0 1px rgba(170,118,45,.5),inset 0 0 0 8px rgba(255,252,242,.5),inset 0 0 0 9px rgba(170,118,45,.38)}
+.hall-archive-shell::before,.hall-archive-shell::after{content:"";position:absolute;z-index:-1;top:82px;width:19%;height:230px;opacity:.2;background:url('/assets/images/expert-lab-background.webp') center/cover no-repeat;filter:sepia(1)}
+.hall-archive-shell::before{left:9px;clip-path:polygon(0 0,100% 0,76% 100%,0 100%)}.hall-archive-shell::after{right:9px;transform:scaleX(-1);clip-path:polygon(0 0,100% 0,76% 100%,0 100%)}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.archive-hero{max-width:900px;margin:0 auto 16px;text-align:center}
+.archive-crest{position:relative;width:76px;height:27px;margin:0 auto 1px;display:grid;place-items:center;color:#81561c;font:600 17px "Cormorant Garamond",serif}.archive-crest span{width:35px;height:35px;display:grid;place-items:center;border:1px solid var(--archive-line);border-radius:50%;background:#fbf3e2}.archive-crest::before,.archive-crest::after{content:"❧";position:absolute;top:6px;color:#b47b2c;font-size:22px}.archive-crest::before{right:67px;transform:rotate(-12deg)}.archive-crest::after{left:67px;transform:scaleX(-1) rotate(-12deg)}
+.archive-title-row{display:grid;grid-template-columns:1fr auto 1fr;gap:27px;align-items:center}.archive-title-row>span{height:1px;background:linear-gradient(90deg,transparent,var(--archive-gold))}.archive-title-row>span:last-child{transform:scaleX(-1)}
+.archive-title-row h1{margin:0;color:#41250d;font:600 clamp(48px,4.6vw,70px)/.92 "Cormorant Garamond",serif;letter-spacing:.095em;text-transform:uppercase;-webkit-text-fill-color:#41250d;-webkit-text-stroke:0}
+.archive-subtitle{margin:3px 0 0;font:600 clamp(19px,1.7vw,25px)/1.1 "Cormorant Garamond",serif;letter-spacing:.06em}.archive-intro{margin:9px auto 0;color:#806d54;font:italic 14px/1.4 "Cormorant Garamond",serif}
+.archive-toolbar{max-width:1310px;margin:0 auto 7px}.archive-primary-tools{display:grid;grid-template-columns:368px minmax(280px,1fr) 338px;gap:72px;align-items:center;padding:11px 0;border-top:1px solid rgba(170,118,45,.25);border-bottom:1px solid var(--archive-line)}
+.archive-tabs{display:grid;grid-template-columns:1.15fr 1fr}.archive-tabs button,.archive-search,.archive-create,.archive-view-tools select,.archive-view-tools button{min-height:39px;border:1px solid var(--archive-line);background:rgba(255,252,244,.7);color:#493019}.archive-tabs button{padding:0 13px;font:600 12px "Cormorant Garamond",serif;letter-spacing:.09em;text-transform:uppercase;cursor:pointer}.archive-tabs button span{margin-right:9px;color:#a67326}.archive-tabs button.active{color:#fff8e7;border-color:#c69a4f;background:linear-gradient(180deg,#244d31,#15351f);box-shadow:inset 0 0 0 3px #17331f,inset 0 0 0 4px #c49b4b}
+.archive-search{position:relative;display:flex;align-items:center}.archive-search-icon{position:absolute;left:13px;font-size:25px;transform:rotate(-15deg)}.archive-search input{width:100%;height:37px;padding:0 14px 0 42px;border:0;outline:0;color:#493019;background:transparent;font:14px "Cormorant Garamond",serif}.archive-search:focus-within{outline:2px solid rgba(170,118,45,.24)}
+.archive-create{position:relative;padding:0 28px;font:600 13px "Cormorant Garamond",serif;letter-spacing:.11em;text-transform:uppercase;color:#fff7df;background:linear-gradient(180deg,#234c30,#14341e);box-shadow:inset 0 0 0 3px #17351f,inset 0 0 0 4px #c99a55;cursor:pointer}.archive-create>span{margin-right:13px;color:#d7ad5d}.archive-create b{position:absolute;right:22px;font-size:22px;font-weight:400}
+.archive-secondary-tools{display:flex;justify-content:space-between;align-items:center;padding:6px 0 0}.archive-secondary-tools p{margin:0;font:600 11px "Cormorant Garamond",serif;letter-spacing:.1em;text-transform:uppercase}.archive-view-tools{display:flex;gap:8px}.archive-view-tools select{height:30px;min-height:30px;padding:0 30px 0 12px;font:600 10px "Cormorant Garamond",serif;letter-spacing:.07em;text-transform:uppercase;cursor:pointer}.archive-view-tools button{width:34px;min-height:30px;height:30px;padding:0;color:#9a6722;font-size:20px;line-height:1;cursor:pointer}.archive-view-tools button.active{background:#fff7e7;box-shadow:inset 0 0 0 2px rgba(170,118,45,.14)}
+.archive-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px;max-width:1310px;margin:0 auto}.archive-card{position:relative;min-width:0;padding:12px 12px 10px;overflow:hidden;color:var(--archive-ink);border:1px solid rgba(170,118,45,.65);outline:1px solid rgba(170,118,45,.26);outline-offset:-5px;background:linear-gradient(150deg,rgba(255,253,247,.96),rgba(247,235,210,.9));text-align:center;cursor:pointer;transition:transform .22s ease,box-shadow .22s ease}.archive-card::before,.archive-card::after{content:"";position:absolute;width:12px;height:12px;border-color:#b47b2c}.archive-card::before{top:3px;left:3px;border-top:1px solid;border-left:1px solid}.archive-card::after{right:3px;bottom:3px;border-right:1px solid;border-bottom:1px solid}.archive-card:hover,.archive-card:focus-visible{z-index:2;transform:translateY(-4px);box-shadow:0 12px 25px rgba(83,58,24,.16);outline-offset:-5px}
+.archive-card-number{display:block;margin-bottom:5px;font:600 10px Inter,sans-serif;letter-spacing:.1em}.archive-bottle-stage{display:block;height:146px;overflow:hidden;background:radial-gradient(ellipse at 50% 53%,rgba(231,210,165,.54),rgba(255,255,255,.45) 68%,transparent 69%)}.archive-bottle-stage img{width:100%;height:100%;object-fit:cover;transition:transform .25s ease}.archive-card:hover img{transform:scale(1.03)}
+.archive-card-copy{display:block}.archive-card-title{display:block;margin:5px 0 1px;font:600 16px/1.05 "Cormorant Garamond",serif;letter-spacing:.02em}.archive-card-creator{display:block;min-height:17px;font:11px/1.2 "Cormorant Garamond",serif}.archive-card-moods{display:flex;justify-content:center;gap:6px;margin:7px 0}.archive-card-moods span{padding:2px 7px;border:1px solid rgba(170,118,45,.22);border-radius:5px;background:#f2e5c8;font:600 7px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase}.archive-card-status{display:flex;align-items:center;gap:7px;color:#8d6129;font:600 8px "Cormorant Garamond",serif;letter-spacing:.12em;text-transform:uppercase}.archive-card-status i{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--archive-gold))}.archive-card-status i:last-child{transform:scaleX(-1)}
+.archive-grid--list{grid-template-columns:1fr;gap:8px}.archive-grid--list .archive-card{display:grid;grid-template-columns:92px 150px 1fr;align-items:center;min-height:118px;text-align:left}.archive-grid--list .archive-bottle-stage{height:96px}.archive-grid--list .archive-card-copy{padding:0 24px}.archive-grid--list .archive-card-title{font-size:24px}.archive-grid--list .archive-card-moods{justify-content:flex-start}.archive-grid--list .archive-card-status{max-width:230px}
+.archive-footer{max-width:985px;display:flex;justify-content:space-between;align-items:center;margin:15px auto 0;padding:10px 45px;border:1px solid var(--archive-line);outline:1px solid rgba(170,118,45,.25);outline-offset:-5px;background:rgba(255,252,243,.65)}.archive-footer strong{font:16px "Cormorant Garamond",serif}.archive-footer p{margin:5px 0 0;font:13px "Cormorant Garamond",serif}.archive-footer button{min-width:260px;height:40px;padding:0 18px;border:1px solid var(--archive-line);background:rgba(255,252,243,.7);color:#4b3116;font:600 10px "Cormorant Garamond",serif;letter-spacing:.09em;text-transform:uppercase;cursor:pointer}.archive-footer button span{float:right;font-size:16px}
+.archive-empty{max-width:650px;margin:45px auto;padding:38px 24px;border:1px solid var(--archive-line);text-align:center}.archive-empty>span{font:600 42px "Cormorant Garamond",serif;opacity:.2}.archive-empty h2{margin:4px 0;font:600 32px "Cormorant Garamond",serif}.archive-empty p{color:#76634b}.archive-empty button{padding:9px 18px;color:#5d3b13;border:1px solid var(--archive-line);background:#fffaf0;cursor:pointer}
+.archive-modal-open{overflow:hidden}.archive-modal{position:fixed;z-index:6000;inset:0;display:grid;place-items:center;padding:24px;background:rgba(35,27,18,.68);backdrop-filter:blur(5px)}.archive-modal-panel{position:relative;width:min(820px,100%);max-height:calc(100vh - 48px);display:grid;grid-template-columns:minmax(240px,.8fr) 1.2fr;gap:26px;overflow:auto;padding:30px;color:var(--archive-ink);border:1px solid #b17b31;outline:1px solid rgba(177,123,49,.48);outline-offset:-7px;background:linear-gradient(135deg,#fffdf7,#f1dfbb);box-shadow:0 30px 90px rgba(0,0,0,.4)}.archive-modal-close{position:absolute;z-index:2;top:14px;right:15px;width:36px;height:36px;color:#704a1c;border:1px solid var(--archive-line);border-radius:50%;background:#fffaf0;font:25px/1 serif;cursor:pointer}.archive-modal-bottle{min-height:360px;overflow:hidden;background:rgba(255,252,243,.62)}.archive-modal-bottle img{width:100%;height:100%;object-fit:cover}.archive-modal-copy{align-self:center;padding:20px;border:1px solid rgba(170,118,45,.35);background:rgba(255,248,231,.65)}.archive-modal-number{color:#8c622b;font:600 10px Inter,sans-serif;letter-spacing:.15em;text-transform:uppercase}.archive-modal-copy h2{margin:7px 0;font:600 clamp(38px,5vw,56px)/.9 "Cormorant Garamond",serif}.archive-modal-byline{font:19px "Cormorant Garamond",serif}.archive-modal-tags{display:flex;gap:7px;flex-wrap:wrap;margin:18px 0}.archive-modal-tags span{padding:5px 10px;border:1px solid var(--archive-line);font:600 10px Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase}.archive-modal-story{font:italic 19px/1.5 "Cormorant Garamond",serif}.archive-privacy-note{margin-top:20px;padding-top:14px;color:#786955;border-top:1px solid var(--archive-line);font:11px/1.55 Inter,sans-serif}
+@media (max-width:1180px){.archive-primary-tools{grid-template-columns:1fr 1.4fr;gap:15px}.archive-create{grid-column:1/-1}.archive-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.archive-bottle-stage{height:auto;aspect-ratio:1/1}.hall-archive-shell::before,.hall-archive-shell::after{display:none}}
+@media (max-width:720px){.hall-archive-shell{padding:82px 12px 20px}.archive-title-row{grid-template-columns:1fr}.archive-title-row>span{display:none}.archive-title-row h1{font-size:43px}.archive-primary-tools{grid-template-columns:1fr}.archive-create{grid-column:auto}.archive-tabs{grid-template-columns:1fr 1fr}.archive-secondary-tools{align-items:flex-start;gap:8px}.archive-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.archive-card{padding:10px 8px}.archive-card-title{font-size:17px}.archive-grid--list{grid-template-columns:1fr}.archive-grid--list .archive-card{grid-template-columns:68px 95px 1fr}.archive-grid--list .archive-card-copy{padding:0 8px}.archive-grid--list .archive-card-title{font-size:19px}.archive-footer{align-items:stretch;flex-direction:column;gap:12px;padding:16px}.archive-footer button{min-width:0}.archive-modal{padding:8px;align-items:end}.archive-modal-panel{grid-template-columns:1fr;gap:14px;padding:25px 17px}.archive-modal-bottle{min-height:240px;height:34vh}.archive-modal-copy{padding:16px}}
+@media (max-width:410px){.archive-grid{grid-template-columns:1fr}.archive-card{width:min(320px,100%);margin:auto}.archive-secondary-tools{flex-direction:column}.archive-view-tools{width:100%}.archive-view-tools label{flex:1}.archive-view-tools select{width:100%}}
+@media (prefers-reduced-motion:reduce){.archive-card,.archive-bottle-stage img{transition:none}}
+
+/* Restored original Hall Archive composition; the interactive toolbar above remains new. */
+.hall-archive-shell{padding:116px clamp(18px,3vw,52px) 34px;border:0;background:linear-gradient(rgba(255,252,243,.92),rgba(248,238,216,.95));box-shadow:none}
+.hall-archive-shell::before,.hall-archive-shell::after{display:none}
+.archive-hero{max-width:1120px;margin:0 auto 28px}
+.archive-crest{width:58px;height:58px;margin:0 auto 5px;display:grid;place-items:center;border:1px solid var(--archive-line);border-radius:50% 50% 46% 46%;font:600 25px "Cormorant Garamond",serif}
+.archive-crest span{width:auto;height:auto;border:0;border-radius:0;background:none}.archive-crest::before,.archive-crest::after{display:none}
+.archive-title-row{gap:24px}.archive-title-row h1{font:600 clamp(52px,7vw,94px)/.86 "Cormorant Garamond",serif;letter-spacing:.1em}
+.archive-subtitle{margin:8px 0 0;font:600 clamp(20px,2.2vw,30px)/1.1 "Cormorant Garamond",serif;letter-spacing:.08em}.archive-intro{max-width:640px;margin:16px auto 0;font-size:17px;line-height:1.5}
+.archive-toolbar{max-width:1640px;margin:0 auto 28px}
+.archive-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(15px,2vw,27px);max-width:1640px;margin:0 auto}
+.archive-grid-panel.ornate-panel{--panel-bg:rgba(255,251,241,.78);--panel-border:rgba(182,139,68,.54);--curve:clamp(7px,.85vw,11px);--frame-gap:clamp(2px,.3vw,4px);padding:clamp(18px,2vw,30px);background:radial-gradient(circle at 50% 0,rgba(255,255,255,.86),transparent 40%),rgba(255,251,241,.78);box-shadow:0 14px 34px rgba(83,61,31,.1),0 0 20px rgba(182,139,68,.08)}
+.archive-card{display:block;padding:18px 14px 17px;text-align:center}.archive-record-panel.inner-panel{--nested-curve:clamp(4px,.5vw,6px);border:0;outline:0;background:linear-gradient(150deg,rgba(255,253,247,.94),rgba(248,236,211,.84));box-shadow:0 8px 22px rgba(87,58,21,.08)}
+.archive-card-number{margin-bottom:9px;font-size:12px}.archive-bottle-stage{height:auto;aspect-ratio:1/1.03;border-radius:50% 50% 0 0}.archive-card-title{min-height:2.2em;margin:7px 0 2px;font:600 clamp(21px,1.7vw,29px)/1.05 "Cormorant Garamond",serif}.archive-card-divider{display:block;color:var(--archive-gold);font-size:8px}.archive-card-divider::before,.archive-card-divider::after{content:"";display:inline-block;width:28%;height:1px;margin:0 7px 2px;background:var(--archive-line)}
+.archive-card-creator{display:block;min-height:34px;font:600 12px/1.25 "Cormorant Garamond",serif;letter-spacing:.08em;text-transform:uppercase}.archive-card-creator small{display:block;margin-bottom:2px;font-size:9px}.archive-card-status{display:inline-block;margin-top:8px;padding:4px 9px;color:#305b3d;border:1px solid rgba(48,91,61,.42);border-radius:20px;background:rgba(226,237,223,.6);font:600 9px Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase}.archive-card-moods{display:block;margin-top:7px;color:#78664f;font:italic 13px "Cormorant Garamond",serif}
+.archive-footer{max-width:900px;display:flex;gap:17px;align-items:center;justify-content:center;margin:32px auto 0;padding:0;color:#96672b;border:0;outline:0;background:none;font:600 13px "Cormorant Garamond",serif;letter-spacing:.18em;text-align:center;text-transform:uppercase}.archive-footer span{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--archive-gold))}.archive-footer span:last-child{transform:scaleX(-1)}
+.archive-grid--list{grid-template-columns:1fr}.archive-grid--list .archive-card{display:grid;grid-template-columns:90px 220px 1fr 120px 150px;align-items:center;min-height:150px;text-align:left}.archive-grid--list .archive-bottle-stage{height:120px;aspect-ratio:auto}.archive-grid--list .archive-card-title{min-height:0;font-size:25px}.archive-grid--list .archive-card-divider{display:none}.archive-grid--list .archive-card-creator{min-height:0}.archive-grid--list .archive-card-moods{margin:0}.archive-grid--list .archive-card-status{margin:0;text-align:center}
+@media (min-width:1500px){.archive-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.archive-grid--list{grid-template-columns:1fr}}
+@media (max-width:1050px){.archive-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.archive-grid--list{grid-template-columns:1fr}.archive-title-row h1{letter-spacing:.06em}}
+@media (max-width:720px){.hall-archive-shell{padding:94px 12px 25px}.archive-title-row{grid-template-columns:1fr;gap:7px}.archive-title-row>span{display:none}.archive-toolbar{margin-bottom:18px}.archive-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.archive-grid--list{grid-template-columns:1fr}.archive-grid-panel.ornate-panel{padding:12px}.archive-card{padding:14px 8px}.archive-card-title{font-size:20px}.archive-grid--list .archive-card{grid-template-columns:70px 100px 1fr;gap:7px}.archive-grid--list .archive-card-status,.archive-grid--list .archive-card-moods{display:none}.archive-footer{letter-spacing:.1em}}
+@media (max-width:410px){.archive-grid{grid-template-columns:1fr}.archive-card{width:min(330px,100%);margin:auto}}
+
+/* Shared bright-panel treatment for archive records and every toolbar control. */
+.archive-tool-panel.inner-panel{
+  --nested-curve:5px;
+  --inner-panel-bg:rgba(255,250,238,.76);
+  --inner-panel-border:rgba(182,139,68,.48);
+  position:relative;
+  min-width:0;
+  padding:0 13px;
+  display:flex;
+  gap:0;
+  align-items:center;
+  overflow:hidden;
+  -webkit-mask:none;
+  mask:none;
+  border:0;
+  outline:0;
+  box-shadow:0 5px 13px rgba(83,61,31,.06);
+}
+.archive-tool-panel.inner-panel:hover,.archive-tool-panel.inner-panel:focus-within{--inner-panel-bg:rgba(255,252,244,.94);box-shadow:0 7px 17px rgba(83,61,31,.11)}
+.archive-tool-panel.inner-panel::before{opacity:.52}
+.archive-tool-panel.inner-panel::after{opacity:.18}
+.archive-tabs .archive-tool-panel.inner-panel.active,.archive-create.archive-tool-panel.inner-panel{--inner-panel-bg:linear-gradient(180deg,#244d31,#15351f);color:#fff8e7;box-shadow:0 6px 15px rgba(35,55,30,.16)}
+.archive-tabs .archive-tool-panel.inner-panel.active::before,.archive-create.archive-tool-panel.inner-panel::before{--nested-outer-line-color:rgba(213,173,91,.76);opacity:.68}
+.archive-tabs .archive-tool-panel.inner-panel.active::after,.archive-create.archive-tool-panel.inner-panel::after{--nested-line-color:rgba(213,173,91,.38);opacity:.22}
+.archive-search.archive-tool-panel.inner-panel{padding:0}.archive-search.archive-tool-panel input{position:relative;z-index:2}.archive-search-icon{z-index:3}
+.archive-sort-panel.inner-panel{padding:0}.archive-sort-panel select{position:relative;z-index:2;border:0;background:transparent;box-shadow:none}
+.archive-view-tools>.archive-tool-panel.inner-panel{justify-content:center;padding:0}.archive-view-tools>.archive-tool-panel.inner-panel.active{--inner-panel-bg:rgba(255,248,230,.96);color:#80551a}
+.archive-record-panel.inner-panel{--inner-panel-bg:linear-gradient(150deg,rgba(255,253,247,.94),rgba(248,236,211,.84));--nested-outer-line-color:rgba(182,139,68,.66);--nested-line-color:rgba(182,139,68,.42);background:var(--inner-panel-bg)}
+.archive-record-panel.inner-panel::before{opacity:.82}
+.archive-record-panel.inner-panel::after{opacity:.55}
+.archive-record-panel.inner-panel:hover,.archive-record-panel.inner-panel:focus-visible{--inner-panel-bg:rgba(255,252,242,.98)}
+
+/* Scale-specific bright panel variants: compact controls and full archive records. */
+.archive-tool-panel.inner-panel{
+  border:1px solid rgba(168,123,51,.48)!important;
+  clip-path:polygon(4px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,0 calc(100% - 4px),0 4px);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.35),0 3px 8px rgba(83,61,31,.04)!important;
+}
+.archive-tool-panel.inner-panel::before,.archive-tool-panel.inner-panel::after{display:none!important}
+.archive-tool-panel.inner-panel:hover,.archive-tool-panel.inner-panel:focus-within{border-color:rgba(150,103,35,.68)!important;box-shadow:inset 0 0 0 2px rgba(255,255,255,.5),0 5px 12px rgba(83,61,31,.08)!important}
+.archive-tabs .archive-tool-panel.inner-panel.active,.archive-create.archive-tool-panel.inner-panel{border-color:rgba(203,158,77,.82)!important;box-shadow:inset 0 0 0 2px rgba(220,180,101,.28),0 4px 10px rgba(35,55,30,.12)!important}
+.archive-record-panel.inner-panel{
+  border:1px solid rgba(166,119,45,.72)!important;
+  clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 7px,100% calc(100% - 7px),calc(100% - 7px) 100%,7px 100%,0 calc(100% - 7px),0 7px);
+  box-shadow:inset 0 0 0 4px rgba(255,252,244,.72),inset 0 0 0 5px rgba(182,139,68,.42),0 8px 22px rgba(87,58,21,.08)!important;
+}
+.archive-record-panel.inner-panel::before,.archive-record-panel.inner-panel::after{display:none!important}
+.archive-record-panel.inner-panel:hover,.archive-record-panel.inner-panel:focus-visible{border-color:rgba(143,93,30,.9)!important;box-shadow:inset 0 0 0 4px rgba(255,253,247,.84),inset 0 0 0 5px rgba(162,111,37,.56),0 18px 35px rgba(87,58,21,.16)!important}
+
+/* Toolbar controls stay intentionally simple; only archive records use ornate corners. */
+.archive-tool-panel.inner-panel{
+  clip-path:none;
+  border-radius:4px;
+  border:1px solid rgba(161,117,49,.42)!important;
+  box-shadow:0 2px 7px rgba(83,61,31,.04)!important;
+}
+.archive-tool-panel.inner-panel:hover,.archive-tool-panel.inner-panel:focus-within{border-color:rgba(145,96,30,.66)!important;box-shadow:0 3px 9px rgba(83,61,31,.07)!important}
+.archive-tabs .archive-tool-panel.inner-panel.active,.archive-create.archive-tool-panel.inner-panel{border-color:#a87b33!important;box-shadow:inset 0 0 0 1px rgba(218,178,99,.22),0 3px 8px rgba(35,55,30,.1)!important}
+.archive-record-panel.inner-panel{
+  clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 14px,100% calc(100% - 14px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 14px),0 14px);
+  border-color:rgba(157,106,35,.82)!important;
+  box-shadow:inset 0 0 0 5px rgba(255,252,244,.76),inset 0 0 0 6px rgba(170,121,45,.55),0 8px 22px rgba(87,58,21,.08)!important;
+}
+.archive-record-panel.inner-panel:hover,.archive-record-panel.inner-panel:focus-visible{box-shadow:inset 0 0 0 5px rgba(255,253,247,.88),inset 0 0 0 6px rgba(150,96,29,.68),0 18px 35px rgba(87,58,21,.16)!important}
+
+/* Cards use the unmodified bright inner-panel system; the grid has no outer panel. */
+.archive-card.inner-panel{
+  border:0;
+  outline:0;
+  clip-path:none;
+  background:var(--inner-panel-bg);
+  box-shadow:0 8px 22px rgba(87,58,21,.08);
+}
+.archive-card.inner-panel:hover,.archive-card.inner-panel:focus-visible{background:rgba(255,252,242,.98);box-shadow:0 18px 35px rgba(87,58,21,.16)}
+
+/* Clean bright cards: retain the bright surface without decorative corner glyphs. */
+.archive-card.inner-panel{
+  -webkit-mask:none;
+  mask:none;
+  border:1px solid rgba(182,139,68,.46);
+  border-radius:6px;
+  background:linear-gradient(150deg,rgba(255,253,247,.96),rgba(248,236,211,.86));
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.38),0 8px 22px rgba(87,58,21,.08);
+}
+.archive-card.inner-panel::before,.archive-card.inner-panel::after{display:none!important}
+.archive-card.inner-panel:hover,.archive-card.inner-panel:focus-visible{border-color:rgba(143,93,30,.74);background:rgba(255,252,242,.98);box-shadow:inset 0 0 0 3px rgba(255,255,255,.48),0 16px 30px rgba(87,58,21,.14)}
+.archive-title-row h1{text-shadow:none!important;filter:none!important}
+
+/* Bright card with clean ornamental cut corners and no corner glyphs. */
+.archive-card.inner-panel{
+  border:1px solid rgba(166,119,45,.58);
+  border-radius:0;
+  clip-path:polygon(11px 0,calc(100% - 11px) 0,100% 11px,100% calc(100% - 11px),calc(100% - 11px) 100%,11px 100%,0 calc(100% - 11px),0 11px);
+  box-shadow:inset 0 0 0 4px rgba(255,253,247,.62),inset 0 0 0 5px rgba(182,139,68,.3),0 8px 22px rgba(87,58,21,.08);
+}
+.archive-card.inner-panel::before,.archive-card.inner-panel::after{display:none!important}
+.archive-card.inner-panel:hover,.archive-card.inner-panel:focus-visible{border-color:rgba(143,93,30,.78);box-shadow:inset 0 0 0 4px rgba(255,253,247,.75),inset 0 0 0 5px rgba(163,109,34,.42),0 16px 30px rgba(87,58,21,.14)}
+.archive-grid--list .archive-card{grid-template-columns:90px 220px minmax(0,1fr) 180px}
+
+/* Match the My Artisan ID personal-action panel system exactly. */
+.archive-card.inner-panel{
+  --nested-curve:clamp(5px,.65vw,8px);
+  --inner-panel-bg:rgba(255,250,238,.94);
+  border:0;
+  border-radius:0;
+  clip-path:none;
+  background:rgba(255,250,238,.94);
+  -webkit-mask:
+    radial-gradient(circle at 0 0,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 0 0/51% 51% no-repeat,
+    radial-gradient(circle at 100% 0,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 100% 0/51% 51% no-repeat,
+    radial-gradient(circle at 100% 100%,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 100% 100%/51% 51% no-repeat,
+    radial-gradient(circle at 0 100%,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 0 100%/51% 51% no-repeat;
+  mask:
+    radial-gradient(circle at 0 0,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 0 0/51% 51% no-repeat,
+    radial-gradient(circle at 100% 0,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 100% 0/51% 51% no-repeat,
+    radial-gradient(circle at 100% 100%,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 100% 100%/51% 51% no-repeat,
+    radial-gradient(circle at 0 100%,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 0 100%/51% 51% no-repeat;
+  box-shadow:0 7px 20px rgba(69,47,17,.09);
+}
+.archive-card.inner-panel::before,.archive-card.inner-panel::after{display:block!important;width:auto;height:auto;border:0;transform:none}
+.archive-card.inner-panel::before{inset:0}
+.archive-card.inner-panel::after{inset:4px}
+.archive-card.inner-panel:hover,.archive-card.inner-panel:focus-visible{background:rgba(255,250,238,.98);box-shadow:0 10px 24px rgba(69,47,17,.15)}
+
+/* Primary CTA uses the complete inner-panel system, matching My Artisan ID. */
+.archive-create.inner-panel{
+  --inner-panel-bg:#173d2a;
+  --nested-curve:clamp(5px,.65vw,8px);
+  min-height:39px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  padding:0 28px;
+  border:0;
+  background:linear-gradient(145deg,#1e5137,#102f22);
+  box-shadow:0 7px 20px rgba(69,47,17,.12);
+}
+.archive-create.inner-panel:hover,.archive-create.inner-panel:focus-visible{transform:translateY(-1px);box-shadow:0 10px 24px rgba(69,47,17,.18)}
+
+.archive-create.inner-panel{
+  --nested-curve:3px;
+  color:#fff6d9!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.34);
+}
+.archive-create.inner-panel>span{color:#e8c06e!important}
+.archive-create.inner-panel>b{color:#fff6d9!important}
+
+/* Compact inner-panel system across the complete archive toolbar. */
+.archive-tool-panel.inner-panel{
+  --nested-curve:3px;
+  border:0!important;
+  border-radius:0;
+  clip-path:none;
+  color:#4a321b!important;
+  -webkit-mask:
+    radial-gradient(circle at 0 0,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 0 0/51% 51% no-repeat,
+    radial-gradient(circle at 100% 0,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 100% 0/51% 51% no-repeat,
+    radial-gradient(circle at 100% 100%,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 100% 100%/51% 51% no-repeat,
+    radial-gradient(circle at 0 100%,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 0 100%/51% 51% no-repeat;
+  mask:
+    radial-gradient(circle at 0 0,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 0 0/51% 51% no-repeat,
+    radial-gradient(circle at 100% 0,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 100% 0/51% 51% no-repeat,
+    radial-gradient(circle at 100% 100%,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 100% 100%/51% 51% no-repeat,
+    radial-gradient(circle at 0 100%,transparent 0 var(--nested-curve),#000 calc(var(--nested-curve) + 1px)) 0 100%/51% 51% no-repeat;
+}
+.archive-tool-panel.inner-panel::before,.archive-tool-panel.inner-panel::after{display:block!important;width:auto;height:auto;border:0;transform:none}
+.archive-tool-panel.inner-panel::before{inset:0}
+.archive-tool-panel.inner-panel::after{inset:4px}
+.archive-tabs .archive-tool-panel.inner-panel.active{color:#fff6d9!important;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.archive-tabs .archive-tool-panel.inner-panel.active>span{color:#e8c06e!important}
+.archive-search.archive-tool-panel input,.archive-sort-panel select{color:#4a321b!important}
+
+.archive-crest{width:58px;height:58px;border:0;border-radius:0;background:none}
+.archive-crest img{width:100%;height:100%;display:block;object-fit:contain;filter:drop-shadow(0 3px 6px rgba(70,46,16,.12))}

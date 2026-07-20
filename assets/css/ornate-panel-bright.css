@@ -1,0 +1,196 @@
+:root {
+  --gold: #b68b44;
+  --gold-soft: #8a631d;
+  --panel-bg: rgba(255, 251, 241, 0.78);
+  --panel-border: rgba(182, 139, 68, 0.54);
+  --text-main: #2f2b1e;
+  --text-muted: #5f543a;
+  --inner-panel-bg: rgba(255, 248, 231, 0.68);
+  --inner-panel-border: rgba(182, 139, 68, 0.42);
+  --curve: clamp(7px, 0.85vw, 11px);
+  --inner-curve: clamp(5px, 0.65vw, 8px);
+  --nested-curve: clamp(4px, 0.5vw, 6px);
+  --frame-gap: clamp(2px, 0.3vw, 4px);
+}
+
+.ornate-panel,
+.inner-panel {
+  box-sizing: border-box;
+}
+
+.ornate-panel {
+  position: relative;
+  width: 100%;
+  min-height: var(--panel-min, 0);
+  padding: clamp(28px, 3.4vw, 42px);
+  color: var(--text-main);
+  background: var(--panel-bg);
+  -webkit-mask:
+    radial-gradient(circle at 0 0, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 0 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 0, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 100% 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 100% 100% / 51% 51% no-repeat,
+    radial-gradient(circle at 0 100%, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 0 100% / 51% 51% no-repeat;
+  mask:
+    radial-gradient(circle at 0 0, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 0 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 0, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 100% 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 100% 100% / 51% 51% no-repeat,
+    radial-gradient(circle at 0 100%, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 0 100% / 51% 51% no-repeat;
+  box-shadow:
+    0 14px 34px rgba(83, 61, 31, 0.1),
+    0 0 20px rgba(182, 139, 68, 0.08);
+  display: grid;
+  gap: clamp(10px, 1.7vw, 16px);
+  overflow: hidden;
+}
+
+.ornate-panel::before,
+.ornate-panel::after,
+.inner-panel::before,
+.inner-panel::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.ornate-panel::before {
+  inset: 0;
+  z-index: 1;
+  --outer-line-color: rgba(182, 139, 68, 0.74);
+  background:
+    radial-gradient(circle at 0 0, transparent calc(var(--curve) - 2px), var(--outer-line-color) calc(var(--curve) - 1px) calc(var(--curve) + 2px), transparent calc(var(--curve) + 3px)) left top / calc(var(--curve) + 4px) calc(var(--curve) + 4px) no-repeat,
+    radial-gradient(circle at 100% 0, transparent calc(var(--curve) - 2px), var(--outer-line-color) calc(var(--curve) - 1px) calc(var(--curve) + 2px), transparent calc(var(--curve) + 3px)) right top / calc(var(--curve) + 4px) calc(var(--curve) + 4px) no-repeat,
+    radial-gradient(circle at 100% 100%, transparent calc(var(--curve) - 2px), var(--outer-line-color) calc(var(--curve) - 1px) calc(var(--curve) + 2px), transparent calc(var(--curve) + 3px)) right bottom / calc(var(--curve) + 4px) calc(var(--curve) + 4px) no-repeat,
+    radial-gradient(circle at 0 100%, transparent calc(var(--curve) - 2px), var(--outer-line-color) calc(var(--curve) - 1px) calc(var(--curve) + 2px), transparent calc(var(--curve) + 3px)) left bottom / calc(var(--curve) + 4px) calc(var(--curve) + 4px) no-repeat,
+    linear-gradient(var(--outer-line-color), var(--outer-line-color)) left calc(var(--curve) - 2px) top / calc(100% - (var(--curve) * 2) + 4px) 2px no-repeat,
+    linear-gradient(var(--outer-line-color), var(--outer-line-color)) left calc(var(--curve) - 2px) bottom / calc(100% - (var(--curve) * 2) + 4px) 2px no-repeat,
+    linear-gradient(var(--outer-line-color), var(--outer-line-color)) left top calc(var(--curve) - 2px) / 2px calc(100% - (var(--curve) * 2) + 4px) no-repeat,
+    linear-gradient(var(--outer-line-color), var(--outer-line-color)) right top calc(var(--curve) - 2px) / 2px calc(100% - (var(--curve) * 2) + 4px) no-repeat;
+}
+
+.ornate-panel::after {
+  inset: var(--frame-gap);
+  z-index: 1;
+  --line-color: rgba(182, 139, 68, 0.48);
+  background:
+    radial-gradient(circle at 0 0, transparent calc(var(--inner-curve) - 1px), var(--line-color) var(--inner-curve), transparent calc(var(--inner-curve) + 1px)) left top / calc(var(--inner-curve) + 2px) calc(var(--inner-curve) + 2px) no-repeat,
+    radial-gradient(circle at 100% 0, transparent calc(var(--inner-curve) - 1px), var(--line-color) var(--inner-curve), transparent calc(var(--inner-curve) + 1px)) right top / calc(var(--inner-curve) + 2px) calc(var(--inner-curve) + 2px) no-repeat,
+    radial-gradient(circle at 100% 100%, transparent calc(var(--inner-curve) - 1px), var(--line-color) var(--inner-curve), transparent calc(var(--inner-curve) + 1px)) right bottom / calc(var(--inner-curve) + 2px) calc(var(--inner-curve) + 2px) no-repeat,
+    radial-gradient(circle at 0 100%, transparent calc(var(--inner-curve) - 1px), var(--line-color) var(--inner-curve), transparent calc(var(--inner-curve) + 1px)) left bottom / calc(var(--inner-curve) + 2px) calc(var(--inner-curve) + 2px) no-repeat,
+    linear-gradient(var(--line-color), var(--line-color)) left var(--inner-curve) top / calc(100% - (var(--inner-curve) * 2)) 1px no-repeat,
+    linear-gradient(var(--line-color), var(--line-color)) left var(--inner-curve) bottom / calc(100% - (var(--inner-curve) * 2)) 1px no-repeat,
+    linear-gradient(var(--line-color), var(--line-color)) left top var(--inner-curve) / 1px calc(100% - (var(--inner-curve) * 2)) no-repeat,
+    linear-gradient(var(--line-color), var(--line-color)) right top var(--inner-curve) / 1px calc(100% - (var(--inner-curve) * 2)) no-repeat;
+}
+
+.ornate-panel > * {
+  position: relative;
+  z-index: 2;
+}
+
+.ornate-panel h1,
+.ornate-panel h2,
+.ornate-panel h3,
+.ornate-panel h4,
+.ornate-panel p {
+  margin: 0;
+}
+
+.ornate-panel h2,
+.ornate-panel h3 {
+  color: var(--gold-soft);
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.ornate-panel p,
+.ornate-panel li {
+  color: var(--text-muted);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.inner-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 18px);
+}
+
+.inner-panel {
+  position: relative;
+  min-width: 0;
+  padding: clamp(14px, 2vw, 20px);
+  color: var(--text-main);
+  background: var(--inner-panel-bg);
+  -webkit-mask:
+    radial-gradient(circle at 0 0, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 0 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 0, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 100% 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 100% 100% / 51% 51% no-repeat,
+    radial-gradient(circle at 0 100%, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 0 100% / 51% 51% no-repeat;
+  mask:
+    radial-gradient(circle at 0 0, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 0 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 0, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 100% 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 100% 100% / 51% 51% no-repeat,
+    radial-gradient(circle at 0 100%, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 0 100% / 51% 51% no-repeat;
+  display: grid;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.inner-panel::before {
+  inset: 0;
+  z-index: 1;
+  --nested-outer-line-color: rgba(182, 139, 68, 0.62);
+  background:
+    radial-gradient(circle at 0 0, transparent calc(var(--nested-curve) - 2px), var(--nested-outer-line-color) calc(var(--nested-curve) - 1px) calc(var(--nested-curve) + 2px), transparent calc(var(--nested-curve) + 3px)) left top / calc(var(--nested-curve) + 4px) calc(var(--nested-curve) + 4px) no-repeat,
+    radial-gradient(circle at 100% 0, transparent calc(var(--nested-curve) - 2px), var(--nested-outer-line-color) calc(var(--nested-curve) - 1px) calc(var(--nested-curve) + 2px), transparent calc(var(--nested-curve) + 3px)) right top / calc(var(--nested-curve) + 4px) calc(var(--nested-curve) + 4px) no-repeat,
+    radial-gradient(circle at 100% 100%, transparent calc(var(--nested-curve) - 2px), var(--nested-outer-line-color) calc(var(--nested-curve) - 1px) calc(var(--nested-curve) + 2px), transparent calc(var(--nested-curve) + 3px)) right bottom / calc(var(--nested-curve) + 4px) calc(var(--nested-curve) + 4px) no-repeat,
+    radial-gradient(circle at 0 100%, transparent calc(var(--nested-curve) - 2px), var(--nested-outer-line-color) calc(var(--nested-curve) - 1px) calc(var(--nested-curve) + 2px), transparent calc(var(--nested-curve) + 3px)) left bottom / calc(var(--nested-curve) + 4px) calc(var(--nested-curve) + 4px) no-repeat,
+    linear-gradient(var(--nested-outer-line-color), var(--nested-outer-line-color)) left calc(var(--nested-curve) - 2px) top / calc(100% - (var(--nested-curve) * 2) + 4px) 2px no-repeat,
+    linear-gradient(var(--nested-outer-line-color), var(--nested-outer-line-color)) left calc(var(--nested-curve) - 2px) bottom / calc(100% - (var(--nested-curve) * 2) + 4px) 2px no-repeat,
+    linear-gradient(var(--nested-outer-line-color), var(--nested-outer-line-color)) left top calc(var(--nested-curve) - 2px) / 2px calc(100% - (var(--nested-curve) * 2) + 4px) no-repeat,
+    linear-gradient(var(--nested-outer-line-color), var(--nested-outer-line-color)) right top calc(var(--nested-curve) - 2px) / 2px calc(100% - (var(--nested-curve) * 2) + 4px) no-repeat;
+}
+
+.inner-panel::after {
+  inset: 4px;
+  z-index: 1;
+  --nested-line-color: rgba(182, 139, 68, 0.42);
+  background:
+    radial-gradient(circle at 0 0, transparent calc(var(--nested-curve) - 1px), var(--nested-line-color) var(--nested-curve), transparent calc(var(--nested-curve) + 1px)) left top / calc(var(--nested-curve) + 2px) calc(var(--nested-curve) + 2px) no-repeat,
+    radial-gradient(circle at 100% 0, transparent calc(var(--nested-curve) - 1px), var(--nested-line-color) var(--nested-curve), transparent calc(var(--nested-curve) + 1px)) right top / calc(var(--nested-curve) + 2px) calc(var(--nested-curve) + 2px) no-repeat,
+    radial-gradient(circle at 100% 100%, transparent calc(var(--nested-curve) - 1px), var(--nested-line-color) var(--nested-curve), transparent calc(var(--nested-curve) + 1px)) right bottom / calc(var(--nested-curve) + 2px) calc(var(--nested-curve) + 2px) no-repeat,
+    radial-gradient(circle at 0 100%, transparent calc(var(--nested-curve) - 1px), var(--nested-line-color) var(--nested-curve), transparent calc(var(--nested-curve) + 1px)) left bottom / calc(var(--nested-curve) + 2px) calc(var(--nested-curve) + 2px) no-repeat,
+    linear-gradient(var(--nested-line-color), var(--nested-line-color)) left var(--nested-curve) top / calc(100% - (var(--nested-curve) * 2)) 1px no-repeat,
+    linear-gradient(var(--nested-line-color), var(--nested-line-color)) left var(--nested-curve) bottom / calc(100% - (var(--nested-curve) * 2)) 1px no-repeat,
+    linear-gradient(var(--nested-line-color), var(--nested-line-color)) left top var(--nested-curve) / 1px calc(100% - (var(--nested-curve) * 2)) no-repeat,
+    linear-gradient(var(--nested-line-color), var(--nested-line-color)) right top var(--nested-curve) / 1px calc(100% - (var(--nested-curve) * 2)) no-repeat;
+}
+
+.inner-panel > * {
+  position: relative;
+  z-index: 2;
+}
+
+.inner-meter {
+  height: 5px;
+  overflow: hidden;
+  background: rgba(119, 84, 30, 0.08);
+  border: 1px solid rgba(182, 139, 68, 0.32);
+}
+
+.inner-meter span {
+  display: block;
+  width: var(--value, 50%);
+  height: 100%;
+  background: rgba(138, 99, 29, 0.62);
+}
+
+@media (max-width: 767px) {
+  .ornate-panel {
+    padding: clamp(20px, 7vw, 28px);
+  }
+
+  .inner-grid {
+    grid-template-columns: 1fr;
+  }
+}

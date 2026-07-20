@@ -1,0 +1,3 @@
+-- Development seed intentionally contains no users, credentials, or privileged roles.
+-- Auth users should be created through local Auth flows during integration testing.
+-- Bootstrap the first super-admin only with the trusted procedure documented in docs/supabase-phase-1-setup.md.

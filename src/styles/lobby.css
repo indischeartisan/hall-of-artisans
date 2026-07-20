@@ -1,0 +1,314 @@
+.lobby-page {
+  display: block;
+  min-height: 100svh;
+  background: #130c07;
+}
+
+.lobby-desktop,
+.lobby-mobile {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.lobby-desktop {
+  display: block;
+  background:
+    linear-gradient(180deg, rgba(255, 247, 226, 0.06), rgba(255, 247, 226, 0.03)),
+    url("/assets/backgrounds/lobby-desktop-bright-final.webp") center center / cover no-repeat;
+}
+
+.lobby-mobile {
+  display: none;
+}
+
+.lobby-page .lobby-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 50% 31%, rgba(255, 250, 232, 0.13), transparent 34%),
+    linear-gradient(180deg, rgba(72, 45, 18, 0.02), rgba(72, 45, 18, 0.06) 70%, rgba(72, 45, 18, 0.12) 100%),
+    linear-gradient(90deg, rgba(72, 45, 18, 0.08), transparent 21%, transparent 79%, rgba(72, 45, 18, 0.08));
+  pointer-events: none;
+}
+
+.lobby-page .lobby-header {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.lobby-map {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+.lobby-marker {
+  position: absolute;
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  line-height: 0;
+  filter: drop-shadow(0 9px 11px rgba(0, 0, 0, 0.28)) drop-shadow(0 0 7px rgba(0, 0, 0, 0.12));
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.lobby-marker img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.lobby-marker:hover,
+.lobby-marker:focus-visible {
+  filter: brightness(1.03) drop-shadow(0 12px 14px rgba(0, 0, 0, 0.32)) drop-shadow(0 0 10px rgba(70, 44, 16, 0.2));
+  transform: translateY(-2px);
+}
+
+.marker-primary {
+  filter: drop-shadow(0 15px 22px rgba(0, 0, 0, 0.38)) drop-shadow(0 0 10px rgba(244, 202, 118, 0.16));
+}
+
+.marker-archive {
+  top: 23%;
+  right: 25.2%;
+  width: clamp(138px, 13vw, 220px);
+}
+
+.marker-academy {
+  top: 24%;
+  left: 12%;
+  width: clamp(140px, 13vw, 224px);
+}
+
+.marker-library {
+  top: 30%;
+  right: 11.2%;
+  width: clamp(140px, 13vw, 226px);
+}
+
+.marker-make {
+  top: 53%;
+  left: 50%;
+  width: clamp(174px, 16vw, 276px);
+  transform: translate(-50%, -50%);
+}
+
+.marker-make:hover,
+.marker-make:focus-visible {
+  transform: translate(-50%, calc(-50% - 2px));
+}
+
+.marker-bespoke {
+  left: 13.2%;
+  bottom: 26%;
+  width: clamp(144px, 14vw, 235px);
+}
+
+.marker-register {
+  right: 12.6%;
+  bottom: 23.5%;
+  width: clamp(144px, 14vw, 235px);
+}
+
+@media (max-width: 980px) {
+  .lobby-marker {
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.34));
+  }
+}
+
+@media (max-width: 768px) {
+  .lobby-body .global-header,
+  .lobby-body .global-header.scrolled:not(.menu-active) {
+    background: transparent;
+    border-bottom-color: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .lobby-body .global-header .brand {
+    display: none !important;
+  }
+
+  .lobby-desktop {
+    display: none;
+  }
+
+  .lobby-page {
+    padding: 0;
+  }
+
+  .lobby-mobile {
+    min-height: max(100svh, 216vw);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0;
+    color: var(--paper);
+    background:
+      linear-gradient(180deg, rgba(10, 6, 3, 0.28), rgba(10, 6, 3, 0.06) 34%, rgba(10, 6, 3, 0.2) 68%, rgba(10, 6, 3, 0.72) 100%),
+      url("/assets/backgrounds/lobby-mobile-final.webp") center top / cover no-repeat;
+  }
+
+  .lobby-mobile-shade {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(circle at 50% 9%, rgba(255, 226, 161, 0.16), transparent 13rem),
+      linear-gradient(90deg, rgba(10, 6, 3, 0.32), transparent 38%, transparent 62%, rgba(10, 6, 3, 0.3));
+    pointer-events: none;
+  }
+
+  .mobile-lobby-title {
+    position: absolute;
+    top: 4.8%;
+    left: 50%;
+    z-index: 2;
+    width: min(88%, 390px);
+    margin: 0;
+    text-align: center;
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.72);
+    transform: translateX(-50%);
+  }
+
+  .mobile-lobby-title > img:first-child {
+    width: clamp(56px, 13vw, 72px);
+    margin: 0 auto 6px;
+    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.46));
+  }
+
+  .mobile-lobby-title h1 {
+    margin: 0;
+    color: #fff8ea;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(24px, 7vw, 35px);
+    font-weight: 500;
+    letter-spacing: 0.052em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .mobile-lobby-title p {
+    margin: 6px 0 0;
+    color: #f7dfaf;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(14px, 3.7vw, 19px);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  .mobile-ornament {
+    width: min(220px, 64%);
+    margin: 8px auto 0;
+    opacity: 0.72;
+  }
+
+  .mobile-lobby-actions {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    width: 100%;
+    margin: 0;
+  }
+
+  .mobile-lobby-actions a,
+  .mobile-lobby-actions .mobile-main-cta {
+    position: absolute;
+    display: block;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    line-height: 0;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.36)) drop-shadow(0 0 8px rgba(239, 202, 121, 0.12));
+    transition: transform 180ms ease, filter 180ms ease;
+  }
+
+  .mobile-lobby-actions a:hover,
+  .mobile-lobby-actions a:focus-visible {
+    transform: translate(-50%, calc(-50% - 2px));
+    filter: brightness(1.08) drop-shadow(0 13px 19px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 10px rgba(244, 202, 118, 0.2));
+  }
+
+  .mobile-lobby-actions img {
+    width: 100%;
+    max-width: none;
+    height: auto;
+  }
+
+  .lobby-body .mobile-lobby-actions .mobile-marker {
+    width: min(31vw, 145px);
+    max-width: 145px;
+  }
+
+  .lobby-body .mobile-lobby-actions .mobile-marker-archive {
+    top: 28%;
+    left: 50%;
+    width: min(32vw, 150px);
+    max-width: 150px;
+  }
+
+  .lobby-body .mobile-lobby-actions .mobile-marker-academy {
+    top: 37%;
+    left: 27%;
+  }
+
+  .lobby-body .mobile-lobby-actions .mobile-marker-library {
+    top: 37%;
+    left: 73%;
+  }
+
+  .lobby-body .mobile-lobby-actions .mobile-marker-make {
+    top: 51%;
+    left: 50%;
+    width: min(40vw, 184px);
+    max-width: 184px;
+  }
+
+  .lobby-body .mobile-lobby-actions .mobile-marker-bespoke {
+    top: 65.5%;
+    left: 27%;
+  }
+
+  .lobby-body .mobile-lobby-actions .mobile-marker-register {
+    top: 65.5%;
+    left: 73%;
+  }
+}
+
+@media (max-width: 390px) {
+  .lobby-body .mobile-lobby-actions .mobile-marker {
+    width: min(33vw, 128px);
+    max-width: 128px;
+  }
+
+  .lobby-body .mobile-lobby-actions .mobile-marker-archive {
+    width: min(34vw, 132px);
+    max-width: 132px;
+  }
+
+  .lobby-body .mobile-lobby-actions .mobile-marker-make {
+    width: min(43vw, 166px);
+    max-width: 166px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lobby-marker,
+  .mobile-lobby-actions a {
+    transition: none;
+  }
+}

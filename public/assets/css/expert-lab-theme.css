@@ -1,0 +1,543 @@
+/* Theme layer for Artisan Bench. The existing atelier styles remain the dark mode baseline. */
+body.expert-lab-page {
+  --page-bg: #f4ead7;
+  --panel-bg: rgba(255, 248, 232, 0.82);
+  --panel-bg-soft: rgba(250, 240, 218, 0.68);
+  --text-main: #26351f;
+  --text-muted: #7a684d;
+  --heading: #17351f;
+  --accent: #b9904f;
+  --accent-soft: #d7bd82;
+  --border: rgba(137, 105, 52, 0.38);
+  --button-bg: rgba(255, 249, 235, 0.85);
+  --button-text: #26351f;
+  --active-bg: #244321;
+  --active-text: #f8edd8;
+  --shadow: 0 14px 36px rgba(95, 74, 38, 0.14);
+  --hero-overlay: linear-gradient(to bottom, rgba(255, 248, 232, 0.16), rgba(255, 248, 232, 0.48));
+}
+
+body.expert-lab-page[data-theme="dark"] {
+  --page-bg: #100a06;
+  --panel-bg: rgba(28, 18, 10, 0.78);
+  --panel-bg-soft: rgba(13, 8, 5, 0.86);
+  --text-main: #fff3dc;
+  --text-muted: #c8b18a;
+  --heading: #fff3dc;
+  --accent: #d6ac60;
+  --accent-soft: #f0ce83;
+  --border: rgba(207, 165, 88, 0.46);
+  --button-bg: linear-gradient(180deg, rgba(62, 39, 20, 0.88), rgba(23, 14, 8, 0.92));
+  --button-text: #fff3dc;
+  --active-bg: #5a391b;
+  --active-text: #fff3dc;
+  --shadow: 0 14px 32px rgba(0, 0, 0, 0.22);
+  --hero-overlay: linear-gradient(180deg, rgba(14, 8, 4, 0.35), rgba(14, 8, 4, 0.9));
+}
+
+body.expert-lab-page {
+  color: var(--text-main);
+  background: var(--page-bg);
+  transition: background 220ms ease, color 220ms ease;
+}
+
+body.expert-lab-page[data-theme="dark"] {
+  background:
+    radial-gradient(circle at 20% 0%, rgba(155, 98, 38, 0.18), transparent 34rem),
+    linear-gradient(180deg, #171009, var(--page-bg) 42rem);
+}
+
+body.expert-lab-page[data-theme="bright"] {
+  --bg: var(--page-bg);
+  --panel: var(--panel-bg);
+  --panel-deep: var(--panel-bg-soft);
+  --line: var(--border);
+  --line-soft: rgba(137, 105, 52, 0.2);
+  --gold: var(--accent);
+  --gold-bright: var(--accent-soft);
+  --cream: var(--text-main);
+  --paper: #f4e6c9;
+  --muted: var(--text-muted);
+  --panel-workbench-bg: var(--panel-bg);
+  --panel-workbench-inner: var(--panel-bg-soft);
+  --panel-workbench-border: var(--border);
+  --panel-workbench-border-soft: rgba(137, 105, 52, 0.22);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 8px 12px;
+  white-space: nowrap;
+  border-radius: 999px;
+  color: var(--button-text);
+  border-color: var(--border);
+  background: var(--button-bg);
+  box-shadow: none;
+  font-family: var(--font-serif);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  color: var(--active-text);
+  border-color: var(--accent);
+  background: var(--active-bg);
+}
+
+.theme-toggle-icon { font-size: 16px; line-height: 1; }
+
+body.expert-lab-page[data-theme="bright"] .topbar {
+  background: rgba(255, 248, 232, 0.94) !important;
+  border-bottom-color: var(--border);
+  box-shadow: 0 8px 22px rgba(95, 74, 38, 0.1), inset 0 -1px 0 rgba(185, 144, 79, 0.24) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] nav { color: var(--text-main); }
+body.expert-lab-page[data-theme="bright"] .brand-mark { background: radial-gradient(circle, rgba(215, 189, 130, 0.38), rgba(255, 248, 232, 0.9) 68%); }
+body.expert-lab-page[data-theme="bright"] .signin-link { color: var(--heading); background: var(--button-bg); border-color: var(--border); }
+
+body.expert-lab-page[data-theme="bright"] .hero-veil {
+  background: var(--hero-overlay), linear-gradient(90deg, rgba(250, 240, 218, 0.7), rgba(255, 248, 232, 0.08) 58%, rgba(244, 234, 215, 0.38));
+}
+body.expert-lab-page[data-theme="bright"] .hero-copy { color: var(--heading); text-shadow: 0 3px 16px rgba(255, 248, 232, 0.78); }
+body.expert-lab-page[data-theme="bright"] .hero-copy p { color: #34462d; }
+
+body.expert-lab-page[data-theme="bright"] .ornate-panel:not(.brief),
+body.expert-lab-page[data-theme="bright"] .formula-builder.ornate-panel {
+  background: var(--panel-bg) !important;
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .inner-panel:not(.brief-paper),
+body.expert-lab-page[data-theme="bright"] .layer-card.inner-panel,
+body.expert-lab-page[data-theme="bright"] .timeline-card.inner-panel,
+body.expert-lab-page[data-theme="bright"] .material-item.inner-panel,
+body.expert-lab-page[data-theme="bright"] .note-box.inner-panel {
+  background: var(--panel-bg-soft) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 6px 16px rgba(95, 74, 38, 0.08) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .ornate-panel h2,
+body.expert-lab-page[data-theme="bright"] .ornate-panel h3,
+body.expert-lab-page[data-theme="bright"] .ornate-panel h4,
+body.expert-lab-page[data-theme="bright"] .formula-builder h2,
+body.expert-lab-page[data-theme="bright"] .analysis h2,
+body.expert-lab-page[data-theme="bright"] .drydown h2 { color: var(--heading) !important; }
+
+body.expert-lab-page[data-theme="bright"] .step,
+body.expert-lab-page[data-theme="bright"] .kicker,
+body.expert-lab-page[data-theme="bright"] small,
+body.expert-lab-page[data-theme="bright"] .muted { color: var(--text-muted) !important; }
+
+body.expert-lab-page[data-theme="bright"] input,
+body.expert-lab-page[data-theme="bright"] textarea,
+body.expert-lab-page[data-theme="bright"] select {
+  color: var(--text-main) !important;
+  border-color: var(--border) !important;
+  background: rgba(255, 252, 242, 0.9) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] button:not(.theme-toggle),
+body.expert-lab-page[data-theme="bright"] .choice-button,
+body.expert-lab-page[data-theme="bright"] .panel-button,
+body.expert-lab-page[data-theme="bright"] .pill-row button {
+  color: var(--button-text) !important;
+  border-color: var(--border) !important;
+  background: var(--button-bg) !important;
+  box-shadow: none !important;
+}
+
+body.expert-lab-page[data-theme="bright"] button.active,
+body.expert-lab-page[data-theme="bright"] .choice-button.active,
+body.expert-lab-page[data-theme="bright"] .pill-row button.active,
+body.expert-lab-page[data-theme="bright"] .gold-button {
+  color: var(--active-text) !important;
+  background: var(--active-bg) !important;
+  border-color: var(--accent) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] button:hover,
+body.expert-lab-page[data-theme="bright"] button:focus-visible { border-color: var(--accent) !important; }
+
+body.expert-lab-page[data-theme="bright"] input[type="range"] { accent-color: var(--active-bg); }
+body.expert-lab-page[data-theme="bright"] progress { accent-color: var(--active-bg); }
+body.expert-lab-page[data-theme="bright"] .analysis-bar,
+body.expert-lab-page[data-theme="bright"] .balance-bar { background: rgba(36, 67, 33, 0.14) !important; }
+body.expert-lab-page[data-theme="bright"] .analysis-bar span,
+body.expert-lab-page[data-theme="bright"] .balance-bar span { background: var(--active-bg) !important; }
+
+body.expert-lab-page[data-theme="bright"] .brief,
+body.expert-lab-page[data-theme="bright"] .brief-paper,
+body.expert-lab-page[data-theme="bright"] .story-card-preview {
+  color: #26351f !important;
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* Bright mode contrast pass: the original dark-mode cream transparencies are too faint on parchment. */
+body.expert-lab-page[data-theme="bright"] {
+  --text-muted: #5f4e35;
+}
+
+body.expert-lab-page[data-theme="bright"] .ornate-panel :is(p, li, label, small, em),
+body.expert-lab-page[data-theme="bright"] .panel-title + p,
+body.expert-lab-page[data-theme="bright"] .next-creation,
+body.expert-lab-page[data-theme="bright"] .message,
+body.expert-lab-page[data-theme="bright"] .selected-material header,
+body.expert-lab-page[data-theme="bright"] .bar-label,
+body.expert-lab-page[data-theme="bright"] .timeline-card p {
+  color: var(--text-main) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .step,
+body.expert-lab-page[data-theme="bright"] .kicker,
+body.expert-lab-page[data-theme="bright"] .layer-card small,
+body.expert-lab-page[data-theme="bright"] .material-item small,
+body.expert-lab-page[data-theme="bright"] .coming-soon small,
+body.expert-lab-page[data-theme="bright"] .material-info-button :is(small, em, p),
+body.expert-lab-page[data-theme="bright"] .story-card-message {
+  color: var(--text-muted) !important;
+  opacity: 1;
+}
+
+body.expert-lab-page[data-theme="bright"] .category summary,
+body.expert-lab-page[data-theme="bright"] .material-item span,
+body.expert-lab-page[data-theme="bright"] .material-info-button span,
+body.expert-lab-page[data-theme="bright"] .layer-card h3,
+body.expert-lab-page[data-theme="bright"] .layer-card > strong,
+body.expert-lab-page[data-theme="bright"] .timeline-card strong {
+  color: var(--heading) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .bar-track,
+body.expert-lab-page[data-theme="bright"] .category,
+body.expert-lab-page[data-theme="bright"] .selected-material,
+body.expert-lab-page[data-theme="bright"] .message {
+  border-color: rgba(95, 78, 53, 0.3) !important;
+  background-color: rgba(255, 252, 242, 0.64) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .brief-paper,
+body.expert-lab-page[data-theme="bright"] .brief-paper :is(p, li, strong) {
+  color: #26351f !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .brief-paper h3 { color: #17351f !important; }
+
+body.expert-lab-page[data-theme="bright"] #briefOutput.brief-paper.inner-panel {
+  background-color: #f8edcf !important;
+  background-image: url("../images/fragrance-brief-paper-bright.webp") !important;
+  background-position: center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .gold-button,
+body.expert-lab-page[data-theme="bright"] .gold-button :is(span, small),
+body.expert-lab-page[data-theme="bright"] button.active,
+body.expert-lab-page[data-theme="bright"] button.active :is(span, small) {
+  color: var(--active-text) !important;
+}
+
+/* Material picker: keep its text legible after the bright button treatment is applied. */
+body.expert-lab-page[data-theme="bright"] dialog {
+  color: var(--text-main);
+  border-color: var(--accent) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(215, 189, 130, 0.34), transparent 24rem),
+    #fbf2df !important;
+  box-shadow: 0 24px 70px rgba(62, 50, 28, 0.24) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] dialog::backdrop {
+  background: rgba(43, 50, 35, 0.36);
+  backdrop-filter: blur(5px);
+}
+
+body.expert-lab-page[data-theme="bright"] .dialog-heading .step,
+body.expert-lab-page[data-theme="bright"] .dialog-material-group h3 {
+  color: var(--heading) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] #dialogMaterials .dialog-material-option.panel-button {
+  color: var(--text-main) !important;
+  border-color: rgba(95, 78, 53, 0.32) !important;
+  background: rgba(255, 251, 240, 0.96) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] #dialogMaterials .dialog-material-option.panel-button:hover,
+body.expert-lab-page[data-theme="bright"] #dialogMaterials .dialog-material-option.panel-button:focus-visible {
+  border-color: var(--accent) !important;
+  background: #f4e6c9 !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .dialog-material-name {
+  color: var(--heading) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .dialog-material-meta {
+  color: #85642f !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .dialog-material-description {
+  color: var(--text-muted) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] #dialogMaterials {
+  scrollbar-color: #a87c3c rgba(228, 211, 174, 0.72);
+}
+
+body.expert-lab-page[data-theme="bright"] #dialogMaterials::-webkit-scrollbar-track {
+  background: rgba(228, 211, 174, 0.72);
+  border-color: rgba(137, 105, 52, 0.32);
+}
+
+body.expert-lab-page[data-theme="bright"] #dialogMaterials::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #c39b5a, #87632f);
+  border-color: #f7ecd5;
+}
+
+/* High-contrast controls and feedback in the compact top and formula-check panels. */
+body.expert-lab-page[data-theme="bright"] .formula-insights-panel .direction-chip.active {
+  color: #fff8e8 !important;
+  border-color: #274b28 !important;
+  background: linear-gradient(180deg, #3e6538, #244321) !important;
+  box-shadow: 0 5px 12px rgba(36, 67, 33, 0.22) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .formula-insights-panel .direction-chip.active strong,
+body.expert-lab-page[data-theme="bright"] .formula-insights-panel .direction-chip.active em {
+  color: #fff8e8 !important;
+  opacity: 1;
+}
+
+body.expert-lab-page[data-theme="bright"] .concentration-heading .step {
+  color: #314d2d !important;
+  font-weight: 700;
+}
+
+body.expert-lab-page[data-theme="bright"] .concentration-help summary {
+  color: #fff8e8 !important;
+  border: 1px solid #274b28 !important;
+  background: #315a30 !important;
+  box-shadow: 0 3px 8px rgba(36, 67, 33, 0.2) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .concentration-help-popover {
+  color: var(--text-main) !important;
+  border-color: var(--accent) !important;
+  background: #fff8e8 !important;
+  box-shadow: var(--shadow) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .concentration-help-popover h3,
+body.expert-lab-page[data-theme="bright"] .concentration-help-popover strong {
+  color: var(--heading) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .concentration-help-popover p {
+  color: var(--text-main) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .formula-check #formulaMessages .message.good {
+  color: #1d4a2b !important;
+  border-color: #6c995b !important;
+  background: #e5f0dc !important;
+  font-weight: 600;
+}
+
+body.expert-lab-page[data-theme="bright"] .formula-check #formulaMessages .message.warn {
+  color: #704719 !important;
+  border-color: #c99b4a !important;
+  background: #fff0cf !important;
+  font-weight: 600;
+}
+
+/* Drydown Journey: give each phase a readable narrative hierarchy. */
+body.expert-lab-page .timeline-card .journey-cue {
+  display: block;
+  margin-top: 8px;
+  color: var(--gold);
+  font-family: var(--font-serif);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+body.expert-lab-page .timeline-card .journey-detail {
+  display: block;
+  margin-top: 12px;
+  padding-top: 9px;
+  border-top: 1px solid var(--line-soft);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+body.expert-lab-page[data-theme="bright"] .timeline-card .journey-cue { color: #805b25; }
+body.expert-lab-page[data-theme="bright"] .timeline-card .journey-detail { color: #5f4e35 !important; }
+
+@media (max-width: 980px) {
+  .theme-toggle-label { display: none; }
+  .theme-toggle { width: 42px; padding: 8px; }
+}
+
+/* Mobile reading order: check the formula before returning to the material library. */
+@media (max-width: 760px) {
+  body.expert-lab-page .expert-workshop {
+    grid-template-areas:
+      "controls"
+      "build"
+      "check"
+      "library"
+      "analysis"
+      "drydown"
+      "brief"
+      "next" !important;
+  }
+
+  body.expert-lab-page .formula-check {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  body.expert-lab-page .formula-check #formulaMessages {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  body.expert-lab-page .formula-check #formulaMessages .message {
+    min-height: 0 !important;
+    padding: 12px 14px !important;
+    line-height: 1.45 !important;
+  }
+}
+
+/* Bright-mode clarity and compact-control alignment pass. */
+body.expert-lab-page[data-theme="bright"] .hero-image {
+  filter: brightness(1.03) saturate(1.05) contrast(1.04) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .hero-veil {
+  background:
+    radial-gradient(circle at 22% 52%, rgba(255, 246, 219, 0.1), transparent 34%),
+    linear-gradient(90deg, rgba(40, 29, 13, 0.08), transparent 48%, rgba(40, 29, 13, 0.06)),
+    linear-gradient(180deg, transparent 54%, rgba(43, 31, 15, 0.1)) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .formula-insights-panel .direction-empty {
+  color: #5f4e35 !important;
+  opacity: 1 !important;
+  font-weight: 500;
+}
+
+body.expert-lab-page[data-theme="bright"] #concentrationButtons .choice-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  text-indent: 0 !important;
+}
+
+/* Keep the concentration guide above every following workbench panel. */
+body.expert-lab-page .expert-workshop,
+body.expert-lab-page .top-controls,
+body.expert-lab-page .concentration-panel,
+body.expert-lab-page .concentration-heading,
+body.expert-lab-page .concentration-help {
+  overflow: visible !important;
+}
+
+body.expert-lab-page .top-controls {
+  position: relative !important;
+  z-index: 100 !important;
+}
+
+body.expert-lab-page .top-controls:has(.concentration-help[open]),
+body.expert-lab-page .concentration-panel:has(.concentration-help[open]) {
+  z-index: 10000 !important;
+}
+
+body.expert-lab-page .concentration-help[open] {
+  position: relative !important;
+  z-index: 10001 !important;
+}
+
+body.expert-lab-page .concentration-help-popover {
+  z-index: 10002 !important;
+}
+
+body.expert-lab-page .build-review-row {
+  position: relative;
+  z-index: 1;
+}
+
+/* Bright hero: local parchment backing keeps copy readable without clouding the full image. */
+body.expert-lab-page[data-theme="bright"] .hero-copy {
+  padding: clamp(22px, 3.4vw, 52px) !important;
+  border-left: 1px solid rgba(168, 124, 60, 0.52);
+  border-radius: 0 10px 10px 0;
+  color: #17351f !important;
+  background: linear-gradient(90deg, rgba(255, 248, 232, 0.94), rgba(255, 248, 232, 0.82) 68%, rgba(255, 248, 232, 0.18) 94%, transparent);
+  box-shadow: inset 1px 0 rgba(255, 255, 255, 0.74), 0 10px 28px rgba(45, 31, 14, 0.08);
+  text-shadow: none !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .hero-copy .kicker {
+  color: #805b25 !important;
+  opacity: 1;
+}
+
+body.expert-lab-page[data-theme="bright"] .hero-copy h1 {
+  color: #17351f !important;
+  text-shadow: 0 1px rgba(255, 255, 255, 0.5) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .hero-copy p:last-child {
+  color: #26351f !important;
+  font-weight: 500;
+  text-shadow: none !important;
+}
+
+/* Drydown empty state uses the same parchment-card language as the other inner panels. */
+body.expert-lab-page[data-theme="bright"] .drydown #drydownTimeline .message.warn:only-child {
+  min-height: 76px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 18px !important;
+  border: 1px solid rgba(137, 105, 52, 0.34) !important;
+  border-radius: 8px !important;
+  color: #34462d !important;
+  background: linear-gradient(145deg, rgba(255, 252, 242, 0.96), rgba(244, 230, 201, 0.82)) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55), 0 6px 16px rgba(95, 74, 38, 0.08) !important;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center !important;
+}
+
+@media (max-width: 760px) {
+  body.expert-lab-page[data-theme="bright"] .hero-copy {
+    width: calc(100% - 24px);
+    margin-inline: 12px;
+    border: 1px solid rgba(168, 124, 60, 0.34);
+    border-radius: 8px;
+    background: rgba(255, 248, 232, 0.88);
+  }
+}

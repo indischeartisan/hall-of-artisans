@@ -1,0 +1,2081 @@
+/*
+  Expert Lab final refinements
+  Keep new visual tweaks here so the older base CSS stays stable.
+
+  Sections:
+  1. Simple panel tone
+  2. Concentration guide
+  3. Formula Builder workbench
+  4. Fragrance Brief parchment
+  5. Responsive refinements
+*/
+
+/* 1. Simple panel tone */
+body.expert-lab-page {
+  --panel-workbench-bg: linear-gradient(180deg, rgba(35, 23, 14, 0.78), rgba(15, 10, 7, 0.9));
+  --panel-workbench-inner: linear-gradient(180deg, rgba(31, 21, 13, 0.56), rgba(13, 8, 5, 0.68));
+  --panel-workbench-border: rgba(190, 137, 61, 0.28);
+  --panel-workbench-border-soft: rgba(190, 137, 61, 0.18);
+  --panel-workbench-radius: 8px;
+  --panel-workbench-inner-radius: 7px;
+}
+
+body.expert-lab-page .ornate-panel,
+body.expert-lab-page .panel.ornate-panel,
+body.expert-lab-page .setup-block.ornate-panel,
+body.expert-lab-page .material-library.ornate-panel,
+body.expert-lab-page .formula-builder.ornate-panel,
+body.expert-lab-page .formula-insights-panel.ornate-panel,
+body.expert-lab-page .perfume-name.ornate-panel,
+body.expert-lab-page .analysis.ornate-panel,
+body.expert-lab-page .drydown.ornate-panel,
+body.expert-lab-page .formula-check.ornate-panel,
+body.expert-lab-page .brief.ornate-panel,
+body.expert-lab-page .story-card-section.ornate-panel,
+body.expert-lab-page .next.ornate-panel {
+  overflow: hidden;
+  border: 1px solid var(--panel-workbench-border);
+  border-radius: var(--panel-workbench-radius);
+  -webkit-mask: none;
+  mask: none;
+  clip-path: none;
+  background: var(--panel-workbench-bg);
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(255, 232, 180, 0.025);
+}
+
+body.expert-lab-page .ornate-panel::before,
+body.expert-lab-page .ornate-panel::after,
+body.expert-lab-page .panel.ornate-panel::before,
+body.expert-lab-page .panel.ornate-panel::after,
+body.expert-lab-page .inner-panel::before,
+body.expert-lab-page .inner-panel::after {
+  display: none !important;
+}
+
+body.expert-lab-page .inner-panel,
+body.expert-lab-page .brief-paper.inner-panel,
+body.expert-lab-page .layer-card.inner-panel,
+body.expert-lab-page .timeline-card.inner-panel,
+body.expert-lab-page .coming-soon.inner-panel,
+body.expert-lab-page .category.inner-panel,
+body.expert-lab-page .material-item.inner-panel,
+body.expert-lab-page .note-box.inner-panel {
+  overflow: hidden;
+  border: 1px solid var(--panel-workbench-border-soft);
+  border-radius: var(--panel-workbench-inner-radius);
+  -webkit-mask: none;
+  mask: none;
+  clip-path: none;
+  background: var(--panel-workbench-inner);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 232, 180, 0.025),
+    0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+body.expert-lab-page .choice-button,
+body.expert-lab-page .panel-button,
+body.expert-lab-page .gold-button {
+  border-width: 1px;
+  border-radius: 7px;
+}
+
+body.expert-lab-page .expert-workshop > .material-library {
+  position: static;
+  top: auto;
+  align-self: start;
+}
+
+body.expert-lab-page .concentration-panel.ornate-panel {
+  overflow: visible;
+}
+
+/* 2. Concentration guide */
+body.expert-lab-page .concentration-panel.ornate-panel {
+  overflow: visible;
+}
+
+body.expert-lab-page .concentration-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+body.expert-lab-page .concentration-heading .step {
+  margin: 0;
+}
+
+body.expert-lab-page .concentration-help {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+body.expert-lab-page .concentration-help summary {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border: 1px solid rgba(215, 166, 83, 0.72);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(54, 35, 18, 0.9), rgba(19, 12, 7, 0.94));
+  box-shadow: 0 0 14px rgba(216, 161, 75, 0.18), inset 0 0 0 1px rgba(255, 230, 172, 0.08);
+  color: #f2d99b;
+  cursor: pointer;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  line-height: 1;
+  list-style: none;
+}
+
+body.expert-lab-page .concentration-help summary::-webkit-details-marker {
+  display: none;
+}
+
+body.expert-lab-page .concentration-help-popover {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 10px);
+  left: 50%;
+  width: min(310px, 78vw);
+  padding: 16px 17px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(201, 154, 85, 0.56);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(41, 28, 17, 0.96), rgba(15, 10, 7, 0.98));
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.46),
+    inset 0 0 0 1px rgba(255, 232, 180, 0.08);
+  color: #ead9b8;
+}
+
+body.expert-lab-page .concentration-help-popover::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  transform: translateX(-50%) rotate(45deg);
+  border-top: 1px solid rgba(201, 154, 85, 0.56);
+  border-left: 1px solid rgba(201, 154, 85, 0.56);
+  background: rgba(41, 28, 17, 0.96);
+}
+
+body.expert-lab-page .concentration-help-popover h3 {
+  margin: 0 0 10px;
+  color: #d6b46f;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+body.expert-lab-page .concentration-help-popover p {
+  margin: 8px 0 0;
+  color: rgba(239, 226, 195, 0.88);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+body.expert-lab-page .concentration-help-popover strong {
+  color: #f0cf83;
+  font-family: var(--font-serif);
+  letter-spacing: 0.08em;
+}
+
+body.expert-lab-page .concentration-panel .pill-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+body.expert-lab-page .concentration-panel .choice-button {
+  min-width: 0;
+  min-height: 36px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+body.expert-lab-page .concentration-guidance[hidden] {
+  display: none !important;
+}
+
+/* 3. Formula Builder workbench */
+body.expert-lab-page .formula-builder.ornate-panel {
+  padding: clamp(14px, 1.15vw, 22px);
+  border-color: var(--panel-workbench-border);
+  border-radius: var(--panel-workbench-radius);
+  background: var(--panel-workbench-bg);
+}
+
+body.expert-lab-page .formula-builder .panel-title {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  margin-bottom: 12px;
+}
+
+body.expert-lab-page .formula-builder .panel-title h2 {
+  font-size: clamp(22px, 1.75vw, 36px);
+  line-height: 1;
+}
+
+body.expert-lab-page .builder-grid.inner-grid,
+body.expert-lab-page .formula-builder .layer-grid.inner-grid {
+  gap: clamp(8px, 0.75vw, 14px);
+}
+
+body.expert-lab-page .formula-builder .layer-card.inner-panel {
+  min-height: 0;
+  padding: 12px 13px 11px;
+  border-color: var(--panel-workbench-border);
+  border-radius: var(--panel-workbench-inner-radius);
+  background: var(--panel-workbench-inner);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 232, 180, 0.02),
+    0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+body.expert-lab-page .formula-builder .layer-card h3 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  color: #d9b76e;
+  font-size: clamp(13px, 0.8vw, 15px);
+  line-height: 1.1;
+  letter-spacing: 0.1em;
+}
+
+body.expert-lab-page .formula-builder .layer-card h3 span,
+body.expert-lab-page .formula-builder .layer-card h3 strong {
+  white-space: nowrap;
+}
+
+body.expert-lab-page .formula-builder .layer-card h3 strong {
+  margin: 0;
+  color: #e2c275;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+body.expert-lab-page .formula-builder .layer-card small {
+  display: block;
+  margin: 4px 0 9px;
+  color: rgba(239, 226, 195, 0.68);
+  font-size: 10px;
+  line-height: 1.1;
+}
+
+body.expert-lab-page .formula-builder .selected-list {
+  gap: 6px;
+}
+
+body.expert-lab-page .formula-builder .selected-material.inner-panel {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(194, 145, 72, 0.13);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.expert-lab-page .formula-builder .selected-material.inner-panel:last-child {
+  border-bottom: 0;
+}
+
+body.expert-lab-page .formula-builder .selected-material header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 22px;
+  padding: 1px 0 2px;
+  color: #f0dfbf;
+  font-size: 12px;
+  line-height: 1.15;
+}
+
+body.expert-lab-page .formula-builder .selected-material-name,
+body.expert-lab-page .formula-builder .selected-material-controls {
+  display: inline-flex;
+  align-items: center;
+}
+
+body.expert-lab-page .formula-builder .selected-material-name {
+  gap: 7px;
+  min-width: 0;
+}
+
+body.expert-lab-page .formula-builder .selected-material-controls {
+  gap: 6px;
+}
+
+body.expert-lab-page .formula-builder .material-note-icon {
+  display: inline-grid;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  place-items: center;
+  color: #d8ac5d;
+  font-size: 14px;
+  line-height: 1;
+  filter: drop-shadow(0 0 5px rgba(213, 154, 67, 0.18));
+}
+
+body.expert-lab-page .formula-builder .material-percent {
+  min-width: 28px;
+  color: #e3c476;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: right;
+}
+
+body.expert-lab-page .formula-builder .remove-btn {
+  display: inline-grid;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  place-items: center;
+  padding: 0;
+  border-color: rgba(201, 154, 85, 0.32);
+  border-radius: 50%;
+  background: rgba(17, 10, 6, 0.45);
+  color: rgba(239, 226, 195, 0.82);
+  font-size: 10px;
+  line-height: 1;
+}
+
+body.expert-lab-page .formula-builder .selected-material input[type="range"] {
+  width: min(74%, 145px);
+  height: 10px;
+  margin: 0 0 5px 25px;
+  accent-color: #d59e4d;
+}
+
+body.expert-lab-page .formula-builder .selected-material input[type="range"]::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(208, 150, 70, 0.82), rgba(74, 48, 24, 0.7));
+}
+
+body.expert-lab-page .formula-builder .selected-material input[type="range"]::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  margin-top: -3.5px;
+  border: 1px solid rgba(255, 228, 158, 0.86);
+  border-radius: 999px;
+  background: #d9a452;
+  box-shadow: 0 0 7px rgba(216, 164, 82, 0.34);
+}
+
+body.expert-lab-page .formula-builder .selected-material input[type="range"]::-moz-range-track {
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(208, 150, 70, 0.82), rgba(74, 48, 24, 0.7));
+}
+
+body.expert-lab-page .formula-builder .selected-material input[type="range"]::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgba(255, 228, 158, 0.86);
+  border-radius: 999px;
+  background: #d9a452;
+}
+
+body.expert-lab-page .formula-builder .add-btn {
+  min-height: 30px;
+  margin-top: 7px;
+  padding: 5px 9px;
+  border-style: dashed;
+  border-color: rgba(207, 157, 78, 0.42);
+  border-radius: 7px;
+  background: rgba(18, 11, 7, 0.34);
+  box-shadow: none;
+  color: #e9cf8f;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+body.expert-lab-page .formula-summary-strip {
+  display: grid;
+  grid-template-columns: minmax(140px, 1.1fr) repeat(3, minmax(80px, 0.62fr));
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+  padding: 10px 13px;
+  border-top: 1px solid rgba(190, 137, 61, 0.22);
+  border-bottom: 1px solid rgba(190, 137, 61, 0.14);
+  color: rgba(239, 226, 195, 0.82);
+  font-family: var(--font-serif);
+  font-size: 13px;
+}
+
+body.expert-lab-page .formula-summary-strip span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+body.expert-lab-page .formula-summary-strip strong {
+  color: #e6c77c;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+body.expert-lab-page .formula-summary-strip span:not(:first-child) strong {
+  color: #76c5d4;
+  font-size: 13px;
+}
+
+body.expert-lab-page .formula-builder .actions.inner-panel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 0 0;
+  border: 0;
+  border-top: 1px solid rgba(190, 137, 61, 0.22);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.expert-lab-page .formula-builder .actions.inner-panel::before,
+body.expert-lab-page .formula-builder .actions.inner-panel::after {
+  display: none;
+}
+
+body.expert-lab-page .formula-builder .actions button {
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 7px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+body.expert-lab-page .formula-builder .actions .gold-button {
+  color: #211406;
+}
+
+/* 4. Fragrance Brief parchment */
+body.expert-lab-page .brief-paper.inner-panel {
+  position: relative;
+  overflow: hidden;
+  min-height: clamp(300px, 22vw, 430px);
+  padding: clamp(24px, 2.3vw, 42px);
+  border: 1px solid rgba(136, 91, 39, 0.44);
+  border-radius: 18px;
+  -webkit-mask: none;
+  mask: none;
+  clip-path: none;
+  background:
+    radial-gradient(circle at 14% 10%, rgba(255, 247, 218, 0.5), transparent 20rem),
+    radial-gradient(circle at 90% 20%, rgba(172, 108, 42, 0.13), transparent 18rem),
+    linear-gradient(90deg, rgba(92, 55, 24, 0.1), transparent 14%, transparent 86%, rgba(92, 55, 24, 0.1)),
+    linear-gradient(180deg, #ead5a8, #d6b980 52%, #c59c5f);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 250, 225, 0.22),
+    inset 0 0 42px rgba(84, 45, 15, 0.28),
+    0 12px 24px rgba(0, 0, 0, 0.24);
+  color: #2a1c0f;
+}
+
+body.expert-lab-page .brief-paper.inner-panel::before,
+body.expert-lab-page .brief-paper.inner-panel::after {
+  content: "";
+  position: absolute;
+  display: block !important;
+  pointer-events: none;
+  inset: 12px;
+  border: 1px solid rgba(130, 88, 42, 0.3);
+  border-radius: 14px;
+}
+
+body.expert-lab-page .brief-paper.inner-panel::after {
+  inset: 20px;
+  border-color: rgba(255, 246, 214, 0.22);
+  background:
+    linear-gradient(135deg, rgba(133, 88, 38, 0.35), transparent 38px) top left / 74px 74px no-repeat,
+    linear-gradient(225deg, rgba(133, 88, 38, 0.28), transparent 38px) top right / 74px 74px no-repeat,
+    linear-gradient(45deg, rgba(133, 88, 38, 0.24), transparent 38px) bottom left / 74px 74px no-repeat,
+    linear-gradient(315deg, rgba(133, 88, 38, 0.28), transparent 38px) bottom right / 74px 74px no-repeat;
+}
+
+body.expert-lab-page .brief-paper.inner-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+body.expert-lab-page .brief-paper.inner-panel h3 {
+  color: #183324;
+}
+
+body.expert-lab-page .brief-paper.inner-panel p,
+body.expert-lab-page .brief-paper.inner-panel li,
+body.expert-lab-page .brief-paper.inner-panel strong {
+  color: #2a1c0f;
+}
+
+body.expert-lab-page .brief-paper.inner-panel hr {
+  border-color: rgba(119, 76, 30, 0.28);
+}
+
+/* Tighten reward/output area to avoid stretched empty panels. */
+body.expert-lab-page .expert-workshop {
+  align-items: start !important;
+  gap: 8px !important;
+  row-gap: 8px !important;
+  grid-auto-rows: auto !important;
+}
+
+body.expert-lab-page .brief-story-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.85fr) minmax(300px, 0.85fr) !important;
+  align-items: start !important;
+  gap: 8px !important;
+  margin: 0 !important;
+}
+
+body.expert-lab-page .brief-story-row .brief,
+body.expert-lab-page .brief-story-row .story-card-section {
+  align-self: start !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: clamp(14px, 1.05vw, 20px) !important;
+}
+
+body.expert-lab-page .brief-story-row .brief {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+body.expert-lab-page .brief .panel-title,
+body.expert-lab-page .story-card-section .panel-title {
+  margin-bottom: 8px !important;
+}
+
+body.expert-lab-page .brief-paper.inner-panel {
+  min-height: clamp(220px, 16vw, 320px) !important;
+  padding: clamp(18px, 1.6vw, 28px) !important;
+}
+
+body.expert-lab-page .story-card-section .story-card-preview {
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+
+body.expert-lab-page .story-card-section .story-card-canvas {
+  width: min(100%, 220px) !important;
+}
+
+body.expert-lab-page .story-card-actions {
+  gap: 6px !important;
+  margin-top: 8px !important;
+}
+
+body.expert-lab-page .story-card-actions .panel-button,
+body.expert-lab-page .story-unlock-link {
+  min-height: 31px !important;
+  padding: 6px 10px !important;
+  font-size: 0.72rem !important;
+}
+
+body.expert-lab-page .story-card-message {
+  margin-top: 8px !important;
+}
+
+body.expert-lab-page .expert-workshop > .next {
+  align-self: start !important;
+  margin-top: 0 !important;
+  min-height: 0 !important;
+  padding: clamp(14px, 1.1vw, 20px) !important;
+}
+
+body.expert-lab-page .next-actions {
+  gap: 8px !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+body.expert-lab-page .next-actions button {
+  min-height: 48px !important;
+  padding: 9px 12px !important;
+}
+
+@media (max-width: 900px) {
+  body.expert-lab-page .brief-story-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.expert-lab-page .story-card-section .story-card-canvas {
+    width: min(100%, 260px) !important;
+  }
+}
+
+/* 5. Responsive refinements */
+@media (min-width: 1181px) {
+  body.expert-lab-page .formula-builder {
+    align-self: start;
+  }
+}
+
+@media (max-width: 1500px) and (min-width: 1181px) {
+  body.expert-lab-page .top-controls {
+    grid-template-columns: minmax(160px, 0.65fr) minmax(300px, 1.22fr) minmax(430px, 1.82fr);
+  }
+
+  body.expert-lab-page .build-review-row {
+    grid-template-columns: minmax(580px, 1.34fr) minmax(250px, 0.48fr) minmax(300px, 0.56fr);
+  }
+
+  body.expert-lab-page .build-review-row .formula-builder,
+  body.expert-lab-page .build-review-row .analysis,
+  body.expert-lab-page .build-review-row .drydown {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  body.expert-lab-page .formula-summary-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.expert-lab-page .formula-builder .actions.inner-panel {
+    grid-template-columns: 1fr;
+  }
+
+  body.expert-lab-page .formula-builder .selected-material input[type="range"] {
+    width: calc(100% - 25px);
+  }
+}
+
+/* Layout bugfix pass: stop old desktop grid rules from leaking into tablet/mobile. */
+body.expert-lab-page {
+  overflow-x: hidden;
+}
+
+body.expert-lab-page main,
+body.expert-lab-page .expert-workshop,
+body.expert-lab-page .top-controls,
+body.expert-lab-page .build-review-row,
+body.expert-lab-page .brief-story-row,
+body.expert-lab-page .formula-check,
+body.expert-lab-page .next,
+body.expert-lab-page .expert-workshop > *,
+body.expert-lab-page .top-controls > *,
+body.expert-lab-page .build-review-row > *,
+body.expert-lab-page .brief-story-row > * {
+  min-width: 0 !important;
+  max-width: 100%;
+}
+
+body.expert-lab-page .top-controls,
+body.expert-lab-page .build-review-row,
+body.expert-lab-page .brief-story-row,
+body.expert-lab-page .formula-check {
+  align-items: start !important;
+}
+
+body.expert-lab-page .drydown #drydownTimeline:has(.message:only-child) {
+  display: block !important;
+}
+
+body.expert-lab-page .drydown #drydownTimeline .message.warn:only-child {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  padding: 14px 16px !important;
+  text-align: left;
+}
+
+@media (min-width: 1181px) {
+  body.expert-lab-page .brief-story-row {
+    align-items: stretch !important;
+  }
+
+  body.expert-lab-page .brief-story-row .brief {
+    align-self: stretch !important;
+  }
+
+  body.expert-lab-page .brief-paper.inner-panel {
+    flex: 1 1 auto;
+    min-height: clamp(340px, 24vw, 460px) !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  body.expert-lab-page main {
+    width: min(100% - 18px, 980px) !important;
+  }
+
+  body.expert-lab-page .expert-workshop {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      "controls"
+      "build"
+      "library"
+      "check"
+      "brief"
+      "next" !important;
+    gap: 10px !important;
+  }
+
+  body.expert-lab-page .expert-workshop > .material-library {
+    grid-area: library !important;
+    width: 100% !important;
+    position: static !important;
+  }
+
+  body.expert-lab-page .top-controls {
+    grid-area: controls !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  body.expert-lab-page .build-review-row {
+    grid-area: build !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  body.expert-lab-page .formula-check {
+    grid-area: check !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  body.expert-lab-page .brief-story-row {
+    grid-area: brief !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  body.expert-lab-page .expert-workshop > .next {
+    grid-area: next !important;
+  }
+
+  body.expert-lab-page .top-controls .name-row,
+  body.expert-lab-page .next-actions {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.expert-lab-page .brief-paper.inner-panel {
+    min-height: 260px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  body.expert-lab-page main {
+    width: min(100% - 14px, 520px) !important;
+  }
+
+  body.expert-lab-page .expert-workshop {
+    gap: 8px !important;
+  }
+
+  body.expert-lab-page .ornate-panel,
+  body.expert-lab-page .panel.ornate-panel {
+    padding: 14px !important;
+  }
+
+  body.expert-lab-page .material-library.ornate-panel {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  body.expert-lab-page .top-controls .pill-row,
+  body.expert-lab-page #concentrationButtons {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  body.expert-lab-page #concentrationButtons button {
+    flex: 1 1 82px !important;
+    min-width: 0 !important;
+    padding-inline: 8px !important;
+    white-space: nowrap;
+  }
+
+  body.expert-lab-page .formula-builder .layer-grid.inner-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  body.expert-lab-page .formula-builder .layer-card.inner-panel {
+    min-height: 0 !important;
+  }
+
+  body.expert-lab-page .formula-builder .actions.inner-panel,
+  body.expert-lab-page .formula-summary-strip {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.expert-lab-page .brief-paper.inner-panel {
+    min-height: 220px !important;
+    padding: 18px !important;
+  }
+
+  body.expert-lab-page .story-card-section .story-card-canvas {
+    width: min(100%, 240px) !important;
+  }
+}
+
+/* Final spacing/responsive guard: remove legacy empty heights and clipping. */
+body.expert-lab-page .build-review-row .drydown,
+body.expert-lab-page .drydown.ornate-panel,
+body.expert-lab-page .formula-check.ornate-panel,
+body.expert-lab-page .story-card-section.ornate-panel,
+body.expert-lab-page .next.ornate-panel {
+  align-self: start !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+body.expert-lab-page .story-card-section {
+  display: grid !important;
+  align-content: start !important;
+  gap: 8px !important;
+}
+
+body.expert-lab-page .story-card-section .story-card-preview.inner-panel {
+  display: grid !important;
+  justify-items: center !important;
+  align-items: start !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 8px !important;
+}
+
+body.expert-lab-page .drydown #drydownTimeline {
+  min-height: 0 !important;
+}
+
+body.expert-lab-page .drydown #drydownTimeline .message.warn:only-child {
+  display: block !important;
+  inline-size: 100% !important;
+  min-inline-size: 0 !important;
+  max-inline-size: none !important;
+  min-block-size: 0 !important;
+  writing-mode: horizontal-tb !important;
+  white-space: normal !important;
+}
+
+body.expert-lab-page .formula-check #formulaMessages:empty {
+  display: none !important;
+}
+
+@media (max-width: 1180px) {
+  body.expert-lab-page .site-header,
+  body.expert-lab-page .header-inner {
+    max-width: 100vw !important;
+    min-width: 0 !important;
+  }
+
+  body.expert-lab-page .site-nav {
+    display: none !important;
+  }
+
+  body.expert-lab-page .brand-block {
+    min-width: 0 !important;
+  }
+
+  body.expert-lab-page .brand {
+    font-size: clamp(15px, 4vw, 22px) !important;
+    white-space: normal !important;
+  }
+
+  body.expert-lab-page .header-cta {
+    margin-left: auto !important;
+  }
+
+  body.expert-lab-page .brief-story-row .brief,
+  body.expert-lab-page .brief-story-row .story-card-section {
+    align-self: start !important;
+  }
+}
+
+@media (max-width: 520px) {
+  body.expert-lab-page .header-inner {
+    gap: 8px !important;
+    padding-inline: 10px !important;
+  }
+
+  body.expert-lab-page .brand-mark {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  body.expert-lab-page .brand {
+    font-size: clamp(14px, 4.4vw, 18px) !important;
+    letter-spacing: 0.08em !important;
+  }
+
+  body.expert-lab-page .brand-sub {
+    font-size: 9px !important;
+  }
+
+  body.expert-lab-page .header-cta {
+    min-height: 40px !important;
+    padding: 8px 12px !important;
+    font-size: 0.68rem !important;
+  }
+
+  body.expert-lab-page .signin {
+    width: 40px !important;
+    height: 40px !important;
+    flex: 0 0 40px !important;
+  }
+
+  body.expert-lab-page .formula-builder .panel-heading h2,
+  body.expert-lab-page .panel-title h2 {
+    font-size: clamp(22px, 7vw, 30px) !important;
+  }
+}
+
+/* Alignment pass from screenshot review: compact top row, stretch workbench rows, readable drydown. */
+body.expert-lab-page .top-controls {
+  overflow: visible !important;
+  align-items: stretch !important;
+  position: relative !important;
+  z-index: 80 !important;
+}
+
+body.expert-lab-page .build-review-row,
+body.expert-lab-page .formula-check,
+body.expert-lab-page .brief-story-row {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+body.expert-lab-page .top-controls > .ornate-panel,
+body.expert-lab-page .top-controls > .panel {
+  align-self: stretch !important;
+  min-height: 112px !important;
+  height: auto !important;
+  padding: 18px 22px !important;
+}
+
+body.expert-lab-page .concentration-panel {
+  position: relative !important;
+  z-index: 30 !important;
+  overflow: visible !important;
+}
+
+body.expert-lab-page .concentration-panel .pill-row,
+body.expert-lab-page #concentrationButtons {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+body.expert-lab-page .concentration-panel .choice-button,
+body.expert-lab-page #concentrationButtons button {
+  min-width: 54px !important;
+  min-height: 34px !important;
+  padding: 8px 10px !important;
+  font-size: 0.72rem !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+body.expert-lab-page .concentration-help[open] {
+  z-index: 10000 !important;
+}
+
+body.expert-lab-page .concentration-help-popover {
+  z-index: 10001 !important;
+  max-height: min(62vh, 340px) !important;
+  overflow: auto !important;
+}
+
+body.expert-lab-page .formula-builder,
+body.expert-lab-page .build-review-row .analysis,
+body.expert-lab-page .build-review-row .drydown {
+  align-self: stretch !important;
+  height: 100% !important;
+}
+
+body.expert-lab-page .build-review-row {
+  align-items: stretch !important;
+}
+
+body.expert-lab-page .build-review-row .timeline,
+body.expert-lab-page .drydown #drydownTimeline {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 8px !important;
+}
+
+body.expert-lab-page .build-review-row .timeline-card.inner-panel,
+body.expert-lab-page .timeline-card.inner-panel {
+  display: grid !important;
+  grid-template-columns: minmax(62px, 0.35fr) minmax(0, 1fr) !important;
+  align-items: start !important;
+  min-height: 0 !important;
+  padding: 10px 12px !important;
+  gap: 8px 12px !important;
+}
+
+body.expert-lab-page .timeline-card.inner-panel strong,
+body.expert-lab-page .timeline-card.inner-panel h3 {
+  margin: 0 !important;
+}
+
+body.expert-lab-page .timeline-card.inner-panel p {
+  grid-column: 2 !important;
+  margin: 0 !important;
+  max-width: none !important;
+  font-size: 0.76rem !important;
+  line-height: 1.45 !important;
+}
+
+@media (min-width: 1181px) {
+  body.expert-lab-page .expert-workshop > .material-library {
+    align-self: stretch !important;
+    height: auto !important;
+    min-height: 100% !important;
+  }
+
+  body.expert-lab-page .top-controls {
+    grid-template-columns: minmax(210px, 0.72fr) minmax(390px, 1.35fr) minmax(520px, 2fr) !important;
+    gap: 8px !important;
+  }
+
+  body.expert-lab-page .top-controls .perfume-name {
+    display: grid !important;
+    align-content: center !important;
+  }
+
+  body.expert-lab-page .top-controls .name-row {
+    grid-template-columns: minmax(0, 1fr) minmax(92px, auto) minmax(92px, auto) !important;
+    gap: 8px !important;
+  }
+
+  body.expert-lab-page .top-controls #perfumeNameInput {
+    min-height: 38px !important;
+    font-size: clamp(17px, 1.1vw, 22px) !important;
+  }
+
+  body.expert-lab-page .top-controls .panel-button {
+    min-height: 38px !important;
+    padding: 7px 12px !important;
+    font-size: clamp(0.62rem, 0.7vw, 0.78rem) !important;
+    line-height: 1.05 !important;
+  }
+
+  body.expert-lab-page .name-help {
+    margin-top: 8px !important;
+    font-size: 0.78rem !important;
+    line-height: 1.35 !important;
+  }
+
+  body.expert-lab-page .build-review-row {
+    grid-template-columns: minmax(0, 1.72fr) minmax(250px, 0.55fr) minmax(300px, 0.74fr) !important;
+    gap: 8px !important;
+  }
+
+  body.expert-lab-page .formula-check,
+  body.expert-lab-page .brief-story-row {
+    margin-top: 0 !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  body.expert-lab-page .top-controls > .ornate-panel,
+  body.expert-lab-page .top-controls > .panel {
+    min-height: 0 !important;
+  }
+}
+
+@media (max-width: 520px) {
+  body.expert-lab-page .concentration-panel .choice-button,
+  body.expert-lab-page #concentrationButtons button {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    font-size: 0.66rem !important;
+    padding-inline: 6px !important;
+  }
+
+  body.expert-lab-page .build-review-row .timeline-card.inner-panel,
+  body.expert-lab-page .timeline-card.inner-panel {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.expert-lab-page .timeline-card.inner-panel p {
+    grid-column: auto !important;
+  }
+}
+
+/* Pass 12: modal hierarchy, compact name controls, lighter rows/buttons. */
+body.expert-lab-page dialog {
+  width: min(760px, calc(100vw - 34px)) !important;
+  max-height: min(78vh, 720px) !important;
+  border-radius: 14px !important;
+  padding: 16px !important;
+  overflow: hidden !important;
+}
+
+body.expert-lab-page dialog form {
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+  gap: 12px !important;
+  max-height: calc(min(78vh, 720px) - 32px) !important;
+}
+
+body.expert-lab-page .dialog-material-search {
+  display: grid;
+  gap: 6px;
+}
+
+body.expert-lab-page .dialog-material-search-label {
+  color: var(--muted);
+  font-family: var(--font-serif);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+body.expert-lab-page #dialogMaterialSearch {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 13px;
+  border: 1px solid rgba(201, 154, 85, 0.48);
+  border-radius: 8px;
+  color: var(--cream);
+  background: rgba(13, 8, 5, 0.72);
+  font: 500 0.86rem/1.2 var(--font-body);
+  outline: none;
+}
+
+body.expert-lab-page #dialogMaterialSearch:focus {
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 0 3px rgba(201, 154, 85, 0.14);
+}
+
+body.expert-lab-page #dialogMaterialSearch::placeholder {
+  color: var(--muted);
+  opacity: 0.78;
+}
+
+body.expert-lab-page .dialog-heading {
+  align-items: center !important;
+  padding-bottom: 8px !important;
+}
+
+body.expert-lab-page .dialog-close.panel-button {
+  min-height: 36px !important;
+  padding: 8px 14px !important;
+  font-size: 0.78rem !important;
+  font-weight: 500 !important;
+}
+
+body.expert-lab-page #dialogMaterials {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 14px !important;
+  overflow: auto !important;
+  padding-right: 8px !important;
+}
+
+body.expert-lab-page .dialog-material-group {
+  display: grid;
+  gap: 8px;
+}
+
+body.expert-lab-page .dialog-material-group h3 {
+  margin: 0;
+  color: #dfbd73;
+  font-family: var(--font-serif);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+body.expert-lab-page .dialog-material-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+body.expert-lab-page #dialogMaterials .dialog-material-option.panel-button {
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  min-height: 0;
+  padding: 12px 14px;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+body.expert-lab-page .dialog-material-name {
+  color: #f3dfad;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.expert-lab-page .dialog-material-meta {
+  color: rgba(224, 185, 112, 0.82);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.expert-lab-page .dialog-material-description {
+  color: rgba(238, 224, 197, 0.76);
+  font-size: 0.82rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+body.expert-lab-page .top-controls .name-help {
+  display: none !important;
+}
+
+body.expert-lab-page .top-controls .panel-button,
+body.expert-lab-page .story-card-actions .panel-button,
+body.expert-lab-page .story-unlock-link,
+body.expert-lab-page .next-actions button {
+  font-weight: 500 !important;
+  letter-spacing: 0.09em !important;
+}
+
+body.expert-lab-page .story-card-actions .panel-button,
+body.expert-lab-page .story-unlock-link {
+  line-height: 1.18 !important;
+}
+
+body.expert-lab-page .formula-builder .selected-material.inner-panel {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 6px 0 8px !important;
+}
+
+body.expert-lab-page .formula-builder .selected-material.inner-panel::before,
+body.expert-lab-page .formula-builder .selected-material.inner-panel::after {
+  display: none !important;
+}
+
+body.expert-lab-page .formula-builder .selected-list {
+  gap: 2px !important;
+}
+
+body.expert-lab-page .formula-builder .layer-grid.inner-grid,
+body.expert-lab-page .formula-builder .formula-summary-strip {
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+}
+
+body.expert-lab-page .formula-builder .selected-material header {
+  margin-bottom: 4px !important;
+}
+
+body.expert-lab-page .formula-builder .selected-material input[type="range"] {
+  height: 12px !important;
+  width: 82% !important;
+  margin: 0 0 0 28px !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+body.expert-lab-page .formula-builder .selected-material input[type="range"]::-webkit-slider-runnable-track {
+  height: 3px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, rgba(216, 163, 79, 0.9), rgba(91, 61, 28, 0.74)) !important;
+  box-shadow: none !important;
+}
+
+body.expert-lab-page .formula-builder .selected-material input[type="range"]::-webkit-slider-thumb {
+  width: 12px !important;
+  height: 12px !important;
+  margin-top: -4.5px !important;
+  border-width: 1px !important;
+}
+
+body.expert-lab-page .formula-builder .selected-material input[type="range"]::-moz-range-track {
+  height: 3px !important;
+  border: 0 !important;
+  background: linear-gradient(90deg, rgba(216, 163, 79, 0.9), rgba(91, 61, 28, 0.74)) !important;
+}
+
+body.expert-lab-page .formula-builder .selected-material input[type="range"]::-moz-range-thumb {
+  width: 12px !important;
+  height: 12px !important;
+  border-width: 1px !important;
+}
+
+body.expert-lab-page .formula-check #formulaMessages {
+  gap: 8px !important;
+}
+
+body.expert-lab-page .formula-check #formulaMessages .message {
+  min-height: 42px !important;
+  padding: 10px 14px !important;
+  border: 1px solid rgba(196, 137, 58, 0.55) !important;
+  border-radius: 8px !important;
+  background: linear-gradient(180deg, rgba(37, 24, 14, 0.72), rgba(18, 11, 7, 0.86)) !important;
+  color: rgba(232, 219, 190, 0.9) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 232, 180, 0.04) !important;
+  font-size: 0.78rem !important;
+  line-height: 1.35 !important;
+}
+
+body.expert-lab-page .formula-check #formulaMessages .message.good {
+  color: #bfe48e !important;
+}
+
+body.expert-lab-page .formula-check #formulaMessages .message.warn {
+  color: #f1c87c !important;
+}
+
+@media (min-width: 1181px) {
+  body.expert-lab-page .top-controls {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  body.expert-lab-page .top-controls > .ornate-panel,
+  body.expert-lab-page .top-controls > .panel {
+    min-height: 96px !important;
+    padding: 16px 20px !important;
+  }
+
+  body.expert-lab-page .top-controls .name-row {
+    grid-template-columns: minmax(0, 1fr) auto auto !important;
+  }
+
+  body.expert-lab-page .top-controls #perfumeNameInput {
+    min-height: 36px !important;
+  }
+
+  body.expert-lab-page .top-controls .panel-button {
+    min-height: 36px !important;
+    padding: 7px 11px !important;
+    font-size: 0.68rem !important;
+  }
+}
+
+@media (max-width: 760px) {
+  body.expert-lab-page .dialog-material-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Pass 13: mobile flow, themed dialog scrollbar, simpler material library labels. */
+body.expert-lab-page .material-library .category-count {
+  display: none !important;
+}
+
+body.expert-lab-page .material-library .category-toggle {
+  grid-template-columns: auto minmax(0, 1fr) !important;
+}
+
+body.expert-lab-page #dialogMaterials {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(218, 169, 91, 0.72) rgba(27, 17, 10, 0.82);
+}
+
+body.expert-lab-page #dialogMaterials::-webkit-scrollbar {
+  width: 10px;
+}
+
+body.expert-lab-page #dialogMaterials::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, rgba(27, 17, 10, 0.92), rgba(44, 28, 15, 0.76));
+  border: 1px solid rgba(160, 109, 47, 0.38);
+  border-radius: 999px;
+}
+
+body.expert-lab-page #dialogMaterials::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #d8ad66, #7c5529);
+  border: 2px solid rgba(27, 17, 10, 0.92);
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(255, 232, 174, 0.25);
+}
+
+body.expert-lab-page #dialogMaterials::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #efcc83, #9b6a35);
+}
+
+body.expert-lab-page .formula-builder .add-btn.panel-button {
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: none !important;
+}
+
+body.expert-lab-page .formula-summary-strip {
+  font-size: 0.9rem !important;
+}
+
+body.expert-lab-page .formula-summary-strip strong {
+  font-size: 1rem !important;
+}
+
+body.expert-lab-page .formula-builder .actions button,
+body.expert-lab-page .formula-builder .actions .panel-button,
+body.expert-lab-page .formula-builder .actions .gold-button {
+  min-height: 42px !important;
+  font-size: 0.76rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.07em !important;
+  line-height: 1.2 !important;
+  text-transform: none !important;
+}
+
+body.expert-lab-page .formula-builder .actions .gold-button {
+  font-size: 0.78rem !important;
+}
+
+/* Pass 14: compact setup row to better match the reference proportions. */
+@media (min-width: 1181px) {
+  body.expert-lab-page .top-controls {
+    grid-template-columns: minmax(190px, 1.05fr) minmax(320px, 1.85fr) minmax(520px, 3fr) !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+
+  body.expert-lab-page .top-controls > .ornate-panel,
+  body.expert-lab-page .top-controls > .panel {
+    min-height: 72px !important;
+    padding: 10px 16px !important;
+    border-radius: 8px !important;
+  }
+
+  body.expert-lab-page .top-controls .step,
+  body.expert-lab-page .top-controls label {
+    margin: 0 0 7px !important;
+    font-size: 0.67rem !important;
+    line-height: 1 !important;
+    letter-spacing: 0.12em !important;
+    font-weight: 500 !important;
+  }
+
+  body.expert-lab-page .top-controls .panel-title {
+    margin: 0 !important;
+    gap: 0 !important;
+  }
+
+  body.expert-lab-page .top-controls .panel-title h2 {
+    display: none !important;
+  }
+
+  body.expert-lab-page .concentration-heading {
+    align-items: center !important;
+    margin: 0 0 8px !important;
+  }
+
+  body.expert-lab-page .concentration-help summary {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 0.76rem !important;
+    line-height: 20px !important;
+  }
+
+  body.expert-lab-page .concentration-panel .pill-row,
+  body.expert-lab-page #concentrationButtons {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+  }
+
+  body.expert-lab-page .concentration-panel .choice-button,
+  body.expert-lab-page #concentrationButtons .choice-button {
+    min-height: 32px !important;
+    min-width: 0 !important;
+    flex: 1 1 0 !important;
+    padding: 7px 10px !important;
+    border-radius: 6px !important;
+    font-size: 0.72rem !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  body.expert-lab-page .formula-insights-panel {
+    align-content: start !important;
+  }
+
+  body.expert-lab-page .formula-insights-panel .direction-grid {
+    min-height: 0 !important;
+    margin-top: 0 !important;
+    font-size: 0.82rem !important;
+    line-height: 1.2 !important;
+  }
+
+  body.expert-lab-page .perfume-name {
+    align-content: start !important;
+  }
+
+  body.expert-lab-page .top-controls .name-lab {
+    gap: 0 !important;
+  }
+
+  body.expert-lab-page .top-controls .name-row {
+    grid-template-columns: minmax(260px, 1fr) minmax(124px, auto) minmax(110px, auto) !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+
+  body.expert-lab-page .top-controls #perfumeNameInput {
+    min-height: 32px !important;
+    height: 32px !important;
+    padding: 6px 34px 6px 12px !important;
+    border-radius: 6px !important;
+    font-size: 0.86rem !important;
+  }
+
+  body.expert-lab-page .top-controls .panel-button {
+    min-height: 32px !important;
+    padding: 7px 14px !important;
+    border-radius: 6px !important;
+    font-size: 0.67rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.08em !important;
+    line-height: 1 !important;
+  }
+
+  body.expert-lab-page .top-controls .name-help {
+    display: none !important;
+  }
+}
+
+/* Pass 15: make Formula Builder denser and closer to the compact reference. */
+body.expert-lab-page .formula-builder.ornate-panel,
+body.expert-lab-page .formula-builder.panel {
+  padding: 14px 18px 16px !important;
+  border-radius: 8px !important;
+}
+
+body.expert-lab-page .formula-builder .panel-title,
+body.expert-lab-page .formula-builder .panel-heading {
+  margin-bottom: 12px !important;
+  gap: 2px !important;
+}
+
+body.expert-lab-page .formula-builder .panel-title .step,
+body.expert-lab-page .formula-builder .panel-heading .step {
+  margin: 0 !important;
+  font-size: 0.62rem !important;
+  line-height: 1 !important;
+  letter-spacing: 0.12em !important;
+}
+
+body.expert-lab-page .formula-builder .panel-title h2,
+body.expert-lab-page .formula-builder .panel-heading h2 {
+  margin: 0 !important;
+  font-size: clamp(1.35rem, 1.65vw, 1.75rem) !important;
+  line-height: 0.95 !important;
+  letter-spacing: 0.04em !important;
+}
+
+body.expert-lab-page .formula-builder .layer-grid.inner-grid {
+  gap: 10px !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
+}
+
+body.expert-lab-page .formula-builder .layer-card.inner-panel {
+  min-height: 132px !important;
+  padding: 12px 12px 10px !important;
+  border-radius: 7px !important;
+  gap: 7px !important;
+}
+
+body.expert-lab-page .formula-builder .layer-card h3 {
+  margin: 0 !important;
+  font-size: 0.92rem !important;
+  line-height: 1 !important;
+  letter-spacing: 0.07em !important;
+}
+
+body.expert-lab-page .formula-builder .layer-card h3 span,
+body.expert-lab-page .formula-builder .layer-card h3 strong {
+  font-size: 0.78rem !important;
+  letter-spacing: 0.03em !important;
+}
+
+body.expert-lab-page .formula-builder .layer-card small {
+  margin: 2px 0 4px !important;
+  font-size: 0.68rem !important;
+  line-height: 1.05 !important;
+}
+
+body.expert-lab-page .formula-builder .selected-list {
+  gap: 1px !important;
+}
+
+body.expert-lab-page .formula-builder .add-btn.panel-button {
+  min-height: 32px !important;
+  margin-top: auto !important;
+  padding: 8px 10px !important;
+  border-radius: 5px !important;
+  font-size: 0.76rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.02em !important;
+}
+
+body.expert-lab-page .formula-summary-strip {
+  min-height: 44px !important;
+  margin-top: 12px !important;
+  padding: 10px 14px !important;
+  border-top: 1px solid rgba(190, 132, 52, 0.28) !important;
+  border-bottom: 1px solid rgba(190, 132, 52, 0.2) !important;
+  font-size: 0.82rem !important;
+}
+
+body.expert-lab-page .formula-summary-strip strong {
+  font-size: 0.92rem !important;
+}
+
+body.expert-lab-page .formula-summary-strip span:first-child strong {
+  font-size: 1.12rem !important;
+}
+
+body.expert-lab-page .formula-builder .actions.inner-panel {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  margin-top: 10px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.expert-lab-page .formula-builder .actions button,
+body.expert-lab-page .formula-builder .actions .panel-button,
+body.expert-lab-page .formula-builder .actions .gold-button {
+  min-height: 34px !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  font-size: 0.7rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.06em !important;
+}
+
+@media (min-width: 1181px) {
+  body.expert-lab-page .formula-builder.ornate-panel,
+  body.expert-lab-page .formula-builder.panel {
+    align-self: start !important;
+  }
+}
+
+@media (max-width: 760px) {
+body.expert-lab-page .formula-builder .actions.inner-panel {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Pass 19: use the supplied parchment texture for the Fragrance Brief panel. */
+body.expert-lab-page .brief-paper.inner-panel {
+  background:
+    linear-gradient(180deg, rgba(255, 242, 205, 0.08), rgba(150, 93, 31, 0.08)),
+    url("../images/fragrance-brief-paper-texture.webp") center / cover no-repeat !important;
+  border: 1px solid rgba(97, 66, 30, 0.66) !important;
+  box-shadow:
+    0 18px 30px rgba(0, 0, 0, 0.42),
+    inset 0 0 0 4px rgba(70, 48, 24, 0.52),
+    inset 0 0 0 6px rgba(236, 205, 143, 0.28),
+    inset 0 0 28px rgba(91, 54, 18, 0.2) !important;
+}
+
+body.expert-lab-page .brief-paper.inner-panel::before {
+  background:
+    linear-gradient(90deg, rgba(78, 47, 20, 0.14), transparent 7%, transparent 93%, rgba(78, 47, 20, 0.15)),
+    linear-gradient(180deg, rgba(78, 47, 20, 0.16), transparent 10%, transparent 88%, rgba(78, 47, 20, 0.18)) !important;
+}
+
+body.expert-lab-page .brief-paper.inner-panel::after {
+  opacity: 0.12 !important;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(103, 62, 21, 0.16), transparent 30%),
+    radial-gradient(circle at 82% 88%, rgba(255, 235, 180, 0.14), transparent 35%) !important;
+}
+
+/* Pass 18: richer parchment texture for the Fragrance Brief document. */
+body.expert-lab-page .brief-paper.inner-panel {
+  position: relative !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 246, 213, 0.22), transparent 34%),
+    radial-gradient(circle at 88% 22%, rgba(122, 74, 25, 0.14), transparent 38%),
+    radial-gradient(circle at 50% 112%, rgba(83, 45, 15, 0.26), transparent 46%),
+    linear-gradient(180deg, rgba(255, 235, 183, 0.28), rgba(177, 120, 51, 0.22)),
+    url("../images/artisan-register-paper-bg.webp") center / cover no-repeat !important;
+  border: 1px solid rgba(95, 66, 33, 0.72) !important;
+  border-radius: 8px !important;
+  box-shadow:
+    0 18px 30px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 4px rgba(73, 50, 25, 0.62),
+    inset 0 0 0 6px rgba(224, 190, 123, 0.34),
+    inset 0 0 42px rgba(88, 51, 18, 0.34),
+    inset 0 -26px 42px rgba(103, 61, 23, 0.14) !important;
+  color: #2f2417 !important;
+}
+
+body.expert-lab-page .brief-paper.inner-panel::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 12px !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  border: 1px solid rgba(95, 66, 33, 0.48) !important;
+  border-radius: 5px !important;
+  background:
+    linear-gradient(90deg, rgba(79, 45, 17, 0.18), transparent 7%, transparent 93%, rgba(79, 45, 17, 0.2)),
+    linear-gradient(180deg, rgba(79, 45, 17, 0.2), transparent 10%, transparent 88%, rgba(79, 45, 17, 0.22)) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(238, 204, 139, 0.18),
+    inset 0 0 24px rgba(71, 40, 16, 0.22) !important;
+}
+
+body.expert-lab-page .brief-paper.inner-panel::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  opacity: 0.28 !important;
+  background:
+    repeating-linear-gradient(0deg, rgba(92, 55, 22, 0.08) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(90deg, rgba(255, 244, 212, 0.08) 0 1px, transparent 1px 7px) !important;
+  mix-blend-mode: multiply !important;
+}
+
+body.expert-lab-page .brief-paper.inner-panel > * {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+body.expert-lab-page .brief-paper.inner-panel h3,
+body.expert-lab-page .brief-paper.inner-panel p,
+body.expert-lab-page .brief-paper.inner-panel li,
+body.expert-lab-page .brief-paper.inner-panel strong {
+  color: #2d2114 !important;
+}
+
+body.expert-lab-page .brief-paper.inner-panel hr {
+  border-color: rgba(95, 66, 33, 0.4) !important;
+}
+
+/* Pass 17: let the note columns fill the builder space instead of floating. */
+body.expert-lab-page .formula-builder.ornate-panel,
+body.expert-lab-page .formula-builder.panel {
+  min-height: 430px !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(178px, 1fr) auto auto !important;
+}
+
+body.expert-lab-page .formula-builder .layer-grid.inner-grid {
+  align-items: stretch !important;
+  min-height: 178px !important;
+}
+
+body.expert-lab-page .formula-builder .layer-card.inner-panel {
+  align-self: stretch !important;
+  min-height: 178px !important;
+  display: grid !important;
+  grid-template-rows: auto auto minmax(34px, 1fr) auto !important;
+}
+
+body.expert-lab-page .formula-builder .selected-list {
+  min-height: 36px !important;
+}
+
+body.expert-lab-page .formula-builder .add-btn.panel-button {
+  align-self: end !important;
+  margin-top: 12px !important;
+}
+
+body.expert-lab-page .formula-summary-strip {
+  align-self: end !important;
+  margin-top: 14px !important;
+  min-height: 48px !important;
+  padding: 12px 16px !important;
+  font-size: 0.98rem !important;
+}
+
+body.expert-lab-page .formula-summary-strip strong {
+  font-size: 1.12rem !important;
+}
+
+body.expert-lab-page .formula-summary-strip span:first-child strong {
+  font-size: 1.32rem !important;
+}
+
+body.expert-lab-page .formula-builder .actions.inner-panel {
+  margin-top: 12px !important;
+}
+
+@media (max-width: 760px) {
+  body.expert-lab-page .formula-builder.ornate-panel,
+  body.expert-lab-page .formula-builder.panel {
+    min-height: 0 !important;
+    grid-template-rows: auto auto auto auto !important;
+  }
+
+  body.expert-lab-page .formula-builder .layer-grid.inner-grid {
+    min-height: 0 !important;
+  }
+
+  body.expert-lab-page .formula-builder .layer-card.inner-panel {
+    min-height: 150px !important;
+  }
+}
+
+/* Pass 16: align note panels to the top and rebalance Formula Builder actions. */
+body.expert-lab-page .formula-builder .layer-grid.inner-grid {
+  align-items: start !important;
+}
+
+body.expert-lab-page .formula-builder .layer-card.inner-panel {
+  align-self: start !important;
+  min-height: 118px !important;
+  grid-template-rows: auto auto auto auto !important;
+}
+
+body.expert-lab-page .formula-builder .add-btn.panel-button {
+  margin-top: 8px !important;
+}
+
+body.expert-lab-page .formula-summary-strip {
+  margin-top: 10px !important;
+  min-height: 38px !important;
+  padding: 8px 12px !important;
+}
+
+body.expert-lab-page .formula-builder .actions.inner-panel {
+  grid-template-columns: minmax(150px, 0.9fr) minmax(130px, 0.8fr) minmax(180px, 1fr) !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  margin-top: 8px !important;
+}
+
+body.expert-lab-page .formula-builder .actions button,
+body.expert-lab-page .formula-builder .actions .panel-button,
+body.expert-lab-page .formula-builder .actions .gold-button {
+  min-height: 38px !important;
+  padding: 9px 16px !important;
+  font-size: 0.82rem !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1.15 !important;
+}
+
+body.expert-lab-page .formula-builder .actions .gold-button {
+  font-size: 0.84rem !important;
+}
+
+@media (min-width: 1181px) {
+  body.expert-lab-page .formula-builder.ornate-panel,
+  body.expert-lab-page .formula-builder.panel {
+    padding-bottom: 14px !important;
+  }
+}
+
+@media (max-width: 760px) {
+  body.expert-lab-page .formula-builder .actions.inner-panel {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Pass 20: final Fragrance Brief texture override. Keep this after older parchment passes. */
+body.expert-lab-page .brief-paper.inner-panel,
+body.expert-lab-page #briefOutput.brief-paper.inner-panel {
+  background-color: #d9ae67 !important;
+  background-image:
+    linear-gradient(180deg, rgba(255, 244, 212, 0.12), rgba(117, 71, 24, 0.08)),
+    url("../images/fragrance-brief-paper-texture.webp") !important;
+  background-position: center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  border: 1px solid rgba(98, 67, 31, 0.58) !important;
+  box-shadow:
+    0 18px 30px rgba(0, 0, 0, 0.38),
+    inset 0 0 0 4px rgba(72, 49, 24, 0.48),
+    inset 0 0 0 6px rgba(236, 204, 141, 0.24),
+    inset 0 0 26px rgba(98, 60, 22, 0.16) !important;
+}
+
+body.expert-lab-page .brief-paper.inner-panel::before,
+body.expert-lab-page .brief-paper.inner-panel::after,
+body.expert-lab-page #briefOutput.brief-paper.inner-panel::before,
+body.expert-lab-page #briefOutput.brief-paper.inner-panel::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Pass 21: tablet/mobile flow correction.
+   Show Build Your Structure first, then Basic Materials, then review panels. */
+@media (max-width: 1180px) {
+  body.expert-lab-page .expert-workshop {
+    grid-template-areas:
+      "controls"
+      "build"
+      "library"
+      "analysis"
+      "drydown"
+      "check"
+      "brief"
+      "next" !important;
+  }
+
+  body.expert-lab-page .build-review-row {
+    display: contents !important;
+  }
+
+  body.expert-lab-page .build-review-row .formula-builder {
+    grid-area: build !important;
+  }
+
+  body.expert-lab-page .expert-workshop > .material-library {
+    grid-area: library !important;
+  }
+
+  body.expert-lab-page .build-review-row .analysis {
+    grid-area: analysis !important;
+  }
+
+  body.expert-lab-page .build-review-row .drydown {
+    grid-area: drydown !important;
+  }
+}
+
+/* Pass 22: taller Artisan Bench hero for a more visible workbench image. */
+body.expert-lab-page .hero-lab {
+  min-height: clamp(360px, 42vh, 520px) !important;
+  padding-top: clamp(116px, 12vh, 154px) !important;
+  padding-bottom: clamp(58px, 7vh, 86px) !important;
+}
+
+body.expert-lab-page .hero-image {
+  object-position: center 48% !important;
+}
+
+body.expert-lab-page .hero-copy {
+  max-width: 850px !important;
+}
+
+body.expert-lab-page .hero-copy .kicker {
+  letter-spacing: 0.24em !important;
+}
+
+body.expert-lab-page .hero-copy h1 {
+  max-width: 920px !important;
+}
+
+@media (max-width: 760px) {
+  body.expert-lab-page .hero-lab {
+    min-height: 292px !important;
+    padding-top: 94px !important;
+    padding-bottom: 42px !important;
+  }
+
+  body.expert-lab-page .hero-copy {
+    padding-block: 22px !important;
+  }
+
+  body.expert-lab-page .hero-copy h1 {
+    font-size: clamp(44px, 12vw, 62px) !important;
+  }
+}
+
+/* Pass 23: keep scrolling setup panels from visually bleeding through the sticky header. */
+body.expert-lab-page .topbar {
+  z-index: 1000 !important;
+  background:
+    linear-gradient(180deg, rgba(27, 15, 8, 0.99), rgba(17, 9, 5, 0.99)) !important;
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.38),
+    inset 0 -1px 0 rgba(195, 145, 70, 0.28) !important;
+}
+
+body.expert-lab-page .hero-lab,
+body.expert-lab-page .expert-workshop,
+body.expert-lab-page .top-controls,
+body.expert-lab-page .setup-block,
+body.expert-lab-page .perfume-name {
+  position: relative;
+  z-index: 1;
+}
+
+/* Pass 24: move Back to Lobby out of the header as a theme-matched arrow button. */
+body.expert-lab-page .topbar .ghost {
+  position: fixed !important;
+  left: clamp(16px, 2vw, 30px) !important;
+  bottom: clamp(16px, 2vw, 30px) !important;
+  z-index: 1300 !important;
+  width: clamp(48px, 4.2vw, 58px) !important;
+  height: clamp(48px, 4.2vw, 58px) !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  color: #f2d88f !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  background:
+    radial-gradient(circle at 45% 34%, rgba(255, 226, 150, 0.18), transparent 34%),
+    linear-gradient(180deg, rgba(31, 20, 10, 0.82), rgba(13, 8, 4, 0.9)) !important;
+  border: 1px solid rgba(219, 175, 91, 0.72) !important;
+  box-shadow:
+    0 16px 34px rgba(0, 0, 0, 0.34),
+    inset 0 0 0 1px rgba(255, 241, 185, 0.08) !important;
+  text-shadow: none !important;
+  transform: none !important;
+}
+
+body.expert-lab-page .topbar .ghost::before {
+  content: "";
+  width: 18px;
+  height: 18px;
+  border-left: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateX(3px) rotate(45deg);
+  filter: drop-shadow(0 0 6px rgba(239, 202, 121, 0.35));
+}
+
+body.expert-lab-page .topbar .ghost:hover,
+body.expert-lab-page .topbar .ghost:focus-visible {
+  color: #fff0b7 !important;
+  background:
+    radial-gradient(circle at 45% 34%, rgba(255, 226, 150, 0.28), transparent 35%),
+    linear-gradient(180deg, rgba(59, 38, 17, 0.86), rgba(17, 10, 5, 0.92)) !important;
+  border-color: rgba(245, 203, 116, 0.9) !important;
+  transform: translateY(-2px) !important;
+}
+
+@media (max-width: 768px) {
+  body.expert-lab-page .topbar .ghost {
+    left: 16px !important;
+    bottom: 16px !important;
+    width: 48px !important;
+    height: 48px !important;
+  }
+}

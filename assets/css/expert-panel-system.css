@@ -1,0 +1,1983 @@
+body.expert-lab-page {
+  --gold: #3e3121;
+  --gold-soft: #d2c3a0;
+  --panel-bg: rgba(0, 0, 0, 0.46);
+  --panel-border: rgba(62, 49, 33, 0.72);
+  --text-main: #e4d8bd;
+  --text-muted: #afa486;
+  --inner-panel-bg: rgba(0, 0, 0, 0.4);
+  --inner-panel-border: rgba(62, 49, 33, 0.58);
+  --curve: clamp(7px, 0.85vw, 11px);
+  --inner-curve: clamp(5px, 0.65vw, 8px);
+  --nested-curve: clamp(4px, 0.5vw, 6px);
+  --frame-gap: clamp(2px, 0.3vw, 4px);
+}
+
+.ornate-panel,
+.inner-panel {
+  box-sizing: border-box;
+}
+
+.ornate-panel {
+  position: relative;
+  width: 100%;
+  min-height: var(--panel-min, 0);
+  padding: clamp(28px, 3.4vw, 42px);
+  color: var(--text-main);
+  background: var(--panel-bg);
+  -webkit-mask:
+    radial-gradient(circle at 0 0, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 0 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 0, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 100% 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 100% 100% / 51% 51% no-repeat,
+    radial-gradient(circle at 0 100%, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 0 100% / 51% 51% no-repeat;
+  mask:
+    radial-gradient(circle at 0 0, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 0 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 0, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 100% 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 100% 100% / 51% 51% no-repeat,
+    radial-gradient(circle at 0 100%, transparent 0 var(--curve), #000 calc(var(--curve) + 1px)) 0 100% / 51% 51% no-repeat;
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.48),
+    0 0 20px rgba(62, 49, 33, 0.08);
+  display: grid;
+  gap: clamp(10px, 1.7vw, 16px);
+  overflow: hidden;
+}
+
+.ornate-panel::before,
+.ornate-panel::after,
+.inner-panel::before,
+.inner-panel::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.ornate-panel::before {
+  inset: 0;
+  z-index: 1;
+  --outer-line-color: rgba(62, 49, 33, 0.92);
+  background:
+    radial-gradient(circle at 0 0, transparent calc(var(--curve) - 2px), var(--outer-line-color) calc(var(--curve) - 1px) calc(var(--curve) + 2px), transparent calc(var(--curve) + 3px)) left top / calc(var(--curve) + 4px) calc(var(--curve) + 4px) no-repeat,
+    radial-gradient(circle at 100% 0, transparent calc(var(--curve) - 2px), var(--outer-line-color) calc(var(--curve) - 1px) calc(var(--curve) + 2px), transparent calc(var(--curve) + 3px)) right top / calc(var(--curve) + 4px) calc(var(--curve) + 4px) no-repeat,
+    radial-gradient(circle at 100% 100%, transparent calc(var(--curve) - 2px), var(--outer-line-color) calc(var(--curve) - 1px) calc(var(--curve) + 2px), transparent calc(var(--curve) + 3px)) right bottom / calc(var(--curve) + 4px) calc(var(--curve) + 4px) no-repeat,
+    radial-gradient(circle at 0 100%, transparent calc(var(--curve) - 2px), var(--outer-line-color) calc(var(--curve) - 1px) calc(var(--curve) + 2px), transparent calc(var(--curve) + 3px)) left bottom / calc(var(--curve) + 4px) calc(var(--curve) + 4px) no-repeat,
+    linear-gradient(var(--outer-line-color), var(--outer-line-color)) left calc(var(--curve) - 2px) top / calc(100% - (var(--curve) * 2) + 4px) 2px no-repeat,
+    linear-gradient(var(--outer-line-color), var(--outer-line-color)) left calc(var(--curve) - 2px) bottom / calc(100% - (var(--curve) * 2) + 4px) 2px no-repeat,
+    linear-gradient(var(--outer-line-color), var(--outer-line-color)) left top calc(var(--curve) - 2px) / 2px calc(100% - (var(--curve) * 2) + 4px) no-repeat,
+    linear-gradient(var(--outer-line-color), var(--outer-line-color)) right top calc(var(--curve) - 2px) / 2px calc(100% - (var(--curve) * 2) + 4px) no-repeat;
+}
+
+.ornate-panel::after {
+  inset: var(--frame-gap);
+  z-index: 1;
+  --line-color: rgba(62, 49, 33, 0.72);
+  background:
+    radial-gradient(circle at 0 0, transparent calc(var(--inner-curve) - 1px), var(--line-color) var(--inner-curve), transparent calc(var(--inner-curve) + 1px)) left top / calc(var(--inner-curve) + 2px) calc(var(--inner-curve) + 2px) no-repeat,
+    radial-gradient(circle at 100% 0, transparent calc(var(--inner-curve) - 1px), var(--line-color) var(--inner-curve), transparent calc(var(--inner-curve) + 1px)) right top / calc(var(--inner-curve) + 2px) calc(var(--inner-curve) + 2px) no-repeat,
+    radial-gradient(circle at 100% 100%, transparent calc(var(--inner-curve) - 1px), var(--line-color) var(--inner-curve), transparent calc(var(--inner-curve) + 1px)) right bottom / calc(var(--inner-curve) + 2px) calc(var(--inner-curve) + 2px) no-repeat,
+    radial-gradient(circle at 0 100%, transparent calc(var(--inner-curve) - 1px), var(--line-color) var(--inner-curve), transparent calc(var(--inner-curve) + 1px)) left bottom / calc(var(--inner-curve) + 2px) calc(var(--inner-curve) + 2px) no-repeat,
+    linear-gradient(var(--line-color), var(--line-color)) left var(--inner-curve) top / calc(100% - (var(--inner-curve) * 2)) 1px no-repeat,
+    linear-gradient(var(--line-color), var(--line-color)) left var(--inner-curve) bottom / calc(100% - (var(--inner-curve) * 2)) 1px no-repeat,
+    linear-gradient(var(--line-color), var(--line-color)) left top var(--inner-curve) / 1px calc(100% - (var(--inner-curve) * 2)) no-repeat,
+    linear-gradient(var(--line-color), var(--line-color)) right top var(--inner-curve) / 1px calc(100% - (var(--inner-curve) * 2)) no-repeat;
+}
+
+.ornate-panel > * {
+  position: relative;
+  z-index: 2;
+}
+
+.ornate-panel h1,
+.ornate-panel h2,
+.ornate-panel h3,
+.ornate-panel h4,
+.ornate-panel p {
+  margin: 0;
+}
+
+.ornate-panel h2,
+.ornate-panel h3 {
+  color: var(--gold-soft);
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.ornate-panel p,
+.ornate-panel li {
+  color: var(--text-muted);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.inner-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 18px);
+}
+
+.inner-panel {
+  position: relative;
+  min-width: 0;
+  padding: clamp(14px, 2vw, 20px);
+  color: var(--text-main);
+  background: var(--inner-panel-bg);
+  -webkit-mask:
+    radial-gradient(circle at 0 0, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 0 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 0, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 100% 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 100% 100% / 51% 51% no-repeat,
+    radial-gradient(circle at 0 100%, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 0 100% / 51% 51% no-repeat;
+  mask:
+    radial-gradient(circle at 0 0, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 0 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 0, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 100% 0 / 51% 51% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 100% 100% / 51% 51% no-repeat,
+    radial-gradient(circle at 0 100%, transparent 0 var(--nested-curve), #000 calc(var(--nested-curve) + 1px)) 0 100% / 51% 51% no-repeat;
+  display: grid;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.inner-panel::before {
+  inset: 0;
+  z-index: 1;
+  --nested-outer-line-color: rgba(62, 49, 33, 0.82);
+  background:
+    radial-gradient(circle at 0 0, transparent calc(var(--nested-curve) - 2px), var(--nested-outer-line-color) calc(var(--nested-curve) - 1px) calc(var(--nested-curve) + 2px), transparent calc(var(--nested-curve) + 3px)) left top / calc(var(--nested-curve) + 4px) calc(var(--nested-curve) + 4px) no-repeat,
+    radial-gradient(circle at 100% 0, transparent calc(var(--nested-curve) - 2px), var(--nested-outer-line-color) calc(var(--nested-curve) - 1px) calc(var(--nested-curve) + 2px), transparent calc(var(--nested-curve) + 3px)) right top / calc(var(--nested-curve) + 4px) calc(var(--nested-curve) + 4px) no-repeat,
+    radial-gradient(circle at 100% 100%, transparent calc(var(--nested-curve) - 2px), var(--nested-outer-line-color) calc(var(--nested-curve) - 1px) calc(var(--nested-curve) + 2px), transparent calc(var(--nested-curve) + 3px)) right bottom / calc(var(--nested-curve) + 4px) calc(var(--nested-curve) + 4px) no-repeat,
+    radial-gradient(circle at 0 100%, transparent calc(var(--nested-curve) - 2px), var(--nested-outer-line-color) calc(var(--nested-curve) - 1px) calc(var(--nested-curve) + 2px), transparent calc(var(--nested-curve) + 3px)) left bottom / calc(var(--nested-curve) + 4px) calc(var(--nested-curve) + 4px) no-repeat,
+    linear-gradient(var(--nested-outer-line-color), var(--nested-outer-line-color)) left calc(var(--nested-curve) - 2px) top / calc(100% - (var(--nested-curve) * 2) + 4px) 2px no-repeat,
+    linear-gradient(var(--nested-outer-line-color), var(--nested-outer-line-color)) left calc(var(--nested-curve) - 2px) bottom / calc(100% - (var(--nested-curve) * 2) + 4px) 2px no-repeat,
+    linear-gradient(var(--nested-outer-line-color), var(--nested-outer-line-color)) left top calc(var(--nested-curve) - 2px) / 2px calc(100% - (var(--nested-curve) * 2) + 4px) no-repeat,
+    linear-gradient(var(--nested-outer-line-color), var(--nested-outer-line-color)) right top calc(var(--nested-curve) - 2px) / 2px calc(100% - (var(--nested-curve) * 2) + 4px) no-repeat;
+}
+
+.inner-panel::after {
+  inset: 4px;
+  z-index: 1;
+  --nested-line-color: rgba(62, 49, 33, 0.62);
+  background:
+    radial-gradient(circle at 0 0, transparent calc(var(--nested-curve) - 1px), var(--nested-line-color) var(--nested-curve), transparent calc(var(--nested-curve) + 1px)) left top / calc(var(--nested-curve) + 2px) calc(var(--nested-curve) + 2px) no-repeat,
+    radial-gradient(circle at 100% 0, transparent calc(var(--nested-curve) - 1px), var(--nested-line-color) var(--nested-curve), transparent calc(var(--nested-curve) + 1px)) right top / calc(var(--nested-curve) + 2px) calc(var(--nested-curve) + 2px) no-repeat,
+    radial-gradient(circle at 100% 100%, transparent calc(var(--nested-curve) - 1px), var(--nested-line-color) var(--nested-curve), transparent calc(var(--nested-curve) + 1px)) right bottom / calc(var(--nested-curve) + 2px) calc(var(--nested-curve) + 2px) no-repeat,
+    radial-gradient(circle at 0 100%, transparent calc(var(--nested-curve) - 1px), var(--nested-line-color) var(--nested-curve), transparent calc(var(--nested-curve) + 1px)) left bottom / calc(var(--nested-curve) + 2px) calc(var(--nested-curve) + 2px) no-repeat,
+    linear-gradient(var(--nested-line-color), var(--nested-line-color)) left var(--nested-curve) top / calc(100% - (var(--nested-curve) * 2)) 1px no-repeat,
+    linear-gradient(var(--nested-line-color), var(--nested-line-color)) left var(--nested-curve) bottom / calc(100% - (var(--nested-curve) * 2)) 1px no-repeat,
+    linear-gradient(var(--nested-line-color), var(--nested-line-color)) left top var(--nested-curve) / 1px calc(100% - (var(--nested-curve) * 2)) no-repeat,
+    linear-gradient(var(--nested-line-color), var(--nested-line-color)) right top var(--nested-curve) / 1px calc(100% - (var(--nested-curve) * 2)) no-repeat;
+}
+
+.inner-panel > * {
+  position: relative;
+  z-index: 2;
+}
+
+.inner-meter {
+  height: 5px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(62, 49, 33, 0.45);
+}
+
+.inner-meter span {
+  display: block;
+  width: var(--value, 50%);
+  height: 100%;
+  background: rgba(210, 195, 160, 0.68);
+}
+
+@media (max-width: 767px) {
+  .ornate-panel {
+    padding: clamp(20px, 7vw, 28px);
+  }
+
+  .inner-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+body.expert-lab-page .setup-grid.ornate-panel {
+  padding: 12px;
+  gap: 0;
+}
+
+body.expert-lab-page .material-library.ornate-panel,
+body.expert-lab-page .formula-builder.ornate-panel,
+body.expert-lab-page .analysis.ornate-panel,
+body.expert-lab-page .drydown.ornate-panel,
+body.expert-lab-page .perfume-name.ornate-panel,
+body.expert-lab-page .brief.ornate-panel,
+body.expert-lab-page .story-card-section.ornate-panel,
+body.expert-lab-page .next.ornate-panel {
+  padding: clamp(22px, 2.4vw, 32px);
+}
+
+body.expert-lab-page .setup-block.inner-panel,
+body.expert-lab-page .note-box.inner-panel {
+  padding: clamp(16px, 1.9vw, 22px);
+}
+
+body.expert-lab-page .setup-block.inner-panel {
+  align-content: start;
+}
+
+body.expert-lab-page .pill-row button {
+  min-height: 38px;
+  padding: 9px 14px;
+}
+
+body.expert-lab-page .layer-grid.inner-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body.expert-lab-page .layer-card.inner-panel {
+  padding: clamp(18px, 2vw, 24px);
+}
+
+body.expert-lab-page .actions.inner-panel {
+  padding: clamp(14px, 1.7vw, 18px);
+}
+
+body.expert-lab-page .selected-material.inner-panel {
+  padding: 12px;
+}
+
+body.expert-lab-page .timeline-card.inner-panel {
+  padding: clamp(16px, 2vw, 20px);
+}
+
+body.expert-lab-page .brief-paper.inner-panel {
+  padding: clamp(22px, 3vw, 34px);
+  color: #2c2116;
+  background:
+    linear-gradient(90deg, rgba(92, 55, 24, 0.1), transparent 14%, transparent 86%, rgba(92, 55, 24, 0.1)),
+    #ecd9b7;
+}
+
+body.expert-lab-page .coming-soon.inner-panel {
+  padding: 18px;
+}
+
+body.expert-lab-page .material-item.inner-panel {
+  min-height: 0;
+  padding: 9px 10px;
+  display: grid;
+  gap: 8px;
+  text-align: left;
+  cursor: default;
+}
+
+body.expert-lab-page .category.inner-panel {
+  padding: 10px;
+}
+
+body.expert-lab-page .material-item.inner-panel .material-info-button {
+  min-height: 0;
+}
+
+body.expert-lab-page .material-item.inner-panel .material-layer-actions {
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 820px) {
+  body.expert-lab-page .layer-grid.inner-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Layout-specific compatibility for the revised Expert Lab hierarchy. */
+body.expert-lab-page .concentration-panel.ornate-panel,
+body.expert-lab-page .formula-insights-panel.ornate-panel,
+body.expert-lab-page .formula-check.ornate-panel {
+  padding: clamp(18px, 2vw, 26px);
+}
+
+body.expert-lab-page .brief-paper.inner-panel {
+  min-height: clamp(470px, 42vw, 650px);
+  padding: clamp(30px, 4vw, 58px);
+  color: #2c2116;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255, 245, 219, 0.5), transparent 32rem),
+    linear-gradient(90deg, rgba(92, 55, 24, 0.12), transparent 14%, transparent 86%, rgba(92, 55, 24, 0.12)),
+    #ecd9b7;
+  box-shadow:
+    inset 0 0 44px rgba(94, 58, 24, 0.18),
+    0 18px 36px rgba(0, 0, 0, 0.22);
+}
+
+body.expert-lab-page .brief-paper.inner-panel h3 {
+  color: #1d130a;
+}
+
+body.expert-lab-page .brief-paper.inner-panel p,
+body.expert-lab-page .brief-paper.inner-panel li,
+body.expert-lab-page .brief-paper.inner-panel strong {
+  color: #2d2116;
+}
+
+body.expert-lab-page .formula-check #formulaMessages {
+  display: grid;
+  gap: 8px;
+}
+
+body.expert-lab-page .next-actions {
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 700px) {
+  body.expert-lab-page .brief-paper.inner-panel {
+    min-height: 340px;
+    padding: 24px 18px;
+  }
+}
+
+/* Full-width compact pass for the Expert Lab reference layout. */
+body.expert-lab-page main {
+  width: min(1880px, calc(100vw - 24px));
+  margin-inline: auto;
+}
+
+body.expert-lab-page .hero-lab {
+  min-height: clamp(260px, 31vh, 390px);
+  padding-top: 88px;
+  padding-bottom: 22px;
+}
+
+body.expert-lab-page .hero-copy {
+  padding-block: 10px;
+}
+
+body.expert-lab-page .hero-copy h1 {
+  font-size: clamp(46px, 5.2vw, 86px);
+}
+
+body.expert-lab-page .hero-copy p:last-child {
+  font-size: clamp(16px, 1.35vw, 22px);
+  max-width: 520px;
+}
+
+body.expert-lab-page .expert-workshop {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: clamp(250px, 15.5vw, 292px) minmax(0, 1fr);
+  grid-template-areas:
+    "library controls"
+    "library build"
+    "library check"
+    "library brief"
+    "next next";
+  gap: 10px;
+  align-items: start;
+}
+
+body.expert-lab-page .expert-workshop > .material-library {
+  grid-area: library;
+  position: sticky;
+  top: 92px;
+  align-self: start;
+}
+
+body.expert-lab-page .top-controls {
+  grid-area: controls;
+  display: grid;
+  grid-template-columns: minmax(190px, 0.72fr) minmax(410px, 1.44fr) minmax(560px, 2fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+body.expert-lab-page .build-review-row {
+  grid-area: build;
+  display: grid;
+  grid-template-columns: minmax(640px, 1.42fr) minmax(265px, 0.5fr) minmax(390px, 0.7fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+body.expert-lab-page .formula-check {
+  grid-area: check;
+  display: grid;
+  grid-template-columns: minmax(190px, 0.22fr) minmax(170px, 0.18fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+body.expert-lab-page .brief-story-row {
+  grid-area: brief;
+  display: grid;
+  grid-template-columns: minmax(0, 2.1fr) minmax(390px, 0.9fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+body.expert-lab-page .expert-workshop > .next {
+  grid-area: next;
+}
+
+body.expert-lab-page .ornate-panel {
+  padding: clamp(14px, 1.15vw, 20px);
+  gap: 10px;
+}
+
+body.expert-lab-page .inner-panel {
+  padding: clamp(10px, 1vw, 14px);
+  gap: 7px;
+}
+
+body.expert-lab-page .panel-title h2,
+body.expert-lab-page .panel-heading h2 {
+  font-size: clamp(22px, 1.75vw, 31px);
+  line-height: 1.03;
+}
+
+body.expert-lab-page .step {
+  margin-bottom: 7px;
+  font-size: 11px;
+  letter-spacing: 0.13em;
+}
+
+body.expert-lab-page .top-controls .perfume-name .panel-title h2 {
+  font-size: clamp(22px, 1.55vw, 30px);
+}
+
+body.expert-lab-page .top-controls .name-row {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(128px, 0.36fr) minmax(128px, 0.36fr);
+  gap: 9px;
+}
+
+body.expert-lab-page .top-controls #perfumeNameInput {
+  min-width: 0;
+  min-height: 38px;
+  font-size: clamp(18px, 1.28vw, 25px);
+}
+
+body.expert-lab-page .top-controls .panel-button {
+  min-height: 38px;
+  padding: 8px 11px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+body.expert-lab-page .pill-row button {
+  min-height: 36px;
+  padding: 7px 13px;
+}
+
+body.expert-lab-page .direction-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+}
+
+body.expert-lab-page .direction-chip {
+  min-height: 34px;
+  padding: 6px 8px;
+}
+
+body.expert-lab-page .direction-chip strong {
+  font-size: 12px;
+}
+
+body.expert-lab-page .category-list {
+  max-height: calc(100vh - 420px);
+  min-height: 360px;
+  gap: 6px;
+}
+
+body.expert-lab-page .material-library .panel-title h2 {
+  font-size: clamp(25px, 1.95vw, 34px);
+}
+
+body.expert-lab-page .material-library input {
+  min-height: 40px;
+}
+
+body.expert-lab-page .coming-soon.inner-panel {
+  padding: 14px;
+}
+
+body.expert-lab-page .layer-grid.inner-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+body.expert-lab-page .layer-card.inner-panel {
+  min-height: 430px;
+  padding: 16px 12px 14px;
+}
+
+body.expert-lab-page .layer-card h3 {
+  font-size: clamp(25px, 1.8vw, 32px);
+}
+
+body.expert-lab-page .layer-card small {
+  margin: 5px 0 12px;
+}
+
+body.expert-lab-page .selected-list {
+  gap: 9px;
+}
+
+body.expert-lab-page .selected-material.inner-panel {
+  padding: 9px;
+}
+
+body.expert-lab-page .selected-material header {
+  font-size: 13px;
+}
+
+body.expert-lab-page .remove-btn {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  font-size: 10px;
+  border-radius: 6px;
+}
+
+body.expert-lab-page .add-btn {
+  min-height: 38px;
+  margin-top: 12px;
+}
+
+body.expert-lab-page .layer-card > strong {
+  margin-top: 8px;
+  font-size: 25px;
+}
+
+body.expert-lab-page .actions.inner-panel {
+  margin-top: 10px;
+  padding: 10px;
+}
+
+body.expert-lab-page .actions button {
+  min-height: 38px;
+  padding: 8px 14px;
+}
+
+body.expert-lab-page .bar {
+  margin: 10px 0;
+}
+
+body.expert-lab-page .bar-label {
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+body.expert-lab-page .bar-track {
+  height: 6px;
+}
+
+body.expert-lab-page .build-review-row .timeline {
+  grid-template-columns: repeat(5, minmax(70px, 1fr));
+  gap: 7px;
+  margin-top: 10px;
+}
+
+body.expert-lab-page .build-review-row .timeline-card.inner-panel {
+  min-height: 190px;
+  padding: 10px;
+}
+
+body.expert-lab-page .build-review-row .timeline-card h3 {
+  margin-top: 6px;
+  font-size: 16px;
+}
+
+body.expert-lab-page .build-review-row .timeline-card p {
+  font-size: 11px;
+  line-height: 1.38;
+}
+
+body.expert-lab-page .build-review-row .timeline-card strong {
+  font-size: 10px;
+}
+
+body.expert-lab-page .formula-check .wide {
+  width: 100%;
+  margin: 0;
+}
+
+body.expert-lab-page #formulaMessages {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+body.expert-lab-page #formulaMessages .message {
+  margin: 0;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+body.expert-lab-page .brief-paper.inner-panel {
+  min-height: clamp(350px, 27vw, 500px);
+  padding: clamp(24px, 2.8vw, 44px);
+  font-size: clamp(16px, 1.02vw, 19px);
+}
+
+body.expert-lab-page .brief-paper.inner-panel h3 {
+  font-size: clamp(36px, 3.5vw, 60px);
+}
+
+body.expert-lab-page .story-card-section .story-card-preview {
+  min-height: 0;
+  padding: 12px;
+}
+
+body.expert-lab-page .story-card-section .story-card-canvas {
+  width: min(100%, 270px);
+}
+
+body.expert-lab-page .story-card-actions {
+  gap: 8px;
+}
+
+body.expert-lab-page .story-card-actions .panel-button,
+body.expert-lab-page .story-unlock-link {
+  min-height: 40px;
+  padding: 9px 12px;
+}
+
+body.expert-lab-page .next {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.28fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+body.expert-lab-page .next .panel-title {
+  align-self: center;
+}
+
+body.expert-lab-page .next-creation {
+  display: none;
+}
+
+body.expert-lab-page .next-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+body.expert-lab-page .next-actions button {
+  min-height: 52px;
+  width: 100%;
+  text-align: center;
+  justify-items: center;
+}
+
+@media (max-width: 1500px) {
+  body.expert-lab-page .top-controls {
+    grid-template-columns: minmax(170px, 0.72fr) minmax(350px, 1.3fr) minmax(460px, 1.8fr);
+  }
+
+  body.expert-lab-page .build-review-row {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.48fr);
+  }
+
+  body.expert-lab-page .build-review-row .formula-builder {
+    grid-column: 1 / -1;
+  }
+
+  body.expert-lab-page .build-review-row .analysis,
+  body.expert-lab-page .build-review-row .drydown {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 1180px) {
+  body.expert-lab-page main {
+    width: min(100% - 28px, 980px);
+  }
+
+  body.expert-lab-page .expert-workshop {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "library"
+      "controls"
+      "build"
+      "check"
+      "brief"
+      "next";
+  }
+
+  body.expert-lab-page .expert-workshop > .material-library {
+    position: static;
+  }
+
+  body.expert-lab-page .top-controls,
+  body.expert-lab-page .build-review-row,
+  body.expert-lab-page .brief-story-row,
+  body.expert-lab-page .formula-check {
+    grid-template-columns: 1fr;
+  }
+
+  body.expert-lab-page .top-controls .name-row {
+    grid-template-columns: 1fr;
+  }
+
+  body.expert-lab-page .build-review-row .timeline,
+  body.expert-lab-page #formulaMessages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.expert-lab-page .next {
+    grid-template-columns: 1fr;
+  }
+
+  body.expert-lab-page .next-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  body.expert-lab-page main {
+    width: min(100% - 22px, 520px);
+  }
+
+  body.expert-lab-page .direction-grid,
+  body.expert-lab-page .layer-grid.inner-grid,
+  body.expert-lab-page .build-review-row .timeline,
+  body.expert-lab-page #formulaMessages,
+  body.expert-lab-page .next-actions {
+    grid-template-columns: 1fr;
+  }
+
+  body.expert-lab-page .layer-card.inner-panel {
+    min-height: auto;
+  }
+
+  body.expert-lab-page .brief-paper.inner-panel {
+    min-height: 330px;
+    padding: 22px 18px;
+  }
+
+body.expert-lab-page .story-card-section .story-card-canvas {
+  width: min(100%, 255px);
+}
+}
+
+/* Material library repair: readable category names with internal scrolling. */
+body.expert-lab-page .material-library.ornate-panel {
+  max-height: calc(100vh - 112px);
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+}
+
+body.expert-lab-page .category-list {
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+  padding: 2px 8px 2px 0;
+  scrollbar-gutter: stable;
+}
+
+body.expert-lab-page .category.inner-panel {
+  display: block;
+  min-height: 0;
+  padding: 0;
+  overflow: visible;
+}
+
+body.expert-lab-page .category summary {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 13px;
+  color: #f1d596;
+  font-family: var(--font-serif);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  list-style-position: inside;
+}
+
+body.expert-lab-page .category summary::-webkit-details-marker {
+  color: #f1d596;
+}
+
+body.expert-lab-page .category[open] {
+  max-height: min(360px, 42vh);
+  overflow: auto;
+}
+
+body.expert-lab-page .category[open] summary {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background:
+    linear-gradient(180deg, rgba(32, 21, 12, 0.96), rgba(16, 10, 6, 0.96));
+}
+
+body.expert-lab-page .material-item.inner-panel {
+  min-height: 0;
+  margin: 6px 8px 6px 0;
+  padding: 8px 10px;
+  overflow: visible;
+}
+
+body.expert-lab-page .material-info-button {
+  min-height: 26px;
+  padding-right: 22px;
+}
+
+body.expert-lab-page .material-info-button::after {
+  right: 4px;
+  top: 3px;
+}
+
+body.expert-lab-page .material-info-button span {
+  display: block;
+  color: #f5dfba;
+  font-size: 15px;
+  line-height: 1.15;
+  white-space: normal;
+  overflow: visible;
+}
+
+body.expert-lab-page .material-info-button small,
+body.expert-lab-page .material-info-button em,
+body.expert-lab-page .material-info-button p,
+body.expert-lab-page .material-info-button .pairing-hint {
+  color: rgba(234, 220, 192, 0.68);
+  font-size: 11px;
+  line-height: 1.32;
+}
+
+body.expert-lab-page .material-layer-actions {
+  margin-top: 6px;
+}
+
+body.expert-lab-page .coming-soon.inner-panel {
+  margin-top: 10px;
+  max-height: 150px;
+  overflow: hidden;
+}
+
+body.expert-lab-page .coming-soon.inner-panel h3 {
+  font-size: 19px;
+}
+
+body.expert-lab-page .coming-soon.inner-panel small {
+  font-size: 12px;
+}
+
+/* Keep lower reward rows from colliding with the fixed browser/header viewport. */
+body.expert-lab-page .brief-story-row {
+  align-items: start;
+}
+
+body.expert-lab-page .story-card-section {
+  max-height: none;
+}
+
+@media (min-width: 1181px) {
+  body.expert-lab-page .build-review-row {
+    grid-template-columns: minmax(620px, 1.34fr) minmax(260px, 0.48fr) minmax(320px, 0.58fr);
+  }
+
+  body.expert-lab-page .build-review-row .formula-builder,
+  body.expert-lab-page .build-review-row .analysis,
+  body.expert-lab-page .build-review-row .drydown {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 1500px) and (min-width: 1181px) {
+  body.expert-lab-page .build-review-row {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.48fr);
+  }
+
+  body.expert-lab-page .build-review-row .formula-builder {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
+  body.expert-lab-page .material-library.ornate-panel {
+    max-height: none;
+    overflow: visible;
+    display: grid;
+  }
+
+  body.expert-lab-page .category-list {
+    max-height: 460px;
+  }
+
+  body.expert-lab-page .category[open] {
+    max-height: 310px;
+  }
+}
+
+/* Final Basic Materials simplification: plain inner rows, normal details expand. */
+@media (min-width: 1181px) {
+  body.expert-lab-page .expert-workshop > .material-library {
+    position: sticky;
+    top: 92px;
+    align-self: start;
+  }
+}
+
+body.expert-lab-page .material-library.ornate-panel {
+  max-height: none;
+  overflow: visible;
+  display: block;
+}
+
+body.expert-lab-page .category-list {
+  display: grid;
+  gap: 7px;
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+  padding: 0;
+  scrollbar-gutter: auto;
+}
+
+body.expert-lab-page .category.inner-panel {
+  display: block;
+  min-height: 0;
+  max-height: none;
+  padding: 0;
+  overflow: visible;
+  border: 1px solid rgba(192, 146, 78, 0.38);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(32, 21, 12, 0.58), rgba(13, 8, 5, 0.72));
+  -webkit-mask: none;
+  mask: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 232, 180, 0.05),
+    0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+body.expert-lab-page .category.inner-panel::before,
+body.expert-lab-page .category.inner-panel::after {
+  display: none;
+}
+
+body.expert-lab-page .category summary {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  color: #f1d596;
+  background: transparent;
+  font-family: var(--font-serif);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.15;
+  text-transform: uppercase;
+  white-space: normal;
+  cursor: pointer;
+  list-style-position: outside;
+}
+
+body.expert-lab-page .category[open] {
+  max-height: none;
+  overflow: visible;
+}
+
+body.expert-lab-page .category[open] summary {
+  position: static;
+  background: rgba(214, 166, 84, 0.08);
+  border-bottom: 1px solid rgba(192, 146, 78, 0.2);
+}
+
+body.expert-lab-page .material-item.inner-panel {
+  display: grid;
+  min-height: 0;
+  margin: 7px 8px;
+  padding: 9px 10px;
+  overflow: visible;
+  border: 1px solid rgba(192, 146, 78, 0.25);
+  border-radius: 9px;
+  background: rgba(20, 12, 7, 0.54);
+  -webkit-mask: none;
+  mask: none;
+}
+
+body.expert-lab-page .material-item.inner-panel::before,
+body.expert-lab-page .material-item.inner-panel::after {
+  display: none;
+}
+
+body.expert-lab-page .material-info-button {
+  min-height: 28px;
+  padding: 0 22px 0 0;
+}
+
+body.expert-lab-page .material-info-button::after {
+  right: 2px;
+  top: 2px;
+}
+
+body.expert-lab-page .material-info-button span {
+  display: block;
+  color: #f5dfba;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  letter-spacing: 0.035em;
+  line-height: 1.15;
+  white-space: normal;
+  overflow: visible;
+}
+
+body.expert-lab-page .material-info-button small,
+body.expert-lab-page .material-info-button em,
+body.expert-lab-page .material-info-button p,
+body.expert-lab-page .material-info-button .pairing-hint {
+  margin: 3px 0 0;
+  color: rgba(234, 220, 192, 0.66);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  line-height: 1.32;
+}
+
+body.expert-lab-page .material-layer-actions {
+  margin-top: 7px;
+}
+
+body.expert-lab-page .coming-soon.inner-panel {
+  margin-top: 14px;
+  max-height: none;
+  overflow: visible;
+}
+
+@media (max-width: 700px) {
+  body.expert-lab-page .category-list {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+/* Pass 02: reference density and proportion tuning. */
+body.expert-lab-page .topbar {
+  min-height: 66px;
+  padding-block: 8px;
+}
+
+body.expert-lab-page .brand-mark {
+  width: 40px;
+  height: 40px;
+}
+
+body.expert-lab-page .brand {
+  font-size: clamp(16px, 1.25vw, 21px);
+}
+
+body.expert-lab-page main {
+  width: min(1920px, calc(100vw - 18px));
+  margin-bottom: 28px;
+}
+
+body.expert-lab-page .hero-lab {
+  min-height: clamp(210px, 24vh, 330px);
+  padding-top: 74px;
+  padding-bottom: 16px;
+}
+
+body.expert-lab-page .hero-copy h1 {
+  font-size: clamp(40px, 4.3vw, 70px);
+}
+
+body.expert-lab-page .hero-copy p:last-child {
+  margin-top: 10px;
+  font-size: clamp(15px, 1.1vw, 19px);
+}
+
+body.expert-lab-page .expert-workshop {
+  grid-template-columns: clamp(218px, 13.6vw, 260px) minmax(0, 1fr);
+  gap: 8px;
+}
+
+body.expert-lab-page .expert-workshop > .material-library {
+  top: 76px;
+}
+
+body.expert-lab-page .top-controls,
+body.expert-lab-page .build-review-row,
+body.expert-lab-page .brief-story-row {
+  gap: 8px;
+}
+
+body.expert-lab-page .top-controls {
+  grid-template-columns: minmax(170px, 0.66fr) minmax(330px, 1.24fr) minmax(500px, 1.95fr);
+}
+
+body.expert-lab-page .build-review-row {
+  grid-template-columns: minmax(620px, 1.5fr) minmax(250px, 0.52fr) minmax(360px, 0.72fr);
+}
+
+body.expert-lab-page .brief-story-row {
+  grid-template-columns: minmax(0, 2.22fr) minmax(360px, 0.88fr);
+}
+
+body.expert-lab-page .ornate-panel {
+  padding: clamp(11px, 0.85vw, 16px);
+  gap: 8px;
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.34),
+    0 0 12px rgba(62, 49, 33, 0.05);
+}
+
+body.expert-lab-page .ornate-panel::before {
+  --outer-line-color: rgba(62, 49, 33, 0.72);
+}
+
+body.expert-lab-page .ornate-panel::after {
+  --line-color: rgba(62, 49, 33, 0.5);
+}
+
+body.expert-lab-page .inner-panel {
+  padding: clamp(8px, 0.72vw, 12px);
+}
+
+body.expert-lab-page .panel-title h2,
+body.expert-lab-page .panel-heading h2 {
+  font-size: clamp(19px, 1.38vw, 26px);
+  letter-spacing: 0.055em;
+}
+
+body.expert-lab-page .material-library .panel-title h2 {
+  font-size: clamp(22px, 1.55vw, 29px);
+}
+
+body.expert-lab-page .step {
+  margin-bottom: 5px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+body.expert-lab-page .search-label {
+  margin: 10px 0 6px;
+  font-size: 12px;
+}
+
+body.expert-lab-page .material-library input {
+  min-height: 34px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+body.expert-lab-page .category-list {
+  gap: 5px;
+  margin-top: 10px;
+}
+
+body.expert-lab-page .category.inner-panel {
+  border-radius: 7px;
+}
+
+body.expert-lab-page .category summary {
+  min-height: 29px;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 5px 8px;
+  font-size: 12px;
+  letter-spacing: 0.085em;
+}
+
+body.expert-lab-page .category summary::marker {
+  content: "";
+}
+
+body.expert-lab-page .category-icon {
+  width: 16px;
+  height: 16px;
+  align-self: center;
+  border: 1px solid rgba(214, 166, 84, 0.58);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(238, 198, 119, 0.45), rgba(70, 44, 18, 0.3));
+}
+
+body.expert-lab-page .category-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.expert-lab-page .category-count {
+  min-width: 25px;
+  padding: 2px 6px;
+  border: 1px solid rgba(192, 146, 78, 0.34);
+  border-radius: 6px;
+  color: #e7c87e;
+  font-size: 11px;
+  line-height: 1;
+  text-align: center;
+}
+
+body.expert-lab-page .material-item.inner-panel {
+  margin: 5px 7px;
+  padding: 7px 8px;
+  border-radius: 7px;
+}
+
+body.expert-lab-page .material-info-button span {
+  font-size: 14px;
+}
+
+body.expert-lab-page .mini-layer-button {
+  min-height: 22px;
+  padding: 3px 7px;
+  font-size: 9px;
+}
+
+body.expert-lab-page .coming-soon.inner-panel {
+  margin-top: 10px;
+  padding: 10px;
+}
+
+body.expert-lab-page .coming-soon.inner-panel h3 {
+  font-size: 17px;
+}
+
+body.expert-lab-page .coming-soon.inner-panel small {
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+body.expert-lab-page .concentration-panel.ornate-panel,
+body.expert-lab-page .formula-insights-panel.ornate-panel,
+body.expert-lab-page .perfume-name.ornate-panel {
+  min-height: 94px;
+}
+
+body.expert-lab-page .pill-row {
+  gap: 6px;
+}
+
+body.expert-lab-page .pill-row button,
+body.expert-lab-page .choice-button {
+  min-height: 31px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+body.expert-lab-page .concentration-guidance {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+body.expert-lab-page .direction-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+body.expert-lab-page .direction-chip {
+  min-height: 30px;
+  min-width: 74px;
+  padding: 5px 8px;
+}
+
+body.expert-lab-page .direction-chip strong {
+  font-size: 12px;
+}
+
+body.expert-lab-page .direction-chip em {
+  font-size: 9px;
+}
+
+body.expert-lab-page .direction-empty {
+  align-self: center;
+  color: rgba(234, 220, 192, 0.58);
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-style: italic;
+}
+
+body.expert-lab-page .top-controls .perfume-name .panel-title {
+  display: none;
+}
+
+body.expert-lab-page .name-lab {
+  gap: 7px;
+}
+
+body.expert-lab-page .name-lab label {
+  font-size: 10px;
+}
+
+body.expert-lab-page .top-controls .name-row {
+  grid-template-columns: minmax(280px, 1fr) 120px 120px;
+  gap: 8px;
+}
+
+body.expert-lab-page .top-controls #perfumeNameInput {
+  min-height: 34px;
+  padding: 7px 10px;
+  font-size: 20px;
+}
+
+body.expert-lab-page .name-help {
+  font-size: 11px;
+}
+
+body.expert-lab-page .suggested-names {
+  gap: 5px;
+}
+
+body.expert-lab-page .suggested-name {
+  min-height: 27px;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+body.expert-lab-page .layer-card.inner-panel {
+  min-height: 345px;
+  padding: 12px 10px;
+}
+
+body.expert-lab-page .layer-card h3 {
+  font-size: clamp(21px, 1.35vw, 28px);
+}
+
+body.expert-lab-page .layer-card small {
+  margin: 3px 0 9px;
+  font-size: 11px;
+}
+
+body.expert-lab-page .selected-list {
+  gap: 7px;
+}
+
+body.expert-lab-page .selected-material.inner-panel {
+  padding: 7px;
+  border-radius: 8px;
+}
+
+body.expert-lab-page .selected-material header {
+  font-size: 12px;
+}
+
+body.expert-lab-page .selected-material input[type="range"] {
+  height: 16px;
+}
+
+body.expert-lab-page .remove-btn {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+}
+
+body.expert-lab-page .add-btn {
+  min-height: 33px;
+  margin-top: 8px;
+  font-size: 11px;
+}
+
+body.expert-lab-page .layer-card > strong {
+  margin-top: 6px;
+  font-size: 22px;
+}
+
+body.expert-lab-page .actions.inner-panel {
+  margin-top: 8px;
+  padding: 8px;
+}
+
+body.expert-lab-page .actions button {
+  min-height: 32px;
+  padding: 6px 12px;
+  font-size: 11px;
+}
+
+body.expert-lab-page .total-badge strong {
+  font-size: 23px;
+}
+
+body.expert-lab-page .bar {
+  margin: 7px 0;
+}
+
+body.expert-lab-page .bar-label {
+  font-size: 11px;
+}
+
+body.expert-lab-page .build-review-row .timeline {
+  grid-template-columns: repeat(5, minmax(58px, 1fr));
+  gap: 6px;
+}
+
+body.expert-lab-page .build-review-row .timeline-card.inner-panel {
+  min-height: 142px;
+  padding: 8px;
+}
+
+body.expert-lab-page .build-review-row .timeline-card h3 {
+  font-size: 14px;
+}
+
+body.expert-lab-page .build-review-row .timeline-card p {
+  font-size: 10px;
+}
+
+body.expert-lab-page .formula-check {
+  grid-template-columns: minmax(150px, 0.2fr) minmax(145px, 0.16fr) minmax(0, 1fr);
+}
+
+body.expert-lab-page #formulaMessages {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+body.expert-lab-page #formulaMessages .message {
+  padding: 6px 8px;
+  font-size: 11px;
+}
+
+body.expert-lab-page .brief-paper.inner-panel {
+  min-height: clamp(300px, 22vw, 430px);
+  padding: clamp(20px, 2.1vw, 34px);
+  font-size: clamp(14px, 0.88vw, 17px);
+}
+
+body.expert-lab-page .brief-paper.inner-panel h3 {
+  font-size: clamp(30px, 2.7vw, 48px);
+}
+
+body.expert-lab-page .story-card-section .story-card-canvas {
+  width: min(100%, 235px);
+}
+
+body.expert-lab-page .story-card-actions .panel-button,
+body.expert-lab-page .story-unlock-link {
+  min-height: 34px;
+  padding: 7px 10px;
+  font-size: 11px;
+}
+
+body.expert-lab-page .story-card-message {
+  min-height: 0;
+  font-size: 11px;
+}
+
+body.expert-lab-page .next {
+  grid-template-columns: minmax(180px, 0.22fr) minmax(0, 1fr);
+}
+
+body.expert-lab-page .next-actions button {
+  min-height: 44px;
+  font-size: 11px;
+}
+
+/* Concentration help: compact one-row controls with an inline antique popover. */
+body.expert-lab-page .concentration-panel.ornate-panel {
+  overflow: visible;
+}
+
+body.expert-lab-page .concentration-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+body.expert-lab-page .concentration-heading .step {
+  margin: 0;
+}
+
+body.expert-lab-page .concentration-help {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+body.expert-lab-page .concentration-help summary {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border: 1px solid rgba(215, 166, 83, 0.72);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(54, 35, 18, 0.9), rgba(19, 12, 7, 0.94));
+  color: #f2d99b;
+  cursor: pointer;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  line-height: 1;
+  list-style: none;
+  box-shadow: 0 0 14px rgba(216, 161, 75, 0.18), inset 0 0 0 1px rgba(255, 230, 172, 0.08);
+}
+
+body.expert-lab-page .concentration-help summary::-webkit-details-marker {
+  display: none;
+}
+
+body.expert-lab-page .concentration-help-popover {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 10px);
+  left: 50%;
+  width: min(310px, 78vw);
+  padding: 16px 17px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(201, 154, 85, 0.56);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(41, 28, 17, 0.96), rgba(15, 10, 7, 0.98));
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.46),
+    inset 0 0 0 1px rgba(255, 232, 180, 0.08);
+  color: #ead9b8;
+}
+
+body.expert-lab-page .concentration-help-popover::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  transform: translateX(-50%) rotate(45deg);
+  border-left: 1px solid rgba(201, 154, 85, 0.56);
+  border-top: 1px solid rgba(201, 154, 85, 0.56);
+  background: rgba(41, 28, 17, 0.96);
+}
+
+body.expert-lab-page .concentration-help-popover h3 {
+  margin: 0 0 10px;
+  color: #d6b46f;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+body.expert-lab-page .concentration-help-popover p {
+  margin: 8px 0 0;
+  color: rgba(239, 226, 195, 0.88);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+body.expert-lab-page .concentration-help-popover strong {
+  color: #f0cf83;
+  font-family: var(--font-serif);
+  letter-spacing: 0.08em;
+}
+
+body.expert-lab-page .concentration-panel .pill-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+body.expert-lab-page .concentration-panel .choice-button {
+  min-width: 0;
+  min-height: 36px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+body.expert-lab-page .concentration-guidance[hidden] {
+  display: none !important;
+}
+
+/* Formula Builder compact workbench refinement. */
+body.expert-lab-page .formula-builder.ornate-panel {
+  padding: clamp(14px, 1.15vw, 22px);
+  background: linear-gradient(180deg, rgba(36, 23, 13, 0.82), rgba(13, 9, 6, 0.92));
+  border-color: rgba(190, 137, 61, 0.35);
+  box-shadow:
+    0 16px 34px rgba(0, 0, 0, 0.24),
+    inset 0 0 0 1px rgba(250, 215, 142, 0.04);
+}
+
+body.expert-lab-page .formula-builder .panel-title {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  margin-bottom: 12px;
+}
+
+body.expert-lab-page .formula-builder .panel-title h2 {
+  font-size: clamp(22px, 1.75vw, 36px);
+  line-height: 1;
+}
+
+body.expert-lab-page .formula-builder .total-badge {
+  gap: 2px;
+  min-width: 70px;
+  text-align: right;
+}
+
+body.expert-lab-page .formula-builder .total-badge span {
+  font-size: 11px;
+}
+
+body.expert-lab-page .formula-builder .total-badge strong {
+  font-size: clamp(19px, 1.2vw, 25px);
+  color: #edcf86;
+}
+
+body.expert-lab-page .builder-grid.inner-grid,
+body.expert-lab-page .formula-builder .layer-grid.inner-grid {
+  gap: clamp(8px, 0.75vw, 14px);
+}
+
+body.expert-lab-page .formula-builder .layer-card.inner-panel {
+  min-height: 0;
+  padding: 12px 13px 11px;
+  border: 1px solid rgba(190, 137, 61, 0.34);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(33, 23, 14, 0.62), rgba(12, 8, 5, 0.74));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 232, 180, 0.035),
+    0 10px 24px rgba(0, 0, 0, 0.16);
+}
+
+body.expert-lab-page .formula-builder .layer-card h3 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  color: #d9b76e;
+  font-size: clamp(13px, 0.8vw, 15px);
+  line-height: 1.1;
+  letter-spacing: 0.1em;
+}
+
+body.expert-lab-page .formula-builder .layer-card h3 span {
+  white-space: nowrap;
+}
+
+body.expert-lab-page .formula-builder .layer-card h3 strong {
+  margin: 0;
+  color: #e2c275;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+body.expert-lab-page .formula-builder .layer-card small {
+  display: block;
+  margin: 4px 0 9px;
+  color: rgba(239, 226, 195, 0.68);
+  font-size: 10px;
+  line-height: 1.1;
+}
+
+body.expert-lab-page .formula-builder .selected-list {
+  gap: 6px;
+}
+
+body.expert-lab-page .formula-builder .selected-material.inner-panel {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(194, 145, 72, 0.13);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.expert-lab-page .formula-builder .selected-material.inner-panel:last-child {
+  border-bottom: 0;
+}
+
+body.expert-lab-page .formula-builder .selected-material header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 22px;
+  padding: 1px 0 2px;
+  color: #f0dfbf;
+  font-size: 12px;
+  line-height: 1.15;
+}
+
+body.expert-lab-page .formula-builder .selected-material-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+body.expert-lab-page .formula-builder .material-note-icon {
+  display: inline-grid;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  place-items: center;
+  color: #d8ac5d;
+  font-size: 14px;
+  line-height: 1;
+  filter: drop-shadow(0 0 5px rgba(213, 154, 67, 0.18));
+}
+
+body.expert-lab-page .formula-builder .selected-material-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+body.expert-lab-page .formula-builder .material-percent {
+  color: #e3c476;
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 28px;
+  text-align: right;
+}
+
+body.expert-lab-page .formula-builder .remove-btn {
+  display: inline-grid;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  place-items: center;
+  padding: 0;
+  border-color: rgba(201, 154, 85, 0.32);
+  border-radius: 50%;
+  background: rgba(17, 10, 6, 0.45);
+  color: rgba(239, 226, 195, 0.82);
+  font-size: 10px;
+  line-height: 1;
+}
+
+body.expert-lab-page .formula-builder .selected-material input[type="range"] {
+  width: min(74%, 145px);
+  height: 10px;
+  margin: 0 0 5px 25px;
+  accent-color: #d59e4d;
+}
+
+body.expert-lab-page .formula-builder .selected-material input[type="range"]::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(208, 150, 70, 0.82), rgba(74, 48, 24, 0.7));
+}
+
+body.expert-lab-page .formula-builder .selected-material input[type="range"]::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  margin-top: -3.5px;
+  border: 1px solid rgba(255, 228, 158, 0.86);
+  border-radius: 999px;
+  background: #d9a452;
+  box-shadow: 0 0 7px rgba(216, 164, 82, 0.34);
+}
+
+body.expert-lab-page .formula-builder .selected-material input[type="range"]::-moz-range-track {
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(208, 150, 70, 0.82), rgba(74, 48, 24, 0.7));
+}
+
+body.expert-lab-page .formula-builder .selected-material input[type="range"]::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgba(255, 228, 158, 0.86);
+  border-radius: 999px;
+  background: #d9a452;
+}
+
+body.expert-lab-page .formula-builder .add-btn {
+  min-height: 30px;
+  margin-top: 7px;
+  padding: 5px 9px;
+  border-style: dashed;
+  border-color: rgba(207, 157, 78, 0.42);
+  border-radius: 7px;
+  background: rgba(18, 11, 7, 0.34);
+  color: #e9cf8f;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  box-shadow: none;
+}
+
+body.expert-lab-page .formula-summary-strip {
+  display: grid;
+  grid-template-columns: minmax(140px, 1.1fr) repeat(3, minmax(80px, 0.62fr));
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+  padding: 10px 13px;
+  border-top: 1px solid rgba(190, 137, 61, 0.22);
+  border-bottom: 1px solid rgba(190, 137, 61, 0.14);
+  color: rgba(239, 226, 195, 0.82);
+  font-family: var(--font-serif);
+  font-size: 13px;
+}
+
+body.expert-lab-page .formula-summary-strip span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+body.expert-lab-page .formula-summary-strip strong {
+  color: #e6c77c;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+body.expert-lab-page .formula-summary-strip span:not(:first-child) strong {
+  color: #76c5d4;
+  font-size: 13px;
+}
+
+body.expert-lab-page .formula-builder .actions.inner-panel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 0 0;
+  border: 0;
+  border-top: 1px solid rgba(190, 137, 61, 0.22);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.expert-lab-page .formula-builder .actions.inner-panel::before,
+body.expert-lab-page .formula-builder .actions.inner-panel::after {
+  display: none;
+}
+
+body.expert-lab-page .formula-builder .actions button {
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 7px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+body.expert-lab-page .formula-builder .actions .gold-button {
+  color: #211406;
+}
+
+@media (min-width: 1181px) {
+  body.expert-lab-page .formula-builder {
+    align-self: start;
+  }
+}
+
+@media (max-width: 720px) {
+  body.expert-lab-page .formula-summary-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.expert-lab-page .formula-builder .actions.inner-panel {
+    grid-template-columns: 1fr;
+  }
+
+  body.expert-lab-page .formula-builder .selected-material input[type="range"] {
+    width: calc(100% - 25px);
+  }
+}
+
+@media (max-width: 1500px) and (min-width: 1181px) {
+  body.expert-lab-page .top-controls {
+    grid-template-columns: minmax(160px, 0.65fr) minmax(300px, 1.22fr) minmax(430px, 1.82fr);
+  }
+
+  body.expert-lab-page .build-review-row {
+    grid-template-columns: minmax(580px, 1.34fr) minmax(250px, 0.48fr) minmax(300px, 0.56fr);
+  }
+
+  body.expert-lab-page .build-review-row .formula-builder,
+  body.expert-lab-page .build-review-row .analysis,
+  body.expert-lab-page .build-review-row .drydown {
+    grid-column: auto;
+  }
+}
+
+/* Panel system tone pass: match the warmer Build Your Structure panel. */
+body.expert-lab-page {
+  --panel-workbench-bg: linear-gradient(180deg, rgba(36, 23, 13, 0.82), rgba(13, 9, 6, 0.92));
+  --panel-workbench-inner: linear-gradient(180deg, rgba(33, 23, 14, 0.58), rgba(12, 8, 5, 0.72));
+  --panel-workbench-border: rgba(190, 137, 61, 0.34);
+  --panel-workbench-border-soft: rgba(190, 137, 61, 0.2);
+  --panel-workbench-radius: 10px;
+  --panel-workbench-inner-radius: 8px;
+}
+
+body.expert-lab-page .ornate-panel:not(.brief),
+body.expert-lab-page .panel.ornate-panel:not(.brief),
+body.expert-lab-page .setup-block.ornate-panel,
+body.expert-lab-page .material-library.ornate-panel,
+body.expert-lab-page .formula-insights-panel.ornate-panel,
+body.expert-lab-page .perfume-name.ornate-panel,
+body.expert-lab-page .analysis.ornate-panel,
+body.expert-lab-page .drydown.ornate-panel,
+body.expert-lab-page .formula-check.ornate-panel,
+body.expert-lab-page .story-card-section.ornate-panel,
+body.expert-lab-page .next.ornate-panel {
+  border: 1px solid var(--panel-workbench-border);
+  border-radius: var(--panel-workbench-radius);
+  background: var(--panel-workbench-bg);
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 1px rgba(255, 232, 180, 0.035);
+}
+
+body.expert-lab-page .ornate-panel:not(.brief)::before,
+body.expert-lab-page .ornate-panel:not(.brief)::after,
+body.expert-lab-page .panel.ornate-panel:not(.brief)::before,
+body.expert-lab-page .panel.ornate-panel:not(.brief)::after {
+  opacity: 0.34;
+  border-color: var(--panel-workbench-border-soft);
+  border-radius: calc(var(--panel-workbench-radius) - 2px);
+}
+
+body.expert-lab-page .inner-panel:not(.brief-paper),
+body.expert-lab-page .layer-card.inner-panel,
+body.expert-lab-page .timeline-card.inner-panel,
+body.expert-lab-page .coming-soon.inner-panel,
+body.expert-lab-page .category.inner-panel,
+body.expert-lab-page .material-item.inner-panel,
+body.expert-lab-page .note-box.inner-panel {
+  border: 1px solid var(--panel-workbench-border-soft);
+  border-radius: var(--panel-workbench-inner-radius);
+  background: var(--panel-workbench-inner);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 232, 180, 0.025),
+    0 8px 18px rgba(0, 0, 0, 0.14);
+}
+
+body.expert-lab-page .inner-panel:not(.brief-paper)::before,
+body.expert-lab-page .inner-panel:not(.brief-paper)::after {
+  opacity: 0.22;
+  border-color: rgba(190, 137, 61, 0.16);
+  border-radius: calc(var(--panel-workbench-inner-radius) - 2px);
+}
+
+body.expert-lab-page .choice-button,
+body.expert-lab-page .panel-button,
+body.expert-lab-page .gold-button {
+  border-width: 1px;
+  border-radius: 7px;
+}
+
+body.expert-lab-page .formula-builder.ornate-panel {
+  border-color: var(--panel-workbench-border);
+  border-radius: var(--panel-workbench-radius);
+  background: var(--panel-workbench-bg);
+}
+
+body.expert-lab-page .formula-builder .layer-card.inner-panel {
+  border-color: var(--panel-workbench-border);
+  border-radius: var(--panel-workbench-inner-radius);
+  background: var(--panel-workbench-inner);
+}

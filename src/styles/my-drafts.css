@@ -1,0 +1,14 @@
+.my-drafts-page { background: #0d1d16; color: #ead8ad; min-height: 100vh; }
+.drafts-shell { min-height: 100vh; padding: 9rem 5vw 5rem; background: radial-gradient(circle at top, #213b2d, #0d1d16 65%); }
+.drafts-panel { max-width: 1100px; margin: 0 auto; padding: clamp(1.5rem, 4vw, 3rem); border: 1px solid #9b7639; background: rgba(14, 31, 23, .94); box-shadow: inset 0 0 0 4px #10271c, inset 0 0 0 5px rgba(155,118,57,.45); }
+.drafts-kicker { color: #b99a5d; letter-spacing: .2em; text-transform: uppercase; }
+.drafts-panel h1 { margin: .25rem 0; font-family: Georgia, serif; font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 400; }
+.drafts-intro, .drafts-empty { color: #c8b98f; }
+.drafts-list { display: grid; gap: 1rem; margin-top: 2rem; }
+.draft-card { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1.25rem; border: 1px solid rgba(185,154,93,.65); background: rgba(240,221,178,.06); }
+.draft-card h2 { margin: 0 0 .3rem; font-family: Georgia, serif; font-weight: 400; }
+.draft-card p, .draft-card small { margin: 0; color: #c8b98f; }
+.draft-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.draft-actions button { padding: .65rem .9rem; border: 1px solid #b99a5d; color: #ead8ad; background: #173226; cursor: pointer; font: inherit; }
+.draft-actions button:hover { background: #294b3a; }
+@media (max-width: 720px) { .draft-card { align-items: flex-start; flex-direction: column; } }

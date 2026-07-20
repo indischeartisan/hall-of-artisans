@@ -1,0 +1,6 @@
+/* Expert Lab uses the full navigation on desktop; keep the menu trigger mobile-only. */
+@media (min-width: 900px) {
+  body.expert-lab-page .topbar .menu-toggle {
+    display: none !important;
+  }
+}
