@@ -46,7 +46,7 @@ body.modal-open { overflow:hidden; }
 .artisan-modal { position:fixed; z-index:5000; inset:0; display:grid; place-items:center; padding:28px; }
 .artisan-modal__backdrop { position:absolute; inset:0; background:rgba(21,27,20,.68); backdrop-filter:blur(4px); }
 .artisan-modal__dialog { position:relative; width:min(920px,100%); max-height:min(820px,calc(100vh - 56px)); overflow:auto; padding:34px; color:var(--maid-ink); background:linear-gradient(135deg,#fffaf0,#f4e5c7); border:1px solid #b88a43; box-shadow:0 24px 70px rgba(0,0,0,.36),inset 0 0 0 6px rgba(255,255,255,.48),inset 0 0 0 7px rgba(168,121,50,.25); }
-.artisan-modal__close { position:sticky; z-index:2; top:0; float:right; width:40px; height:40px; border:1px solid rgba(144,99,33,.5); border-radius:50%; color:#684616; background:#fff9eb; font:28px/1 serif; cursor:pointer; }
+.artisan-modal__close { position:absolute; z-index:10; top:22px; right:22px; width:40px; height:40px; display:grid; place-items:center; padding:0; border:1px solid rgba(144,99,33,.5); border-radius:50%; color:#684616; background:#fff9eb; font:28px/1 serif; cursor:pointer; pointer-events:auto; }
 .artisan-modal__header { text-align:center; padding:4px 45px 19px; border-bottom:1px solid rgba(161,119,53,.3); }
 .artisan-modal__header h2 { margin:0; font:600 38px/1 "Cormorant Garamond",serif; }
 .artisan-modal__header p:last-child { margin:7px 0 0; font:italic 17px/1.35 "Cormorant Garamond",serif; }
@@ -63,6 +63,7 @@ body.modal-open { overflow:hidden; }
 .record-actions .danger { color:#82483d; }.modal-detail { padding:24px 6px 4px; }.modal-detail h3 { margin:12px 0; font:600 30px "Cormorant Garamond",serif; }.modal-detail dl div { display:grid; grid-template-columns:160px 1fr; gap:15px; padding:9px 0; border-bottom:1px solid rgba(161,119,53,.25); }.modal-detail dd { margin:0; font-weight:600; }.inline-confirm { margin-top:13px; padding:13px; border:1px solid rgba(137,74,56,.35); background:#f8eee4; font:13px/1.5 Inter,sans-serif; }.confirm-actions { display:flex; gap:8px; margin-top:9px; }
 @media (max-width:1050px) { .artisan-dashboard-shell { width:min(760px,calc(100% - 28px)); grid-template-columns:1fr; grid-template-areas:"intro" "profile" "card" "actions"; padding-top:96px; }.dashboard-card { min-height:0; }.dashboard-card .artisan-card { width:min(390px,80vw); } }
 @media (max-width:620px) { .artisan-dashboard-shell { width:calc(100% - 20px); padding-top:84px; gap:12px; }.dashboard-intro { padding-inline:4px; }.dashboard-intro h1 { font-size:43px; }.dashboard-subtitle { font-size:17px; }.dashboard-profile { padding:23px 18px; }.dashboard-profile dl div { grid-template-columns:115px 1fr; gap:10px; }.dashboard-profile dt,.dashboard-profile dd { font-size:15px; }.dashboard-actions { grid-template-columns:1fr; }.personal-action { min-height:92px; }.dashboard-card { padding:23px 12px; }.dashboard-card .artisan-card { width:min(350px,92%); }.card-actions { display:grid; grid-template-columns:1fr 1fr; }.card-actions .register-action--primary { grid-column:1/-1; }.artisan-modal { padding:8px; align-items:end; }.artisan-modal__dialog { width:100%; max-height:calc(100vh - 16px); padding:22px 16px; }.artisan-modal__header { padding:4px 33px 16px; }.artisan-modal__header h2 { font-size:32px; }.record-item__heading { display:block; }.status-badge { display:inline-block; margin-top:9px; }.record-meta { grid-template-columns:1fr; }.modal-detail dl div { grid-template-columns:1fr; gap:3px; } }
+@media (max-width:620px) { .artisan-modal__dialog > .artisan-modal__close { top:18px; right:18px; } }
 
 /* Bright panel system for every Personal Record Chamber popup state. */
 .artisan-modal {
@@ -113,8 +114,11 @@ body.modal-open { overflow:hidden; }
   border: 1px solid rgba(182,139,68,.22);
 }
 .artisan-modal__dialog > * { position: relative; z-index: 2; }
-.artisan-modal__close {
-  top: 0;
+.artisan-modal__dialog > .artisan-modal__close {
+  position: absolute;
+  z-index: 10;
+  top: 22px;
+  right: 22px;
   color: #684616;
   border-color: rgba(144,99,33,.52);
   background: rgba(255,250,238,.94);

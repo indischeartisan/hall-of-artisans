@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router";
 import GlobalHeader from "../components/GlobalHeader";
 import { authService } from "../features/auth/authService";
+import { orderService } from "../features/orders/orderService";
+import { useDrafts } from "../contexts/DraftContext";
 import { useLegacyStylesheets } from "../hooks/useLegacyStylesheets";
-import { prototypePersonalRecords } from "../dev/fixtures/profileFixtures";
 
 const artisanProfileStyles = [
   "/assets/css/styles.css?v=18",
@@ -13,17 +14,27 @@ const artisanProfileStyles = [
 ] as const;
 
 type Profile = { fullName: string; artisanId: string; specialty?: string; status?: string; registeredAt?: string };
-const records = import.meta.env.DEV ? prototypePersonalRecords : { drafts: [], archive: [], orders: [] };
+type RecordType = "drafts" | "archive" | "orders";
+type PersonalRecord = { id: string; title: string; meta: string; status: string };
 
 export default function MyArtisanIdPage() {
   useLegacyStylesheets("artisan-profile", artisanProfileStyles);
-  const [modal, setModal] = useState<keyof typeof records | null>(null);
+  const { drafts } = useDrafts();
+  const [modal, setModal] = useState<RecordType | null>(null);
+  const [requests, setRequests] = useState(() => orderService.getRequests(false));
   const [actionMessage, setActionMessage] = useState("");
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [authFailed, setAuthFailed] = useState(false);
   useEffect(() => { document.title = "My Artisan ID | The Hall of Artisans"; document.body.className = "artisan-dashboard-body"; return () => { document.body.className = ""; }; }, []);
   useEffect(() => { void authService.getArtisanIdentity().then(result => { if (!result.ok) { setAuthFailed(true); setLoading(false); return; } setProfile({ fullName: result.data.displayName, artisanId: result.data.publicId, specialty: result.data.specialty, status: result.data.status === "active" ? "Registered Artisan" : result.data.status, registeredAt: result.data.issuedAt }); setLoading(false); }); }, []);
+  useEffect(() => { const refresh = () => setRequests(orderService.getRequests(false)); window.addEventListener("hoa:orders-change", refresh); return () => window.removeEventListener("hoa:orders-change", refresh); }, []);
+  useEffect(() => { if (!modal) return; document.body.classList.add("modal-open"); const close = (event: KeyboardEvent) => { if (event.key === "Escape") setModal(null); }; window.addEventListener("keydown", close); return () => { document.body.classList.remove("modal-open"); window.removeEventListener("keydown", close); }; }, [modal]);
+  const records = useMemo<Record<RecordType, PersonalRecord[]>>(() => ({
+    drafts: drafts.map(draft => ({ id: draft.id, title: draft.draftName, meta: `${draft.perfumeName || "Untitled creation"} · Updated ${new Date(draft.updatedAt).toLocaleString()}`, status: draft.status === "ready" ? "Ready" : "Draft" })),
+    orders: requests.filter(request => request.status !== "DRAFT_PREVIEW").map(request => ({ id: request.id, title: request.perfumeName, meta: `${request.requestNumber} · Updated ${new Date(request.lastUpdatedAt).toLocaleString()}`, status: request.status.replaceAll("_", " ").toLowerCase().replace(/\b\w/g, letter => letter.toUpperCase()) })),
+    archive: requests.filter(request => request.status === "COMPLETED").map(request => ({ id: request.id, title: request.perfumeName, meta: `${request.requestNumber} · Completed ${request.completedAt ? new Date(request.completedAt).toLocaleDateString() : "date unavailable"}`, status: "Archived" }))
+  }), [drafts, requests]);
   if (loading) return <><GlobalHeader activeLabel="Artisan ID" variant="light" /><main className="artisan-dashboard-shell"><p className="form-message" role="status">Opening your secure Hall ledger...</p></main></>;
   if (authFailed || !profile?.fullName || !profile.artisanId) return <Navigate to="/artisan-login" replace />;
   const date = profile.registeredAt ? new Intl.DateTimeFormat("en", { day: "numeric", month: "long", year: "numeric" }).format(new Date(profile.registeredAt)) : "Not recorded";
@@ -36,5 +47,5 @@ export default function MyArtisanIdPage() {
     <section className="profile-summary dashboard-profile ornate-panel"><div className="profile-watermark" aria-hidden="true">HA</div><p className="section-kicker">Registered Artisan</p><h2>Official Record</h2><dl>{[["Name", profile.fullName], ["Artisan ID", profile.artisanId], ["Specialty", specialty], ["Status", status], ["Registered Since", date]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></section>
     <section className="personal-actions dashboard-actions" aria-label="Personal records and actions">{(["drafts", "archive", "orders"] as const).map((type, index) => <button className="personal-action inner-panel" type="button" onClick={() => setModal(type)} key={type}><span className="action-monogram">{["D", "A", "O"][index]}</span><span><strong>My {type[0].toUpperCase() + type.slice(1)}</strong><small>{["Continue your unfinished fragrance creations.", "Explore your completed and archived creations.", "Track your bespoke commissions and orders."][index]}</small></span><span className="action-arrow">→</span></button>)}<a className="personal-action personal-action--primary inner-panel" href="/chamber-of-creation"><span className="action-monogram">+</span><span><strong>Start New Creation</strong><small>Begin a new journey of scent and story.</small></span><span className="action-arrow">→</span></a></section>
     <aside className="id-preview-wrap dashboard-card ornate-panel"><header className="card-panel-heading"><p className="section-kicker">Personal Hall Credential</p><h2>Your Official Artisan ID Card</h2><p>Instagram Story Size · 1080 × 1920</p></header><div className="artisan-card artisan-card-template"><img className="artisan-card-template-image" src="/assets/images/artisan-id-card-botanical-v2.webp" alt="Ornate botanical Artisan ID card" /><span className="id-card-text id-card-name">{profile.fullName}</span><span className="id-card-text id-card-artisan-id">{profile.artisanId}</span><span className="id-card-text id-card-specialty">{specialty}</span><span className="id-card-text id-card-status">{status}</span><span className="id-card-text id-card-registered-within">Indische World</span><span className="id-card-text id-card-registered-since">{date}</span></div><div className="card-actions inner-panel dashboard-card-actions"><button className="register-action" onClick={() => exportCard()}>Download ID Card</button><button className="register-action" onClick={() => exportCard(true)}>Share Card</button><a className="register-action register-action--primary" href="/hall">Enter The Hall</a></div><p className="action-message" role="status">{actionMessage}</p></aside>
-  </main>{modal && <div className="artisan-modal"><div className="artisan-modal__backdrop" onClick={() => setModal(null)} /><section className="artisan-modal__dialog" role="dialog" aria-modal="true" tabIndex={-1}><button className="artisan-modal__close" onClick={() => setModal(null)}>×</button><header className="artisan-modal__header"><p className="section-kicker">Personal Record Chamber</p><h2>My {modal[0].toUpperCase() + modal.slice(1)}</h2><p>Your personal records within The Hall.</p></header><div className="record-list">{records[modal].map(item => <article className="record-item" key={item.title}><div className="record-item__heading"><h3>{item.title}</h3><span className="status-badge">{item.status}</span></div><p>{item.meta}</p></article>)}</div></section></div>}</>;
+  </main>{modal && <div className="artisan-modal"><div className="artisan-modal__backdrop" onClick={() => setModal(null)} /><section className="artisan-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="personal-record-title" tabIndex={-1}><button className="artisan-modal__close" type="button" aria-label="Close personal records" onClick={() => setModal(null)}>×</button><header className="artisan-modal__header"><p className="section-kicker">Personal Record Chamber</p><h2 id="personal-record-title">My {modal[0].toUpperCase() + modal.slice(1)}</h2><p>Your personal records within The Hall.</p></header><div className="record-list">{records[modal].length ? records[modal].map(item => <article className="record-item" key={item.id}><div className="record-item__heading"><h3>{item.title}</h3><span className="status-badge">{item.status}</span></div><p>{item.meta}</p></article>) : <p className="modal-empty">No {modal} have been recorded yet.</p>}</div></section></div>}</>;
 }
