@@ -2,7 +2,7 @@
 
 Vite + React + TypeScript application for The Hall of Artisans / Indische World.
 
-Supabase Phase 1 setup and security guidance is documented in [`docs/supabase-phase-1-setup.md`](docs/supabase-phase-1-setup.md). Customer workflow persistence remains local until later phases.
+Supabase Phase 1 setup and security guidance is documented in [`docs/supabase-phase-1-setup.md`](docs/supabase-phase-1-setup.md). Registration, login, profiles, roles, and Artisan IDs use Supabase Auth and Postgres; customer draft/order workflow persistence remains local until later phases.
 
 ## Application routes
 
@@ -14,7 +14,7 @@ Supabase Phase 1 setup and security guidance is documented in [`docs/supabase-ph
 - `/artisan-bench` — Artisan Bench perfume simulator
 - `/bespoke-atelier` — Bespoke Atelier
 - `/artisan-register` — Artisan registration
-- `/artisan-login` — returning artisan prototype access
+- `/artisan-login` — secure returning-artisan access through Supabase Auth
 - `/my-artisan-id` — personal Artisan ID ledger
 - `/hall-archive` — public Hall Archive
 

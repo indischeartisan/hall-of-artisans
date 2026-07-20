@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router";
 import GlobalHeader from "../components/GlobalHeader";
+import { authService } from "../features/auth/authService";
 import { useLegacyStylesheets } from "../hooks/useLegacyStylesheets";
 import { prototypePersonalRecords } from "../dev/fixtures/profileFixtures";
 
@@ -18,10 +19,13 @@ export default function MyArtisanIdPage() {
   useLegacyStylesheets("artisan-profile", artisanProfileStyles);
   const [modal, setModal] = useState<keyof typeof records | null>(null);
   const [actionMessage, setActionMessage] = useState("");
-  let profile: Profile | null = null;
-  try { profile = JSON.parse(localStorage.getItem("hallArtisanProfile") || "null"); } catch { profile = null; }
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [authFailed, setAuthFailed] = useState(false);
   useEffect(() => { document.title = "My Artisan ID | The Hall of Artisans"; document.body.className = "artisan-dashboard-body"; return () => { document.body.className = ""; }; }, []);
-  if (!profile?.fullName || !profile.artisanId) return <Navigate to="/artisan-register" replace />;
+  useEffect(() => { void authService.getArtisanIdentity().then(result => { if (!result.ok) { setAuthFailed(true); setLoading(false); return; } setProfile({ fullName: result.data.displayName, artisanId: result.data.publicId, specialty: result.data.specialty, status: result.data.status === "active" ? "Registered Artisan" : result.data.status, registeredAt: result.data.issuedAt }); setLoading(false); }); }, []);
+  if (loading) return <><GlobalHeader activeLabel="Artisan ID" variant="light" /><main className="artisan-dashboard-shell"><p className="form-message" role="status">Opening your secure Hall ledger...</p></main></>;
+  if (authFailed || !profile?.fullName || !profile.artisanId) return <Navigate to="/artisan-login" replace />;
   const date = profile.registeredAt ? new Intl.DateTimeFormat("en", { day: "numeric", month: "long", year: "numeric" }).format(new Date(profile.registeredAt)) : "Not recorded";
   const specialty = profile.specialty || "Artisan Perfumer", status = profile.status || "Registered Artisan";
   const exportCard = async (share = false) => {

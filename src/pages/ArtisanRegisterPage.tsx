@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import GlobalHeader from "../components/GlobalHeader";
+import { authService } from "../features/auth/authService";
 import { useLegacyStylesheets } from "../hooks/useLegacyStylesheets";
 
 const artisanProfileStyles = [
@@ -16,10 +17,6 @@ const groups = [
   { id: "style", label: "Artisan Style", options: ["Storyteller", "Explorer", "Collector", "Archivist", "Dreamer", "Composer", "Experimentalist", "Observer"] }
 ] as const;
 
-function createPrototypeArtisanId() {
-  return `PROTO-LOCAL-${globalThis.crypto?.randomUUID?.().slice(0, 8).toUpperCase() ?? Date.now()}`;
-}
-
 export default function ArtisanRegisterPage() {
   useLegacyStylesheets("artisan-profile", artisanProfileStyles);
   const navigate = useNavigate();
@@ -27,6 +24,7 @@ export default function ArtisanRegisterPage() {
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const specialtyDropdownsRef = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const specialtyLabel = `${specialty.mood} ${specialty.direction} ${specialty.style}`;
 
   useEffect(() => {
@@ -50,16 +48,21 @@ export default function ArtisanRegisterPage() {
     };
   }, []);
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     if (!form.checkValidity()) { setMessage("Please complete the required register fields first."); form.reportValidity(); return; }
     const data = new FormData(form);
     const fullName = String(data.get("fullName")).trim();
     const email = String(data.get("emailAddress")).trim();
-    const profile = { fullName, email, instagramWhatsapp: String(data.get("contactHandle")).trim(), scentDirection: specialty.direction, scentMood: specialty.mood, artisanStyle: specialty.style, specialty: specialtyLabel, artisanId: createPrototypeArtisanId(), status: "Prototype Artisan ID", registeredAt: new Date().toISOString() };
-    localStorage.setItem("hallArtisanProfile", JSON.stringify(profile));
-    localStorage.setItem("hallOfArtisans.artisanId", JSON.stringify({ name: profile.fullName, artisanId: profile.artisanId }));
+    const password = String(data.get("password"));
+    setSubmitting(true); setMessage("Creating your secure Hall account...");
+    const result = await authService.signUp(email, password, fullName, { contact_handle: String(data.get("contactHandle")).trim(), scent_direction: specialty.direction, scent_mood: specialty.mood, artisan_style: specialty.style, specialty: specialtyLabel }, `${window.location.origin}/artisan-login`);
+    if (!result.ok) { setMessage(result.error.message); setSubmitting(false); return; }
+    const response = result.data as { session?: unknown } | null;
+    if (!response?.session) { setMessage("Registration received. Check your email and confirm your address, then sign in to receive your Artisan ID."); setSubmitting(false); return; }
+    const identity = await authService.getArtisanIdentity();
+    if (!identity.ok) { setMessage(identity.error.message); setSubmitting(false); return; }
     navigate("/my-artisan-id");
   };
 
@@ -77,7 +80,7 @@ export default function ArtisanRegisterPage() {
           <label><span>Password</span><input name="password" type="password" autoComplete="new-password" minLength={6} placeholder="Create a password" required /></label>
           <label><span>Instagram / WhatsApp <small>optional</small></span><input name="contactHandle" type="text" autoComplete="off" placeholder="@username or phone number" /></label>
           <section className="specialty-selectors" aria-label="Artisan specialty"><div className="specialty-dropdowns" ref={specialtyDropdownsRef}>{groups.map(group => { const isOpen = openGroup === group.id; return <div className={`specialty-select${isOpen ? " open" : ""}`} key={group.id}><span className="specialty-select-label">{group.label}</span><button className="specialty-select-toggle" type="button" aria-expanded={isOpen} onClick={() => setOpenGroup(isOpen ? null : group.id)}><span className="specialty-selected">{specialty[group.id]}</span><span className="specialty-caret" aria-hidden="true" /></button><div className="specialty-select-menu" hidden={!isOpen}>{group.options.map(option => <button className={`specialty-option${specialty[group.id] === option ? " active" : ""}`} type="button" data-value={option} key={option} onClick={() => { setSpecialty(current => ({ ...current, [group.id]: option })); setOpenGroup(null); }}>{option}</button>)}</div></div>; })}</div><p className="specialty-summary-label">Specialty Preview</p><p className="specialty-result"><strong>{specialtyLabel}</strong></p></section>
-          <p className="form-message" role="status" aria-live="polite">{message}</p><button className="register-submit" type="submit">Register &amp; Create My ID</button><div className="existing-artisan-divider" aria-hidden="true"><span>or</span></div><a className="form-existing-artisan" href="/artisan-login">I Already Have an ID</a><p className="password-prototype-note"><span aria-hidden="true">♙</span>Your information stays in this browser during the prototype phase. Passwords are never stored.</p>
+          <p className="form-message" role="status" aria-live="polite">{message}</p><button className="register-submit" type="submit" disabled={submitting}>{submitting ? "Creating Secure Account..." : "Register & Create My ID"}</button><div className="existing-artisan-divider" aria-hidden="true"><span>or</span></div><a className="form-existing-artisan" href="/artisan-login">I Already Have an ID</a><p className="password-prototype-note"><span aria-hidden="true">♙</span>Your account is protected by Supabase Auth. Your password is never stored by this website.</p>
         </form>
         <aside className="id-preview-wrap blank-id-preview ornate-panel bright-preview-panel" aria-label="Blank Artisan ID card preview"><p className="section-kicker">Artisan ID Card Preview</p><p className="card-size-label">Instagram Story Size 1080 × 1920</p><div className="artisan-card artisan-card-template"><img className="artisan-card-template-image" src="/assets/images/artisan-id-card-botanical-v2.webp" alt="" /><span className="id-card-text id-card-name">Your Name</span><span className="id-card-text id-card-artisan-id">HA-YYYY-XXXX</span><span className="id-card-text id-card-specialty">Your Specialty</span><span className="id-card-text id-card-status">Pending Registration</span><span className="id-card-text id-card-registered-within">Indische World</span><span className="id-card-text id-card-registered-since">YYYY</span></div><p className="preview-issue-note">Your official Artisan ID Card will be issued after registration.</p></aside>
       </div>
