@@ -259,37 +259,79 @@ button:focus-visible {
   filter: brightness(1.14) saturate(1.05) contrast(0.98);
 }
 
-.hero-shade {
-  position: absolute;
+body.entrance-body[data-theme="dark"] .hero-image {
   inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(circle at 50% 34%, rgba(255, 239, 194, 0.16), rgba(255, 239, 194, 0) 42%),
-    linear-gradient(to bottom, rgba(18, 12, 7, 0.02) 0%, rgba(18, 12, 7, 0.02) 38%, rgba(18, 12, 7, 0.16) 66%, rgba(18, 12, 7, 0.46) 100%),
-    linear-gradient(to right, rgba(18, 12, 7, 0.18), rgba(18, 12, 7, 0.01) 26%, rgba(18, 12, 7, 0.01) 74%, rgba(18, 12, 7, 0.18));
-  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  object-position: center center;
+  filter: brightness(1) saturate(1.04) contrast(1.02);
+}
+
+body.entrance-body .global-header > .entrance-theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 42px;
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0;
+  border: 1px solid rgba(202, 157, 80, 0.58);
+  border-radius: 50%;
+  color: #f0cc7d;
+  background: rgba(12, 17, 9, 0.42);
+  cursor: pointer;
+}
+
+body.entrance-body .global-header > .entrance-theme-toggle .theme-toggle-icon {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+body.entrance-body[data-theme="bright"] .global-header > .entrance-theme-toggle {
+  color: #26351f;
+  background: rgba(255, 250, 238, 0.72);
+}
+
+body.entrance-body .global-header > .entrance-theme-toggle:hover,
+body.entrance-body .global-header > .entrance-theme-toggle:focus-visible {
+  border-color: #d1a35d;
+  transform: translateY(-1px);
+}
+
+body.entrance-body .global-header .account-menu-trigger,
+body.entrance-body .global-header .menu-toggle,
+body.entrance-body .global-header > .entrance-theme-toggle,
+body.entrance-body .global-header .account-menu-trigger:hover,
+body.entrance-body .global-header .account-menu.open .account-menu-trigger,
+body.entrance-body .global-header > .entrance-theme-toggle:hover,
+body.entrance-body .global-header > .entrance-theme-toggle:focus-visible {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.hero-shade {
+  display: none;
 }
 
 .hero-content {
   position: relative;
-  width: min(780px, calc(100% - 34px));
-  padding: 0 0 clamp(34px, 6vh, 70px);
+  width: min(700px, calc(100% - 34px));
+  padding: 0 0 clamp(28px, 4vh, 48px);
   text-align: center;
   color: var(--paper);
   text-shadow: 0 3px 14px rgba(0, 0, 0, 0.64), 0 12px 30px rgba(0, 0, 0, 0.48);
 }
 
 .hero-content::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: clamp(28px, 5vh, 60px);
-  z-index: -1;
-  width: min(760px, 108%);
-  height: min(360px, 54vh);
-  transform: translateX(-50%);
-  background: radial-gradient(ellipse at center, rgba(15, 9, 5, 0.58), rgba(15, 9, 5, 0.24) 44%, rgba(15, 9, 5, 0) 72%);
-  pointer-events: none;
+  display: none;
 }
 
 .eyebrow,
@@ -312,7 +354,7 @@ h2 {
 
 h1 {
   color: #fff8ea;
-  font-size: clamp(40px, 6.4vw, 84px);
+  font-size: clamp(38px, 5.5vw, 72px);
   line-height: 0.96;
   letter-spacing: 0.1em;
   text-shadow: 0 2px 0 rgba(91, 54, 20, 0.5), 0 8px 22px rgba(0, 0, 0, 0.82), 0 18px 48px rgba(0, 0, 0, 0.72);
@@ -320,11 +362,11 @@ h1 {
 }
 
 .tagline {
-  max-width: 680px;
-  margin: 18px auto 26px;
+  max-width: 600px;
+  margin: 14px auto 20px;
   color: #f7dfaf;
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(19px, 2.1vw, 27px);
+  font-size: clamp(18px, 1.75vw, 23px);
   line-height: 1.32;
 }
 
@@ -384,12 +426,61 @@ h1 {
   text-transform: uppercase;
 }
 
+/* Entrance CTA uses the shared bright inner-panel system. */
+.hero-entry-actions {
+  display: grid;
+  justify-content: center;
+  justify-items: center;
+  gap: 5px;
+  width: min(100%, 420px);
+  margin-inline: auto;
+}
+
+.hero .hero-entry-actions .hero-enter-panel:first-child {
+  width: clamp(280px, 25vw, 350px);
+  min-height: 58px;
+}
+
+.hero .hero-enter-panel.inner-panel {
+  --inner-panel-bg: linear-gradient(180deg, #202b12 0%, #090e05 100%);
+  --nested-outer-line-color: rgba(222, 179, 92, 0.9);
+  --nested-line-color: rgba(232, 192, 110, 0.58);
+  width: clamp(320px, 28vw, 400px);
+  min-height: 68px;
+  margin-inline: auto;
+  padding: 17px 28px;
+  border: 0;
+  color: #fff8ea;
+  background: var(--inner-panel-bg);
+  box-shadow: inset 0 0 0 1px rgba(255, 240, 188, 0.2), 0 15px 30px rgba(9, 6, 2, 0.52), 0 0 0 1px rgba(232, 192, 110, 0.26);
+  text-decoration: none;
+  letter-spacing: 0.14em;
+  font-weight: 500;
+  overflow: hidden;
+}
+
+.hero .hero-enter-panel.inner-panel span {
+  color: #fff8ea;
+  font-size: clamp(15px, 1.18vw, 18px);
+  font-weight: 500;
+  line-height: 1;
+  text-shadow: none;
+  white-space: nowrap;
+}
+
+.hero .hero-enter-panel.inner-panel:hover,
+.hero .hero-enter-panel.inner-panel:focus-visible {
+  --inner-panel-bg: linear-gradient(180deg, #31431b 0%, #111b09 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px rgba(22, 13, 6, 0.42), 0 0 20px rgba(239, 202, 121, 0.24);
+}
+
 .scroll-indicator {
   width: max-content;
   display: grid;
   justify-items: center;
   gap: 9px;
-  margin: 24px auto 0;
+  margin: 15px auto 0;
   color: rgba(255, 248, 234, 0.82);
   font-size: 11px;
   font-weight: 600;
@@ -474,6 +565,31 @@ h2 {
   margin-top: 16px;
 }
 
+body.entrance-body[data-theme="dark"] .intro-section {
+  color: #f4e7c8;
+  background:
+    radial-gradient(circle at 12% 2%, rgba(104, 120, 77, 0.16), transparent 34%),
+    radial-gradient(circle at 86% 12%, rgba(126, 82, 113, 0.12), transparent 30%),
+    #10170d;
+}
+
+body.entrance-body[data-theme="dark"] .intro-section h2,
+body.entrance-body[data-theme="dark"] .intro-section p {
+  color: #f4e7c8;
+}
+
+body.entrance-body[data-theme="dark"] #hall-lobby .section-kicker {
+  color: #d8ad58;
+  text-shadow: none;
+}
+
+body.entrance-body[data-theme="dark"] .final-cta {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(239, 202, 121, 0.17), transparent 38%),
+    linear-gradient(rgba(8, 10, 6, 0.72), rgba(8, 10, 6, 0.82)),
+    url("/assets/images/hall-entrance-night-desktop-v2.png") center 56% / cover;
+}
+
 @media (min-width: 1500px) {
   .hero-image { object-position: center 43%; }
 }
@@ -521,6 +637,17 @@ h2 {
   .eyebrow { font-size: 12px; margin-bottom: 9px; }
   h1 { font-size: clamp(34px, 10.4vw, 50px); letter-spacing: 0.07em; }
   .tagline { margin: 14px auto 20px; font-size: 17px; }
+  .hero-entry-actions { width: 100%; gap: 3px; }
+  .hero .hero-enter-panel.inner-panel {
+    width: min(78vw, 310px);
+    min-height: 54px;
+    padding: 10px 18px;
+  }
+  .hero .hero-entry-actions .hero-enter-panel:first-child {
+    width: min(66vw, 270px);
+    min-height: 48px;
+  }
+  .hero .hero-enter-panel.inner-panel span { font-size: 14px; letter-spacing: .12em; }
   .svg-button { width: min(82vw, 306px); }
   .svg-button span { font-size: 13px; letter-spacing: 0.1em; padding-inline: 15%; }
   .scroll-indicator { margin-top: 18px; }
@@ -620,6 +747,23 @@ h2 {
 body[data-theme="bright"] .account-menu-trigger, .global-header--light .account-menu-trigger { color: #26351f; background: rgba(255, 250, 238, .72); }
 
 @media (max-width: 760px) {
+  body.entrance-body .global-header > .entrance-theme-toggle {
+    position: fixed;
+    top: 15px;
+    right: 118px;
+    z-index: 1011;
+  }
+
+  body.entrance-body .global-header .account-menu-trigger,
+  body.entrance-body .global-header .menu-toggle,
+  body.entrance-body .global-header .account-menu-trigger:hover,
+  body.entrance-body .global-header .account-menu.open .account-menu-trigger {
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
   .site-header {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) 44px !important;
@@ -693,6 +837,24 @@ body[data-theme="bright"] .account-menu-trigger, .global-header--light .account-
 
   .global-header--light .main-nav > a {
     color: var(--ink) !important;
+    border-bottom-color: rgba(139, 91, 24, 0.18) !important;
+  }
+
+  body.entrance-body[data-theme="bright"] .site-header.menu-active,
+  body.entrance-body[data-theme="bright"] .site-header.scrolled {
+    color: #26351f !important;
+    background: rgba(255, 248, 234, 0.96) !important;
+    box-shadow: 0 12px 30px rgba(65, 45, 20, 0.12) !important;
+  }
+
+  body.entrance-body[data-theme="bright"] .site-header .main-nav {
+    border-color: rgba(160, 112, 39, 0.42) !important;
+    background: rgba(255, 248, 234, 0.98) !important;
+    box-shadow: 0 20px 50px rgba(65, 45, 20, 0.18) !important;
+  }
+
+  body.entrance-body[data-theme="bright"] .site-header .main-nav > a {
+    color: #26351f !important;
     border-bottom-color: rgba(139, 91, 24, 0.18) !important;
   }
 }

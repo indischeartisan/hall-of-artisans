@@ -30,6 +30,26 @@ body.expert-lab-page .hero-lab .hero-image {
   will-change: auto;
 }
 
+body.expert-lab-page .global-header > .theme-toggle {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0;
+  gap: 0;
+  border-radius: 50%;
+}
+
+body.expert-lab-page .global-header > .theme-toggle .theme-toggle-icon {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 1;
+}
+
 @media (max-width: 760px) {
   body.expert-lab-page .global-header {
     grid-template-columns: minmax(0, 1fr) 42px 42px !important;

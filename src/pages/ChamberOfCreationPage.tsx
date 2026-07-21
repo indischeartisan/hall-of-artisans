@@ -46,13 +46,12 @@ export default function ChamberOfCreationPage() {
       onClick={toggleTheme}
     >
       <span className="theme-toggle-icon" aria-hidden="true">{isDark ? "☀" : "☾"}</span>
-      <span className="theme-toggle-label">{isDark ? "Bright Mode" : "Dark Mode"}</span>
     </button>
   );
 
   return (
     <>
-      <GlobalHeader activeLabel="Chamber of Creation" variant="transparent" />
+      <GlobalHeader action={themeToggle} activeLabel="Chamber of Creation" variant="transparent" />
       <main>
         <section className="perfume-page" aria-labelledby="perfumeTitle">
           <img

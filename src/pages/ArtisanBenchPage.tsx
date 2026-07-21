@@ -202,7 +202,6 @@ export default function ArtisanBenchPage() {
       onClick={toggleTheme}
     >
       <span className="theme-toggle-icon" aria-hidden="true">{isDark ? "☀" : "☾"}</span>
-      <span className="theme-toggle-label">{isDark ? "Bright Mode" : "Dark Mode"}</span>
     </button>
   );
 

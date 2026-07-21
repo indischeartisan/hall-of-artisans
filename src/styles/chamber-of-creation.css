@@ -43,8 +43,23 @@ body.perfume-mode-page .theme-toggle:focus-visible {
 }
 
 body.perfume-mode-page .theme-toggle-icon {
-  font-size: 16px;
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  font-size: 25px;
+  font-weight: 400;
   line-height: 1;
+}
+
+body.perfume-mode-page .global-header > .theme-toggle {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0;
+  gap: 0;
+  border-radius: 50%;
 }
 
 .perfume-page {
