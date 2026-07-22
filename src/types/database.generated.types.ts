@@ -61,6 +61,53 @@ export type Database = {
           },
         ]
       }
+      creation_drafts: {
+        Row: {
+          created_at: string
+          draft_name: string
+          id: string
+          mode: Database["public"]["Enums"]["creation_mode"]
+          payload: Json
+          perfume_name: string | null
+          schema_version: number
+          status: Database["public"]["Enums"]["creation_draft_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          draft_name: string
+          id?: string
+          mode: Database["public"]["Enums"]["creation_mode"]
+          payload?: Json
+          perfume_name?: string | null
+          schema_version?: number
+          status?: Database["public"]["Enums"]["creation_draft_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          draft_name?: string
+          id?: string
+          mode?: Database["public"]["Enums"]["creation_mode"]
+          payload?: Json
+          perfume_name?: string | null
+          schema_version?: number
+          status?: Database["public"]["Enums"]["creation_draft_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creation_drafts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -231,6 +278,8 @@ export type Database = {
     Enums: {
       app_role: "customer" | "reviewer" | "admin" | "super_admin"
       artisan_id_status: "active" | "suspended" | "revoked"
+      creation_draft_status: "draft" | "ready"
+      creation_mode: "artisan_bench" | "described"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -360,6 +409,8 @@ export const Constants = {
     Enums: {
       app_role: ["customer", "reviewer", "admin", "super_admin"],
       artisan_id_status: ["active", "suspended", "revoked"],
+      creation_draft_status: ["draft", "ready"],
+      creation_mode: ["artisan_bench", "described"],
     },
   },
 } as const

@@ -16,3 +16,5 @@ export type {
 
 export type AppRole = Database["public"]["Enums"]["app_role"];
 export type ArtisanIdStatus = Database["public"]["Enums"]["artisan_id_status"];
+export type CreationDraftStatus = Database["public"]["Enums"]["creation_draft_status"];
+export type CreationMode = Database["public"]["Enums"]["creation_mode"];
