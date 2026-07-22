@@ -1,3 +1,4 @@
+import type { Session } from "@supabase/supabase-js";
 import { getSupabaseClient } from "../../lib/supabase";
 import type { ArtisanIdStatus } from "../../types/database.types";
 import { formatArtisanSpecialty, type ArtisanSpecialty } from "../../data/artisanSpecialty";
@@ -45,9 +46,16 @@ async function updateArtisanProfile(displayName:string,specialtySelection:Artisa
 export const authService={
   signUp(email:string,password:string,displayName:string,metadata:Record<string,string>={},emailRedirectTo?:string){return run(()=>getSupabaseClient().auth.signUp({email,password,options:{data:{...metadata,display_name:displayName},emailRedirectTo}}))},
   signIn(email:string,password:string){return run(()=>getSupabaseClient().auth.signInWithPassword({email,password}))},
-  signOut(){return run(()=>getSupabaseClient().auth.signOut())},
+  signOut(){return run(()=>getSupabaseClient().auth.signOut({scope:"local"}))},
   getSession(){return run(()=>getSupabaseClient().auth.getSession())},
   getCurrentUser(){return run(()=>getSupabaseClient().auth.getUser())},
+  observeSession(callback:(session:Session|null)=>void){
+    const client=getSupabaseClient();
+    let active=true;
+    void client.auth.getSession().then(({data})=>{if(active)callback(data.session)});
+    const {data}=client.auth.onAuthStateChange((_event,session)=>{if(active)callback(session)});
+    return()=>{active=false;data.subscription.unsubscribe()};
+  },
   requestPasswordReset(email:string,redirectTo?:string){return run(()=>getSupabaseClient().auth.resetPasswordForEmail(email,{redirectTo}))},
   updatePassword(password:string){return run(()=>getSupabaseClient().auth.updateUser({password}))},
   resendVerificationEmail(email:string,emailRedirectTo?:string){return run(()=>getSupabaseClient().auth.resend({type:"signup",email,options:{emailRedirectTo}}))},

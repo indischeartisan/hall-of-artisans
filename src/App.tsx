@@ -10,6 +10,8 @@ import ArtisanRegisterPage from "./pages/ArtisanRegisterPage";
 import MyArtisanIdPage from "./pages/MyArtisanIdPage";
 import HallArchive from "./pages/HallArchive";
 import ArtisanLoginPage from "./pages/ArtisanLoginPage";
+import ArtisanForgotPasswordPage from "./pages/ArtisanForgotPasswordPage";
+import ArtisanResetPasswordPage from "./pages/ArtisanResetPasswordPage";
 import MyDraftsPage from "./pages/MyDraftsPage";
 import OrderDetailPage from "./features/orders/OrderDetailPage";
 import CheckoutPage from "./features/orders/CheckoutPage";
@@ -31,6 +33,8 @@ export default function App() {
       <Route path="/library" element={<LibraryPage />} />
       <Route path="/artisan-register" element={<ArtisanRegisterPage />} />
       <Route path="/artisan-login" element={<ArtisanLoginPage />} />
+      <Route path="/artisan-forgot-password" element={<ArtisanForgotPasswordPage />} />
+      <Route path="/artisan-reset-password" element={<ArtisanResetPasswordPage />} />
       <Route path="/my-artisan-id" element={<MyArtisanIdPage />} />
       <Route path="/hall-archive" element={<HallArchive />} />
       <Route path="*" element={<Navigate to="/" replace />} />

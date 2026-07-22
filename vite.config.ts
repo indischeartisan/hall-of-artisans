@@ -4,6 +4,7 @@ import { defineConfig } from "vite";
 const reactRoutes = new Set([
   "/", "/hall", "/chamber-of-creation", "/artisan-bench", "/academy",
   "/bespoke-atelier", "/library", "/artisan-register", "/artisan-login",
+  "/artisan-forgot-password", "/artisan-reset-password",
   "/my-artisan-id", "/hall-archive"
 ]);
 

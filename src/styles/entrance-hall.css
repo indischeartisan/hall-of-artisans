@@ -850,13 +850,16 @@ body.entrance-body[data-theme="dark"] .final-cta {
 .account-menu.open .account-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
 .account-dropdown::before { content: ""; position: absolute; top: -6px; right: 15px; width: 10px; height: 10px; border-left: 1px solid rgba(166, 120, 48, .34); border-top: 1px solid rgba(166, 120, 48, .34); background: #fffaf0; transform: rotate(45deg); }
 .account-dropdown-label { display: block; padding: 8px 11px 10px; color: #8a672f; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; }
-.account-dropdown a { display: grid; grid-template-columns: 34px 1fr; align-items: center; gap: 10px; padding: 11px; border-radius: 7px; color: #26351f !important; text-decoration: none; text-shadow: none !important; }
-.account-dropdown a:hover { background: #f1e6cf; }
+.account-dropdown a, .account-dropdown-action { display: grid; grid-template-columns: 34px 1fr; align-items: center; gap: 10px; width: 100%; padding: 11px; border: 0; border-radius: 7px; background: transparent; color: #26351f !important; font: inherit; text-align: left; text-decoration: none; text-shadow: none !important; cursor: pointer; }
+.account-dropdown a:hover, .account-dropdown-action:hover { background: #f1e6cf; }
+.account-dropdown-action:disabled { cursor: wait; opacity: .68; }
 .account-dropdown a::after { display: none !important; }
-.account-dropdown i { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid rgba(153, 111, 43, .28); border-radius: 50%; color: #86632b; font-style: normal; }
+.account-dropdown i { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid rgba(153, 111, 43, .28); border-radius: 50%; color: #86632b; font-style: normal; font-size: 10px; }
 .account-dropdown strong, .account-dropdown small { display: block; }
 .account-dropdown strong { font-size: 13px; font-weight: 600; }
 .account-dropdown small { margin-top: 3px; color: #786b54; font-size: 10px; font-weight: 400; }
+.account-dropdown-identity { display: block; overflow: hidden; margin: -3px 11px 5px; color: #5f513c; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.account-dropdown-message { display: block; margin: 7px 11px 3px; color: #8b3027; font-size: 10px; line-height: 1.4; }
 
 body[data-theme="bright"] .account-menu-trigger, .global-header--light .account-menu-trigger { color: #26351f; background: rgba(255, 250, 238, .72); }
 

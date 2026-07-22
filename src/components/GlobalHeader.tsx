@@ -1,6 +1,8 @@
 import { type MouseEvent, type ReactNode, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { navigationItems } from "../data/navigation";
+import { authService } from "../features/auth/authService";
+import { isSupabaseConfigured } from "../lib/supabase";
 
 export type GlobalHeaderVariant = "default" | "transparent" | "light";
 
@@ -20,6 +22,9 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const [accountEmail, setAccountEmail] = useState<string | null>(null);
+  const [signingOut, setSigningOut] = useState(false);
+  const [accountMessage, setAccountMessage] = useState("");
   const [scrolled, setScrolled] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
 
@@ -33,8 +38,17 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
   useEffect(() => {
     setMenuOpen(false);
     setAccountOpen(false);
+    setAccountMessage("");
     document.body.classList.remove("page-leaving");
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+    return authService.observeSession((session) => {
+      setAccountEmail(session?.user.email ?? null);
+      if (!session) setSigningOut(false);
+    });
+  }, []);
 
   useEffect(() => {
     document.body.classList.toggle("nav-open", menuOpen);
@@ -76,6 +90,20 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
     window.setTimeout(() => {
       navigate(href);
     }, reduceMotion ? 0 : 260);
+  };
+
+  const signOut = async () => {
+    if (signingOut) return;
+    setSigningOut(true);
+    setAccountMessage("");
+    const result = await authService.signOut();
+    if (!result.ok) {
+      setAccountMessage(result.error.message);
+      setSigningOut(false);
+      return;
+    }
+    setAccountOpen(false);
+    navigate("/");
   };
 
   return (
@@ -135,10 +163,21 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
           </svg>
         </button>
         <div className="account-dropdown" role="menu">
-          <span className="account-dropdown-label">Artisan Account</span>
-          <a href="/artisan-register" role="menuitem" onClick={(event) => navigateWithTransition(event, "/artisan-register")}><i>＋</i><span><strong>Register</strong><small>Create your Artisan account</small></span></a>
-          <a href="/my-artisan-id" role="menuitem" onClick={(event) => navigateWithTransition(event, "/my-artisan-id")}><i>♙</i><span><strong>My Artisan ID</strong><small>View your identity card</small></span></a>
-          <a href="/my-orders/latest" role="menuitem" onClick={(event) => navigateWithTransition(event, "/my-orders/latest")}><i>◇</i><span><strong>My Orders</strong><small>Follow your creations</small></span></a>
+          <span className="account-dropdown-label">{accountEmail ? "Signed in" : "Artisan Account"}</span>
+          {accountEmail ? (
+            <>
+              <span className="account-dropdown-identity" title={accountEmail}>{accountEmail}</span>
+              <a href="/my-artisan-id" role="menuitem" onClick={(event) => navigateWithTransition(event, "/my-artisan-id")}><i aria-hidden="true">ID</i><span><strong>My Artisan ID</strong><small>View your identity card</small></span></a>
+              <a href="/my-orders/latest" role="menuitem" onClick={(event) => navigateWithTransition(event, "/my-orders/latest")}><i aria-hidden="true">O</i><span><strong>My Orders</strong><small>Follow your creations</small></span></a>
+              <button className="account-dropdown-action" type="button" role="menuitem" disabled={signingOut} onClick={() => void signOut()}><i aria-hidden="true">→</i><span><strong>{signingOut ? "Signing Out..." : "Sign Out"}</strong><small>End this device session</small></span></button>
+            </>
+          ) : (
+            <>
+              <a href="/artisan-login" role="menuitem" onClick={(event) => navigateWithTransition(event, "/artisan-login")}><i aria-hidden="true">→</i><span><strong>Sign In</strong><small>Open your Artisan account</small></span></a>
+              <a href="/artisan-register" role="menuitem" onClick={(event) => navigateWithTransition(event, "/artisan-register")}><i aria-hidden="true">+</i><span><strong>Register</strong><small>Create your Artisan account</small></span></a>
+            </>
+          )}
+          {accountMessage && <span className="account-dropdown-message" role="status">{accountMessage}</span>}
         </div>
       </div>
       {action}
