@@ -52,12 +52,22 @@ body.expert-lab-page .global-header > .theme-toggle .theme-toggle-icon {
 
 @media (max-width: 760px) {
   body.expert-lab-page .global-header {
-    grid-template-columns: minmax(0, 1fr) 42px 42px !important;
-    gap: 8px !important;
+    grid-template-columns: minmax(0, 1fr) 56px 42px 42px !important;
+    gap: 4px !important;
   }
 
   body.expert-lab-page .global-header .menu-toggle {
+    grid-column: 4 !important;
+  }
+
+  body.expert-lab-page .global-header .account-menu {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
     grid-column: 3 !important;
+    grid-row: 1 !important;
+    align-self: center !important;
+    justify-self: center !important;
   }
 
   body.expert-lab-page .global-header > .theme-toggle {
@@ -66,8 +76,8 @@ body.expert-lab-page .global-header > .theme-toggle .theme-toggle-icon {
     grid-column: 2 !important;
     grid-row: 1 !important;
     display: inline-flex !important;
-    width: 42px !important;
-    min-width: 42px !important;
+    width: 56px !important;
+    min-width: 56px !important;
     height: 42px !important;
     min-height: 42px !important;
     margin: 0 !important;

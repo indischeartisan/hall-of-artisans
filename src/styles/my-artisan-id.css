@@ -11,12 +11,32 @@ body.artisan-dashboard-body { min-height:100vh; color:var(--maid-ink); backgroun
 .artisan-dashboard-shell .dashboard-welcome strong { color:#714715; }
 .dashboard-profile.ornate-panel,.dashboard-card.ornate-panel { --panel-bg:rgba(255,251,241,.9); --panel-border:rgba(182,139,68,.64); background:var(--panel-bg); box-shadow:0 14px 34px rgba(83,61,31,.15),0 0 20px rgba(182,139,68,.1); }
 .dashboard-profile { grid-area:profile; position:relative; overflow:hidden; padding:26px clamp(22px,3vw,38px); }
-.artisan-dashboard-shell .dashboard-profile h2 { margin:0 0 17px; color:#352518; font:600 28px/1 "Cormorant Garamond",serif; }
+.artisan-dashboard-shell .dashboard-profile h2 { margin:0; color:#352518; font:600 28px/1 "Cormorant Garamond",serif; }
+.profile-title-row { position:relative; display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:17px; }
+.profile-edit-button,.profile-edit-actions button { min-height:34px; padding:0 14px; color:#684616; border:1px solid rgba(161,113,42,.55); background:rgba(255,250,238,.9); font:600 11px/1 Inter,sans-serif; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
+.profile-edit-button:hover,.profile-edit-button:focus-visible,.profile-edit-actions button:hover,.profile-edit-actions button:focus-visible { border-color:#9c702a; background:#fffdf7; }
 .profile-watermark { position:absolute; right:18px; top:10px; color:rgba(139,100,31,.07); font:700 120px/1 "Cormorant Garamond",serif; }
 .dashboard-profile dl { position:relative; margin:0; }
 .dashboard-profile dl div { display:grid; grid-template-columns:145px 1fr; gap:16px; padding:9px 0; border-bottom:1px solid rgba(161,119,53,.22); }
 .artisan-dashboard-shell .dashboard-profile dt { color:#69471e; font:600 15px/1.2 "Cormorant Garamond",serif; }
 .artisan-dashboard-shell .dashboard-profile dd { margin:0; color:#2d2117; text-align:right; font:600 17px/1.2 "Cormorant Garamond",serif; }
+.profile-edit-form { position:relative; }
+.dashboard-profile .profile-edit-form dd { display:flex; justify-content:flex-end; }
+.profile-edit-form input { width:min(100%,320px); min-height:36px; padding:5px 10px; color:#2d2117; text-align:right; border:1px solid rgba(161,113,42,.48); background:rgba(255,253,246,.78); box-shadow:inset 0 0 0 2px rgba(182,139,68,.06); font:600 16px/1.2 "Cormorant Garamond",serif; }
+.profile-edit-form input:focus { outline:2px solid rgba(180,135,61,.28); outline-offset:2px; border-color:#98702e; }
+.dashboard-profile .profile-edit-form .profile-specialty-row { align-items:start; }
+.dashboard-profile .profile-specialty-row dd { display:grid; gap:7px; }
+.profile-specialty-selects { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; }
+.profile-specialty-selects label { display:grid; gap:3px; }
+.profile-specialty-selects label > span { color:#765018; text-align:left; font:600 9px/1.2 Inter,sans-serif; letter-spacing:.06em; text-transform:uppercase; }
+.profile-specialty-selects select { min-width:0; min-height:36px; padding:5px 25px 5px 8px; color:#2d2117; border:1px solid rgba(161,113,42,.48); background-color:rgba(255,253,246,.9); font:600 14px/1.2 "Cormorant Garamond",serif; cursor:pointer; }
+.profile-specialty-selects select:focus { outline:2px solid rgba(180,135,61,.28); outline-offset:2px; border-color:#98702e; }
+.profile-specialty-preview { color:#49654f; text-align:right; font:600 12px/1.3 "Cormorant Garamond",serif; }
+.profile-edit-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:15px; }
+.profile-edit-actions .profile-save-button { color:#f9e8bd; border-color:#9f7b3c; background:#173d2a; }
+.profile-edit-actions button:disabled { opacity:.6; cursor:wait; }
+.profile-edit-message { position:relative; min-height:0; margin:0; color:#49654f; font:600 12px/1.4 Inter,sans-serif; }
+.profile-edit-message.is-visible { min-height:17px; margin-top:12px; }
 .dashboard-actions { grid-area:actions; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
 .personal-action.inner-panel { min-height:112px; display:grid; grid-template-columns:38px 1fr 20px; gap:10px; align-items:center; padding:16px; color:var(--maid-ink); text-align:left; text-decoration:none; border:0; background:rgba(255,250,238,.94); box-shadow:0 7px 20px rgba(69,47,17,.09); cursor:pointer; transition:.22s ease; }
 .personal-action:hover,.personal-action:focus-visible { transform:translateY(-2px); border-color:var(--maid-gold); box-shadow:0 10px 24px rgba(69,47,17,.15); }
@@ -62,7 +82,7 @@ body.modal-open { overflow:hidden; }
 .record-actions a,.record-actions button,.detail-back,.confirm-actions button { padding:8px 12px; color:#4f371a; border:1px solid rgba(159,111,41,.48); background:#fffaf0; font:600 11px Inter,sans-serif; text-decoration:none; cursor:pointer; }
 .record-actions .danger { color:#82483d; }.modal-detail { padding:24px 6px 4px; }.modal-detail h3 { margin:12px 0; font:600 30px "Cormorant Garamond",serif; }.modal-detail dl div { display:grid; grid-template-columns:160px 1fr; gap:15px; padding:9px 0; border-bottom:1px solid rgba(161,119,53,.25); }.modal-detail dd { margin:0; font-weight:600; }.inline-confirm { margin-top:13px; padding:13px; border:1px solid rgba(137,74,56,.35); background:#f8eee4; font:13px/1.5 Inter,sans-serif; }.confirm-actions { display:flex; gap:8px; margin-top:9px; }
 @media (max-width:1050px) { .artisan-dashboard-shell { width:min(760px,calc(100% - 28px)); grid-template-columns:1fr; grid-template-areas:"intro" "profile" "card" "actions"; padding-top:96px; }.dashboard-card { min-height:0; }.dashboard-card .artisan-card { width:min(390px,80vw); } }
-@media (max-width:620px) { .artisan-dashboard-shell { width:calc(100% - 20px); padding-top:84px; gap:12px; }.dashboard-intro { padding-inline:4px; }.dashboard-intro h1 { font-size:43px; }.dashboard-subtitle { font-size:17px; }.dashboard-profile { padding:23px 18px; }.dashboard-profile dl div { grid-template-columns:115px 1fr; gap:10px; }.dashboard-profile dt,.dashboard-profile dd { font-size:15px; }.dashboard-actions { grid-template-columns:1fr; }.personal-action { min-height:92px; }.dashboard-card { padding:23px 12px; }.dashboard-card .artisan-card { width:min(350px,92%); }.card-actions { display:grid; grid-template-columns:1fr 1fr; }.card-actions .register-action--primary { grid-column:1/-1; }.artisan-modal { padding:8px; align-items:end; }.artisan-modal__dialog { width:100%; max-height:calc(100vh - 16px); padding:22px 16px; }.artisan-modal__header { padding:4px 33px 16px; }.artisan-modal__header h2 { font-size:32px; }.record-item__heading { display:block; }.status-badge { display:inline-block; margin-top:9px; }.record-meta { grid-template-columns:1fr; }.modal-detail dl div { grid-template-columns:1fr; gap:3px; } }
+@media (max-width:620px) { .artisan-dashboard-shell { width:calc(100% - 20px); padding-top:84px; gap:12px; }.dashboard-intro { padding-inline:4px; }.dashboard-intro h1 { font-size:43px; }.dashboard-subtitle { font-size:17px; }.dashboard-profile { padding:23px 18px; }.dashboard-profile dl div { grid-template-columns:105px 1fr; gap:10px; }.dashboard-profile dt,.dashboard-profile dd { font-size:15px; }.profile-title-row { align-items:flex-start; }.profile-edit-button { min-height:32px; padding-inline:10px; }.profile-edit-form input { width:100%; }.dashboard-profile .profile-edit-form .profile-specialty-row { grid-template-columns:1fr; }.profile-specialty-selects { grid-template-columns:1fr; }.profile-specialty-preview { text-align:left; }.dashboard-actions { grid-template-columns:1fr; }.personal-action { min-height:92px; }.dashboard-card { padding:23px 12px; }.dashboard-card .artisan-card { width:min(350px,92%); }.card-actions { display:grid; grid-template-columns:1fr 1fr; }.card-actions .register-action--primary { grid-column:1/-1; }.artisan-modal { padding:8px; align-items:end; }.artisan-modal__dialog { width:100%; max-height:calc(100vh - 16px); padding:22px 16px; }.artisan-modal__header { padding:4px 33px 16px; }.artisan-modal__header h2 { font-size:32px; }.record-item__heading { display:block; }.status-badge { display:inline-block; margin-top:9px; }.record-meta { grid-template-columns:1fr; }.modal-detail dl div { grid-template-columns:1fr; gap:3px; } }
 @media (max-width:620px) { .artisan-modal__dialog > .artisan-modal__close { top:18px; right:18px; } }
 
 /* Bright panel system for every Personal Record Chamber popup state. */

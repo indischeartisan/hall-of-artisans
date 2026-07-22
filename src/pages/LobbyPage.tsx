@@ -1,4 +1,4 @@
-import { type MouseEvent, useLayoutEffect } from "react";
+import { type MouseEvent, useLayoutEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import GlobalHeader from "../components/GlobalHeader";
 
@@ -48,20 +48,54 @@ const mobileLinks: LobbyLinkProps[] = [
 ];
 
 export default function LobbyPage() {
+  const [theme, setTheme] = useState<"dark" | "bright">(() => {
+    const saved = window.localStorage.getItem("hoa-theme");
+    return saved === "dark" || saved === "bright" ? saved : "bright";
+  });
+  const isDark = theme === "dark";
+
   useLayoutEffect(() => {
     const previousTitle = document.title;
     document.title = "Artisan Hall Lobby | The Hall of Artisans";
     document.body.classList.add("lobby-body");
     document.body.classList.remove("entrance-body", "page-leaving");
+    document.body.dataset.theme = theme;
     return () => {
       document.title = previousTitle;
       document.body.classList.remove("lobby-body", "page-leaving");
+      delete document.body.dataset.theme;
     };
   }, []);
 
+  useLayoutEffect(() => {
+    document.body.dataset.theme = theme;
+  }, [theme]);
+
+  const toggleTheme = () => {
+    const nextTheme = isDark ? "bright" : "dark";
+    setTheme(nextTheme);
+    window.localStorage.setItem("hoa-theme", nextTheme);
+  };
+
+  const themeToggle = (
+    <button
+      className="theme-toggle theme-toggle--slider lobby-theme-toggle"
+      type="button"
+      aria-label={isDark ? "Switch to bright mode" : "Switch to dark mode"}
+      aria-pressed={isDark}
+      onClick={toggleTheme}
+    >
+      <span className="theme-toggle-track" aria-hidden="true">
+        <span className="theme-toggle-option theme-toggle-sun">☀</span>
+        <span className="theme-toggle-option theme-toggle-moon">☾</span>
+        <span className="theme-toggle-thumb" />
+      </span>
+    </button>
+  );
+
   return (
     <>
-      <GlobalHeader activeLabel="The Hall" variant="transparent" />
+      <GlobalHeader action={themeToggle} activeLabel="The Hall" variant="transparent" />
       <main>
         <section className="lobby-section lobby-page" id="lobby" aria-labelledby="lobbyTitle">
           <div className="lobby-desktop" aria-hidden="false">
@@ -78,7 +112,7 @@ export default function LobbyPage() {
           <div className="lobby-mobile" aria-labelledby="mobileLobbyTitle">
             <div className="lobby-mobile-shade" aria-hidden="true" />
             <div className="mobile-lobby-title">
-              <img src="/assets/images/hall-artisans-logo-gold.webp" alt="" />
+              <img src="/assets/images/hall-artisans-header-logo.webp" alt="The Hall of Artisans crest" />
               <h1 id="mobileLobbyTitle">The Hall of Artisans</h1>
               <p>Choose your path inside The Hall</p>
               <img className="mobile-ornament" src="/assets/icons/ornament-line.webp" alt="" aria-hidden="true" />

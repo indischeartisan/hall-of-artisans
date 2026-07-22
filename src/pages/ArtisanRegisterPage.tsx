@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import GlobalHeader from "../components/GlobalHeader";
 import { authService } from "../features/auth/authService";
 import { useLegacyStylesheets } from "../hooks/useLegacyStylesheets";
+import { artisanSpecialtyGroups as groups, defaultArtisanSpecialty, formatArtisanSpecialty } from "../data/artisanSpecialty";
 
 const artisanProfileStyles = [
   "/assets/css/styles.css?v=18",
@@ -11,21 +12,15 @@ const artisanProfileStyles = [
   "/assets/css/ornate-panel-bright.css?v=1"
 ] as const;
 
-const groups = [
-  { id: "direction", label: "Scent Direction", options: ["Fresh", "Clean", "Green", "Floral", "Gourmand", "Woody", "Powdery", "Dark", "Experimental"] },
-  { id: "mood", label: "Scent Mood", options: ["Bright", "Misty", "Warm", "Cold", "Nostalgic", "Elegant", "Mysterious", "Playful"] },
-  { id: "style", label: "Artisan Style", options: ["Storyteller", "Explorer", "Collector", "Archivist", "Dreamer", "Composer", "Experimentalist", "Observer"] }
-] as const;
-
 export default function ArtisanRegisterPage() {
   useLegacyStylesheets("artisan-profile", artisanProfileStyles);
   const navigate = useNavigate();
-  const [specialty, setSpecialty] = useState({ direction: "Fresh", mood: "Bright", style: "Storyteller" });
+  const [specialty, setSpecialty] = useState({ ...defaultArtisanSpecialty });
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const specialtyDropdownsRef = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const specialtyLabel = `${specialty.mood} ${specialty.direction} ${specialty.style}`;
+  const specialtyLabel = formatArtisanSpecialty(specialty);
 
   useEffect(() => {
     document.title = "Artisan Register | The Hall of Artisans";

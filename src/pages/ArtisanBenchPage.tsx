@@ -8,7 +8,7 @@ type Theme = "dark" | "bright";
 
 const stylesheets = [
   "/assets/css/expert-lab.css?v=4",
-  "/assets/css/expert-panel-system.css?v=8",
+  "/assets/css/expert-panel-system.css?v=9",
   "/assets/css/expert-lab-refinements.css?v=24",
   "/assets/css/expert-lab-theme.css?v=2"
 ];
@@ -195,13 +195,17 @@ export default function ArtisanBenchPage() {
   const themeToggle = (
     <button
       id="themeToggle"
-      className="theme-toggle"
+      className="theme-toggle theme-toggle--slider"
       type="button"
       aria-label={isDark ? "Switch to bright mode" : "Switch to dark mode"}
       aria-pressed={isDark}
       onClick={toggleTheme}
     >
-      <span className="theme-toggle-icon" aria-hidden="true">{isDark ? "☀" : "☾"}</span>
+      <span className="theme-toggle-track" aria-hidden="true">
+        <span className="theme-toggle-option theme-toggle-sun">☀</span>
+        <span className="theme-toggle-option theme-toggle-moon">☾</span>
+        <span className="theme-toggle-thumb" />
+      </span>
     </button>
   );
 
@@ -343,7 +347,7 @@ export default function ArtisanBenchPage() {
             <div className="next-actions">
               <button id="saveDraft" className="panel-button">Save Draft</button>
               <button className="panel-button" type="button" onClick={() => navigate("/my-drafts")}>My Drafts</button>
-              <button className="gold gold-button" type="button" onClick={openMakeItReal}>Make It Real</button>
+              <button className="gold gold-button" type="button" onClick={openMakeItReal}>Preview</button>
             </div>
           </section>
         </section>

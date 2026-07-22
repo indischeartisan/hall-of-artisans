@@ -75,13 +75,17 @@ export default function EntranceHallPage() {
 
   const themeToggle = (
     <button
-      className="theme-toggle entrance-theme-toggle"
+      className="theme-toggle theme-toggle--slider entrance-theme-toggle"
       type="button"
       aria-label={isDark ? "Switch to bright mode" : "Switch to dark mode"}
       aria-pressed={isDark}
       onClick={toggleTheme}
     >
-      <span className="theme-toggle-icon" aria-hidden="true">{isDark ? "☀" : "☾"}</span>
+      <span className="theme-toggle-track" aria-hidden="true">
+        <span className="theme-toggle-option theme-toggle-sun">☀</span>
+        <span className="theme-toggle-option theme-toggle-moon">☾</span>
+        <span className="theme-toggle-thumb" />
+      </span>
     </button>
   );
 

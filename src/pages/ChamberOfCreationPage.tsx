@@ -1,24 +1,37 @@
-import { type MouseEvent, useLayoutEffect } from "react";
+import { type MouseEvent, useLayoutEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import GlobalHeader from "../components/GlobalHeader";
 
 export default function ChamberOfCreationPage() {
   const navigate = useNavigate();
-  const isDark = true;
-  const toggleTheme = () => undefined;
+  const [theme, setTheme] = useState<"dark" | "bright">(() => {
+    const saved = window.localStorage.getItem("hoa-theme");
+    return saved === "dark" || saved === "bright" ? saved : "dark";
+  });
+  const isDark = theme === "dark";
+
+  const toggleTheme = () => {
+    const nextTheme = isDark ? "bright" : "dark";
+    setTheme(nextTheme);
+    window.localStorage.setItem("hoa-theme", nextTheme);
+  };
 
   useLayoutEffect(() => {
     const previousTitle = document.title;
     document.title = "Make Your Perfume | The Hall of Artisans";
     document.body.classList.add("perfume-mode-page");
     document.body.classList.remove("entrance-body", "lobby-body", "page-leaving");
-    document.body.dataset.theme = "dark";
+    document.body.dataset.theme = theme;
     return () => {
       document.title = previousTitle;
       document.body.classList.remove("perfume-mode-page", "page-leaving");
       delete document.body.dataset.theme;
     };
   }, []);
+
+  useLayoutEffect(() => {
+    document.body.dataset.theme = theme;
+  }, [theme]);
 
   const openArtisanBench = (event: MouseEvent<HTMLAnchorElement>) => {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -39,13 +52,17 @@ export default function ChamberOfCreationPage() {
   const themeToggle = (
     <button
       id="themeToggle"
-      className="theme-toggle"
+      className="theme-toggle theme-toggle--slider"
       type="button"
       aria-label={isDark ? "Switch to bright mode" : "Switch to dark mode"}
       aria-pressed={isDark}
       onClick={toggleTheme}
     >
-      <span className="theme-toggle-icon" aria-hidden="true">{isDark ? "☀" : "☾"}</span>
+      <span className="theme-toggle-track" aria-hidden="true">
+        <span className="theme-toggle-option theme-toggle-sun">☀</span>
+        <span className="theme-toggle-option theme-toggle-moon">☾</span>
+        <span className="theme-toggle-thumb" />
+      </span>
     </button>
   );
 

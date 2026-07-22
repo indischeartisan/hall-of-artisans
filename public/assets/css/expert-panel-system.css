@@ -1473,7 +1473,8 @@ body.expert-lab-page .next {
 
 body.expert-lab-page .next-actions button {
   min-height: 44px;
-  font-size: 11px;
+  font-size: 14px;
+  letter-spacing: 0.06em;
 }
 
 /* Concentration help: compact one-row controls with an inline antique popover. */
