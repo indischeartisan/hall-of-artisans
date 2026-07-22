@@ -2,6 +2,7 @@ import type { Session } from "@supabase/supabase-js";
 import { getSupabaseClient } from "../../lib/supabase";
 import type { ArtisanIdStatus } from "../../types/database.types";
 import { formatArtisanSpecialty, type ArtisanSpecialty } from "../../data/artisanSpecialty";
+import { validatePassword } from "./passwordPolicy";
 
 export interface AuthServiceError{code:string;message:string;status?:number}
 export type AuthResult<T>={ok:true;data:T}|{ok:false;error:AuthServiceError};
@@ -44,7 +45,7 @@ async function updateArtisanProfile(displayName:string,specialtySelection:Artisa
 }
 
 export const authService={
-  signUp(email:string,password:string,displayName:string,metadata:Record<string,string>={},emailRedirectTo?:string){return run(()=>getSupabaseClient().auth.signUp({email,password,options:{data:{...metadata,display_name:displayName},emailRedirectTo}}))},
+  signUp(email:string,password:string,displayName:string,metadata:Record<string,string>={},emailRedirectTo?:string){const validationError=validatePassword(password);if(validationError)return Promise.resolve({ok:false,error:{code:"weak_password",message:validationError}} as const);return run(()=>getSupabaseClient().auth.signUp({email,password,options:{data:{...metadata,display_name:displayName},emailRedirectTo}}))},
   signIn(email:string,password:string){return run(()=>getSupabaseClient().auth.signInWithPassword({email,password}))},
   signOut(){return run(()=>getSupabaseClient().auth.signOut({scope:"local"}))},
   getSession(){return run(()=>getSupabaseClient().auth.getSession())},
@@ -57,7 +58,7 @@ export const authService={
     return()=>{active=false;data.subscription.unsubscribe()};
   },
   requestPasswordReset(email:string,redirectTo?:string){return run(()=>getSupabaseClient().auth.resetPasswordForEmail(email,{redirectTo}))},
-  updatePassword(password:string){return run(()=>getSupabaseClient().auth.updateUser({password}))},
+  updatePassword(password:string){const validationError=validatePassword(password);if(validationError)return Promise.resolve({ok:false,error:{code:"weak_password",message:validationError}} as const);return run(()=>getSupabaseClient().auth.updateUser({password}))},
   resendVerificationEmail(email:string,emailRedirectTo?:string){return run(()=>getSupabaseClient().auth.resend({type:"signup",email,options:{emailRedirectTo}}))},
   getArtisanIdentity,
   updateArtisanProfile

@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import GlobalHeader from "../components/GlobalHeader";
 import { authService } from "../features/auth/authService";
+import { MIN_PASSWORD_LENGTH, passwordRequirement } from "../features/auth/passwordPolicy";
 import { useLegacyStylesheets } from "../hooks/useLegacyStylesheets";
 
 const artisanProfileStyles = [
@@ -49,5 +50,5 @@ export default function ArtisanResetPasswordPage() {
     window.setTimeout(() => navigate("/my-artisan-id", { replace: true }), 900);
   };
 
-  return <><GlobalHeader variant="light" /><main className="login-shell"><form className="register-form login-ledger account-recovery-ledger" noValidate onSubmit={submit}><p className="section-kicker">Secure Recovery</p><h1>Choose a New Password</h1><p>Create a new password for your Artisan account.</p><label><span>New Password</span><input name="password" type="password" autoComplete="new-password" minLength={6} disabled={!sessionReady || submitting} required /></label><label><span>Confirm Password</span><input name="passwordConfirmation" type="password" autoComplete="new-password" minLength={6} disabled={!sessionReady || submitting} required /></label><p className="form-message" role="status" aria-live="polite">{message}</p><button className="register-submit" type="submit" disabled={!sessionReady || submitting}>{submitting ? "Updating Password..." : "Save New Password"}</button>{sessionReady === false && <a className="login-back-link" href="/artisan-forgot-password">Request a New Recovery Letter</a>}</form></main></>;
+  return <><GlobalHeader variant="light" /><main className="login-shell"><form className="register-form login-ledger account-recovery-ledger" noValidate onSubmit={submit}><p className="section-kicker">Secure Recovery</p><h1>Choose a New Password</h1><p>Create a new password for your Artisan account.</p><label><span>New Password</span><input name="password" type="password" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} aria-describedby="reset-password-requirement" disabled={!sessionReady || submitting} required /><small id="reset-password-requirement">{passwordRequirement}</small></label><label><span>Confirm Password</span><input name="passwordConfirmation" type="password" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} disabled={!sessionReady || submitting} required /></label><p className="form-message" role="status" aria-live="polite">{message}</p><button className="register-submit" type="submit" disabled={!sessionReady || submitting}>{submitting ? "Updating Password..." : "Save New Password"}</button>{sessionReady === false && <a className="login-back-link" href="/artisan-forgot-password">Request a New Recovery Letter</a>}</form></main></>;
 }
