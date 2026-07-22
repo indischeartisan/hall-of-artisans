@@ -174,13 +174,6 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      has_role: {
-        Args: { required_role: Database["public"]["Enums"]["app_role"] }
-        Returns: boolean
-      }
-      is_admin: { Args: never; Returns: boolean }
-      is_reviewer_or_admin: { Args: never; Returns: boolean }
-      is_super_admin: { Args: never; Returns: boolean }
       issue_artisan_id: {
         Args: never
         Returns: {
