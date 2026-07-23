@@ -1,12 +1,15 @@
-import { DRAFT_SCHEMA_VERSION, type NewDraftData, type PerfumeDraft } from "../types/perfumeDraft";
+import {
+  DRAFT_SCHEMA_VERSION,
+  type CreationDraft,
+  type DescribedCreationDraft,
+  type PerfumeDraft
+} from "../types/perfumeDraft";
 
 export const DRAFT_STORAGE_KEY = "hallOfArtisans.perfumeDrafts.v1";
 
 const storageAvailable = () => typeof window !== "undefined" && Boolean(window.localStorage);
-const now = () => new Date().toISOString();
-const makeId = () => globalThis.crypto?.randomUUID?.() ?? `draft-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
-function isDraft(value: unknown): value is PerfumeDraft {
+function isArtisanBenchDraft(value: unknown): value is Omit<PerfumeDraft, "mode"> & { mode?: "artisan_bench" } {
   if (!value || typeof value !== "object") return false;
   const draft = value as Partial<PerfumeDraft>;
   return draft.schemaVersion === DRAFT_SCHEMA_VERSION && typeof draft.id === "string" &&
@@ -15,55 +18,56 @@ function isDraft(value: unknown): value is PerfumeDraft {
     Boolean(draft.benchState && Array.isArray(draft.benchState.formula));
 }
 
+function isDescribedDraft(value: unknown): value is DescribedCreationDraft {
+  if (!value || typeof value !== "object") return false;
+  const draft = value as Partial<DescribedCreationDraft>;
+  return draft.mode === "described" && draft.schemaVersion === DRAFT_SCHEMA_VERSION &&
+    typeof draft.id === "string" && typeof draft.draftName === "string" &&
+    typeof draft.createdAt === "string" && typeof draft.updatedAt === "string" &&
+    Boolean(draft.letter && typeof draft.letter.creationTitle === "string" && typeof draft.letter.story === "string" &&
+      Array.isArray(draft.letter.preferredNotes) && Array.isArray(draft.letter.notesToAvoid));
+}
+
+function normalizeDraft(value: unknown): CreationDraft | null {
+  if (isDescribedDraft(value)) return value;
+  if (isArtisanBenchDraft(value)) return { ...value, mode: "artisan_bench" };
+  return null;
+}
+
 function readEntries(): unknown[] {
   if (!storageAvailable()) return [];
   try {
-    const raw = window.localStorage.getItem(DRAFT_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed: unknown = JSON.parse(raw);
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(DRAFT_STORAGE_KEY) || "[]");
     return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
 }
 
-export function getDrafts(): PerfumeDraft[] {
-  return readEntries().filter(isDraft).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+function persist(drafts: CreationDraft[]) {
+  if (storageAvailable()) window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(drafts));
 }
 
-function persist(drafts: unknown[]) {
-  if (!storageAvailable()) return;
-  window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(drafts));
+export function getDrafts(): CreationDraft[] {
+  return readEntries().map(normalizeDraft).filter((draft): draft is CreationDraft => Boolean(draft))
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
 export const getDraftById = (id: string) => getDrafts().find((draft) => draft.id === id);
 
-export function createDraft(data: NewDraftData): PerfumeDraft {
-  const timestamp = now();
-  const draft: PerfumeDraft = { ...data, id: makeId(), schemaVersion: DRAFT_SCHEMA_VERSION, createdAt: timestamp, updatedAt: timestamp };
-  persist([draft, ...readEntries()]);
+export function saveDraft(draft: CreationDraft): CreationDraft {
+  const drafts = getDrafts();
+  const index = drafts.findIndex((item) => item.id === draft.id);
+  if (index >= 0) drafts[index] = draft;
+  else drafts.unshift(draft);
+  persist(drafts);
   return draft;
 }
 
-export function updateDraft(id: string, changes: Partial<NewDraftData>): PerfumeDraft | undefined {
-  let updated: PerfumeDraft | undefined;
-  const drafts = readEntries().map((entry) => {
-    if (!isDraft(entry) || entry.id !== id) return entry;
-    const draft = entry;
-    updated = { ...draft, ...changes, id: draft.id, schemaVersion: draft.schemaVersion, createdAt: draft.createdAt, updatedAt: now() };
-    return updated;
-  });
-  if (updated) persist(drafts);
-  return updated;
+export function deleteDraft(id: string) {
+  persist(getDrafts().filter((draft) => draft.id !== id));
 }
 
-export function deleteDraft(id: string) { persist(readEntries().filter((entry) => !isDraft(entry) || entry.id !== id)); }
-
-export function duplicateDraft(id: string): PerfumeDraft | undefined {
-  const source = getDraftById(id);
-  if (!source) return undefined;
-  const { id: _id, schemaVersion: _version, createdAt: _created, updatedAt: _updated, ...data } = source;
-  return createDraft({ ...data, draftName: `${source.draftName} Copy` });
+export function clearDrafts() {
+  persist([]);
 }
-
-export function clearDrafts() { persist([]); }

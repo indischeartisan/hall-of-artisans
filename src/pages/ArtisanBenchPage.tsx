@@ -2,22 +2,45 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { useNavigate } from "react-router";
 import GlobalHeader from "../components/GlobalHeader";
 import { useDrafts } from "../contexts/DraftContext";
-import type { ArtisanBenchState, NewDraftData } from "../types/perfumeDraft";
+import { authService } from "../features/auth/authService";
+import { isArtisanBenchDraft, type ArtisanBenchState, type NewDraftData } from "../types/perfumeDraft";
 
 type Theme = "dark" | "bright";
+
+const createEmptyBenchState = (): ArtisanBenchState => ({
+  concentration: "edp",
+  perfumeName: "",
+  nameEdited: false,
+  suggestedNames: [],
+  formula: [],
+  formulaMetadata: {
+    concentration: "edp",
+    total: 0,
+    layerTotals: { top: 0, heart: 0, base: 0 },
+    profile: {
+      freshness: 0, sweetness: 0, warmth: 0, green: 0, floral: 0,
+      woody: 0, powdery: 0, clean: 0, darkness: 0, strangeness: 0,
+      intensity: 0, longevity: 0
+    },
+    warnings: [],
+    positives: []
+  },
+  fragranceBrief: null,
+  storyCard: null
+});
 
 const stylesheets = [
   "/assets/css/expert-lab.css?v=4",
   "/assets/css/expert-panel-system.css?v=9",
   "/assets/css/expert-lab-refinements.css?v=24",
-  "/assets/css/expert-lab-theme.css?v=2"
+  "/assets/css/expert-lab-theme.css?v=3"
 ];
 
 const scripts = [
   "/assets/js/fragrance-data.js?v=4",
   "/assets/js/formula-engine.js?v=5",
   "/assets/js/story-card-generator.js?v=1",
-  "/assets/js/expert-lab-app.js?v=11"
+  "/assets/js/expert-lab-app.js?v=12"
 ];
 
 function loadScript(src: string) {
@@ -44,8 +67,11 @@ function hasArtisanIdentity() {
 
 export default function ArtisanBenchPage() {
   const navigate = useNavigate();
-  const { activeDraft, createDraft, saveDraft } = useDrafts();
+  const { activeDraft: activeCreationDraft, clearActiveDraft, createDraft, saveDraft, source } = useDrafts();
+  const activeDraft = isArtisanBenchDraft(activeCreationDraft) ? activeCreationDraft : null;
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
+  const [draftSaveStatus, setDraftSaveStatus] = useState("");
   const savedSignature = useRef(activeDraft ? JSON.stringify(activeDraft.benchState) : "");
   const hasBaseline = useRef(Boolean(activeDraft));
   const pendingRestore = useRef(activeDraft?.benchState ?? null);
@@ -54,6 +80,23 @@ export default function ArtisanBenchPage() {
     return saved === "dark" || saved === "bright" ? saved : "bright";
   });
   const isDark = theme === "dark";
+
+  useEffect(() => authService.observeSession((session) => {
+    if (!session) {
+      setIsAuthenticated(false);
+      return;
+    }
+    void authService.getCurrentUser().then((result) => {
+      const data = result.ok ? result.data as { user?: unknown } | null : null;
+      setIsAuthenticated(Boolean(data?.user));
+    });
+  }), []);
+
+  useEffect(() => {
+    const bridgeWindow = window as typeof window & { __hoaArtisanBenchAuthenticated?: boolean };
+    bridgeWindow.__hoaArtisanBenchAuthenticated = isAuthenticated;
+    window.dispatchEvent(new CustomEvent("hoa:artisan-bench-auth-change", { detail: { isAuthenticated } }));
+  }, [isAuthenticated]);
 
   useLayoutEffect(() => {
     const previousTitle = document.title;
@@ -115,6 +158,18 @@ export default function ArtisanBenchPage() {
     status: snapshot.formulaMetadata.total === 100 ? "ready" : "draft"
   }), []);
 
+  const startNewDraft = useCallback(() => {
+    if (isDirty && !window.confirm("Start a new draft and discard your unsaved Artisan Bench changes?")) return;
+    const emptyState = createEmptyBenchState();
+    clearActiveDraft();
+    pendingRestore.current = null;
+    savedSignature.current = JSON.stringify(emptyState);
+    hasBaseline.current = false;
+    setIsDirty(false);
+    setDraftSaveStatus("New draft started. Your previously saved drafts remain in My Drafts.");
+    window.dispatchEvent(new CustomEvent("hoa:artisan-bench-load-state", { detail: emptyState }));
+  }, [clearActiveDraft, isDirty]);
+
   useEffect(() => {
     const onState = (event: Event) => {
       const snapshot = (event as CustomEvent<ArtisanBenchState>).detail;
@@ -135,30 +190,46 @@ export default function ArtisanBenchPage() {
         window.dispatchEvent(new CustomEvent("hoa:artisan-bench-request-state"));
       }
     };
-    const onSave = (event: Event) => {
+    const onSave = async (event: Event) => {
       const snapshot = (event as CustomEvent<ArtisanBenchState>).detail;
-      if (!snapshot?.formula?.length) {
-        document.getElementById("formulaMessages")!.innerHTML = '<div class="message warn">Add at least one material before saving a draft.</div>';
+      if (!snapshot || !Array.isArray(snapshot.formula) || !snapshot.formulaMetadata) {
+        setDraftSaveStatus("The current Artisan Bench state is not ready to be saved. Please reload the page and try again.");
         return;
       }
-      let name = activeDraft?.draftName;
-      if (!name) name = window.prompt("Name this draft:", snapshot.perfumeName || "Untitled Draft")?.trim();
-      if (!name) return;
-      const result = activeDraft ? saveDraft(activeDraft.id, draftData(snapshot, name)) : createDraft(draftData(snapshot, name));
-      if (!result) return;
-      savedSignature.current = JSON.stringify(snapshot);
-      setIsDirty(false);
-      document.getElementById("formulaMessages")!.innerHTML = `<div class="message good">Draft “${result.draftName}” saved locally.</div>`;
+      const userResult = await authService.getCurrentUser();
+      const userData = userResult.ok ? userResult.data as { user?: unknown } | null : null;
+      if (!userData?.user) {
+        setDraftSaveStatus("Sign in or register before saving this draft to your account.");
+        navigate("/artisan-login");
+        return;
+      }
+      const name = activeDraft?.draftName || snapshot.perfumeName.trim() || "Untitled Artisan Bench Draft";
+      setDraftSaveStatus("Saving draft...");
+      try {
+        const result = activeDraft ? await saveDraft(activeDraft.id, draftData(snapshot, name)) : await createDraft(draftData(snapshot, name));
+        if (!result) {
+          setDraftSaveStatus("This draft could not be found. Please reopen it from My Drafts and try again.");
+          return;
+        }
+        savedSignature.current = JSON.stringify(snapshot);
+        setIsDirty(false);
+        const destination = source === "supabase" ? "to your account" : "on this device";
+        setDraftSaveStatus(`Draft “${result.draftName}” saved ${destination}.`);
+      } catch (requestError) {
+        const detail = requestError instanceof Error ? requestError.message : "Please check your connection and sign-in session.";
+        setDraftSaveStatus(`This draft could not be saved. ${detail}`);
+      }
     };
+    const onSaveRequest = (event: Event) => { void onSave(event); };
     window.addEventListener("hoa:artisan-bench-state-change", onState);
     window.addEventListener("hoa:artisan-bench-ready", restore);
-    window.addEventListener("hoa:artisan-bench-save-request", onSave);
+    window.addEventListener("hoa:artisan-bench-save-request", onSaveRequest);
     return () => {
       window.removeEventListener("hoa:artisan-bench-state-change", onState);
       window.removeEventListener("hoa:artisan-bench-ready", restore);
-      window.removeEventListener("hoa:artisan-bench-save-request", onSave);
+      window.removeEventListener("hoa:artisan-bench-save-request", onSaveRequest);
     };
-  }, [activeDraft, createDraft, draftData, saveDraft]);
+  }, [activeDraft, createDraft, draftData, navigate, saveDraft, source]);
 
   useEffect(() => {
     const warnBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -334,8 +405,7 @@ export default function ArtisanBenchPage() {
               <div id="storyCardPreview" className="story-card-preview inner-panel" aria-live="polite" />
               <div className="story-card-actions">
                 <button id="downloadStoryCard" className="panel-button">Download Story Card</button>
-                <button className="locked panel-button" disabled>Share Story Card <span>Perfumer ID Required</span></button>
-                <a id="createPerfumerId" className="panel-button story-unlock-link" href="/artisan-register">Create Perfumer ID to Unlock</a>
+                <button id="shareStoryCard" className="panel-button" disabled={!isAuthenticated} aria-label={isAuthenticated ? "Share Story Card" : "Share Story Card — sign in required"}>Share Story Card</button>
               </div>
               <p id="storyCardMessage" className="story-card-message" aria-live="polite">Temporary preview mode: download is unlocked for review.</p>
             </section>
@@ -345,10 +415,12 @@ export default function ArtisanBenchPage() {
             <div className="panel-title"><p className="step">11 Save &amp; Next Step</p><h2>Save &amp; Next Step</h2></div>
             <p className="next-creation">Selected creation: <strong id="nextPerfumeName">Morning Tea Garden</strong></p>
             <div className="next-actions">
-              <button id="saveDraft" className="panel-button">Save Draft</button>
+              <button className="panel-button" type="button" onClick={startNewDraft}>New Draft</button>
+              <button id="saveDraft" className="panel-button" type="button">Save Draft</button>
               <button className="panel-button" type="button" onClick={() => navigate("/my-drafts")}>My Drafts</button>
               <button className="gold gold-button" type="button" onClick={openMakeItReal}>Preview</button>
             </div>
+            <p className="story-card-message" role="status" aria-live="polite">{draftSaveStatus}</p>
           </section>
         </section>
 

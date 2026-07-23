@@ -1,6 +1,7 @@
 export const DRAFT_SCHEMA_VERSION = 1;
 
 export type DraftStatus = "draft" | "ready";
+export type DraftMode = "artisan_bench" | "described";
 export type FormulaLayer = "top" | "heart" | "base";
 
 export interface FormulaItem {
@@ -75,6 +76,7 @@ export interface ArtisanBenchState {
 export interface PerfumeDraft {
   id: string;
   schemaVersion: number;
+  mode: "artisan_bench";
   draftName: string;
   perfumeName?: string;
   formula: FormulaItem[];
@@ -87,4 +89,29 @@ export interface PerfumeDraft {
   updatedAt: string;
 }
 
-export type NewDraftData = Omit<PerfumeDraft, "id" | "schemaVersion" | "createdAt" | "updatedAt">;
+export interface DescribedCreationLetter {
+  creationTitle: string;
+  story: string;
+  preferredNotes: string[];
+  notesToAvoid: string[];
+  additionalNotes: string;
+}
+
+export interface DescribedCreationDraft {
+  id: string;
+  schemaVersion: number;
+  mode: "described";
+  draftName: string;
+  perfumeName?: string;
+  letter: DescribedCreationLetter;
+  status: DraftStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CreationDraft = PerfumeDraft | DescribedCreationDraft;
+export type NewDraftData = Omit<PerfumeDraft, "id" | "schemaVersion" | "mode" | "createdAt" | "updatedAt">;
+export type NewDescribedDraftData = Omit<DescribedCreationDraft, "id" | "schemaVersion" | "mode" | "createdAt" | "updatedAt">;
+
+export const isArtisanBenchDraft = (draft: CreationDraft | null | undefined): draft is PerfumeDraft => draft?.mode === "artisan_bench";
+export const isDescribedCreationDraft = (draft: CreationDraft | null | undefined): draft is DescribedCreationDraft => draft?.mode === "described";

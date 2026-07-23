@@ -235,18 +235,18 @@ function buildStoryCardData() {
 }
 
 function updateStoryCardActions() {
-  const identity = getPerfumerIdentity();
+  const isAuthenticated = window.__hoaArtisanBenchAuthenticated === true;
   const shareButton = $('shareStoryCard');
-  const previewMessage = 'Temporary preview mode: download is unlocked for review.';
+  const previewMessage = 'Sign in or register to share this Story Card.';
   $('downloadStoryCard').disabled = false;
   $('downloadStoryCard').classList.remove('locked');
   if (shareButton) {
-    shareButton.disabled = !identity.hasPerfumerId;
-    shareButton.classList.toggle('locked', !identity.hasPerfumerId);
+    shareButton.disabled = !isAuthenticated;
   }
-  $('createPerfumerId').hidden = identity.hasPerfumerId;
-  $('storyCardMessage').textContent = identity.hasPerfumerId ? 'Story card export is unlocked for this Perfumer ID.' : previewMessage;
+  $('storyCardMessage').textContent = isAuthenticated ? 'Story Card sharing is available for your signed-in account.' : previewMessage;
 }
+
+window.addEventListener('hoa:artisan-bench-auth-change', updateStoryCardActions, { signal: bridgeController.signal });
 
 async function renderStoryCardPreview() {
   if (!storyCard || !$('storyCardPreview')) return;
@@ -703,6 +703,34 @@ $('downloadStoryCard').addEventListener('click', async () => {
     $('storyCardMessage').textContent = 'Your Fragrance Brief story card has been downloaded.';
   } catch (error) {
     $('storyCardMessage').textContent = `Download failed: ${error.message}`;
+  }
+});
+
+$('shareStoryCard').addEventListener('click', async () => {
+  if (window.__hoaArtisanBenchAuthenticated !== true) {
+    $('storyCardMessage').textContent = 'Sign in or register to share this Story Card.';
+    return;
+  }
+  try {
+    const safeName = state.perfumeName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'fragrance-brief';
+    const filename = `fragrance-brief-${safeName}.png`;
+    $('storyCardMessage').textContent = 'Preparing your Story Card...';
+    const canvas = await storyCard.createStoryCardCanvas(buildStoryCardData());
+    const blob = await new Promise((resolve, reject) => canvas.toBlob((value) => value ? resolve(value) : reject(new Error('Unable to prepare the Story Card image.')), 'image/png'));
+    const file = new File([blob], filename, { type: 'image/png' });
+    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      await navigator.share({ files: [file], title: state.perfumeName || 'Fragrance Brief Story Card' });
+      $('storyCardMessage').textContent = 'Your Story Card has been shared.';
+    } else {
+      await storyCard.downloadStoryCard(buildStoryCardData(), filename);
+      $('storyCardMessage').textContent = 'Sharing is unavailable in this browser, so the Story Card was downloaded instead.';
+    }
+  } catch (error) {
+    if (error?.name === 'AbortError') {
+      $('storyCardMessage').textContent = 'Story Card sharing was cancelled.';
+    } else {
+      $('storyCardMessage').textContent = `Share failed: ${error.message}`;
+    }
   }
 });
 

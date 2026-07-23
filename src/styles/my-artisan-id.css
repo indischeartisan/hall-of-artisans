@@ -137,6 +137,27 @@ body.modal-open { overflow:hidden; }
   box-shadow: 0 7px 20px rgba(69,47,17,.08);
 }
 .record-item { --nested-curve: 6px; padding: 20px 22px; }
+.record-item--link {
+  width: 100%;
+  display: block;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  appearance: none;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+.record-item--link:hover {
+  z-index: 2;
+  background: rgba(255, 252, 242, .98);
+  box-shadow: 0 10px 26px rgba(69,47,17,.14);
+  transform: translateY(-2px);
+}
+.record-item--link:focus-visible {
+  z-index: 2;
+  outline: 2px solid #9a6c24;
+  outline-offset: 3px;
+}
 .record-item::after,
 .modal-detail::after,
 .inline-confirm::after,

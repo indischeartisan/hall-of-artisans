@@ -8,7 +8,9 @@
 .draft-card { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1.25rem; border: 1px solid rgba(185,154,93,.65); background: rgba(240,221,178,.06); }
 .draft-card h2 { margin: 0 0 .3rem; font-family: Georgia, serif; font-weight: 400; }
 .draft-card p, .draft-card small { margin: 0; color: #c8b98f; }
+.draft-card .draft-card-mode { margin-bottom: .45rem; color: #b99a5d; font-size: .72rem; letter-spacing: .16em; text-transform: uppercase; }
 .draft-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
 .draft-actions button { padding: .65rem .9rem; border: 1px solid #b99a5d; color: #ead8ad; background: #173226; cursor: pointer; font: inherit; }
 .draft-actions button:hover { background: #294b3a; }
+.draft-actions button:disabled { cursor: wait; opacity: .55; }
 @media (max-width: 720px) { .draft-card { align-items: flex-start; flex-direction: column; } }

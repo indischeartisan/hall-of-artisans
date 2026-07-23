@@ -424,6 +424,24 @@ body.expert-lab-page[data-theme="bright"] .timeline-card .journey-detail { color
   }
 }
 
+@media (min-width: 901px) {
+  body.expert-lab-page .next-actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: clamp(8px, 0.9vw, 14px) !important;
+  }
+
+  body.expert-lab-page .next-actions button {
+    min-width: 0;
+    padding-inline: clamp(8px, 1vw, 16px);
+    white-space: nowrap;
+  }
+
+  body.expert-lab-page .next > .story-card-message {
+    grid-column: 2;
+    min-height: 0;
+  }
+}
+
 /* Bright-mode clarity and compact-control alignment pass. */
 body.expert-lab-page[data-theme="bright"] .hero-image {
   filter: brightness(1.03) saturate(1.05) contrast(1.04) !important;
