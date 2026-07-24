@@ -61,6 +61,102 @@ export type Database = {
           },
         ]
       }
+      cms_entries: {
+        Row: {
+          content: Json
+          content_type: string
+          created_at: string
+          created_by: string | null
+          id: string
+          locale: string
+          published_at: string | null
+          seo: Json
+          slug: string
+          status: string
+          summary: string | null
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          content?: Json
+          content_type: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          locale?: string
+          published_at?: string | null
+          seo?: Json
+          slug: string
+          status?: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          content?: Json
+          content_type?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          locale?: string
+          published_at?: string | null
+          seo?: Json
+          slug?: string
+          status?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      cms_media: {
+        Row: {
+          alt_text: string | null
+          caption: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          media_type: string
+          metadata: Json
+          mime_type: string
+          public_url: string | null
+          storage_path: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          media_type: string
+          metadata?: Json
+          mime_type: string
+          public_url?: string | null
+          storage_path: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          media_type?: string
+          metadata?: Json
+          mime_type?: string
+          public_url?: string | null
+          storage_path?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       creation_drafts: {
         Row: {
           created_at: string
@@ -160,6 +256,180 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      material_categories: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          display_order: number
+          id: string
+          name: string
+          slug: string
+          status: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_order?: number
+          id?: string
+          name: string
+          slug: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_order?: number
+          id?: string
+          name?: string
+          slug?: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      materials: {
+        Row: {
+          avoid_if: string[]
+          best_used_for: string[]
+          category_id: string
+          clean: number
+          created_at: string
+          created_by: string | null
+          darkness: number
+          description: string | null
+          display_order: number
+          family: string | null
+          floral: number
+          freshness: number
+          green: number
+          id: string
+          image_alt: string | null
+          image_path: string | null
+          intensity: number
+          is_featured: boolean
+          layers: string[]
+          legacy_bench_id: string | null
+          legacy_library_id: string | null
+          longevity: number
+          material_type: string | null
+          media_id: string | null
+          moods: string[]
+          name: string
+          pairs_well_with: string[]
+          powdery: number
+          slug: string
+          status: string
+          strangeness: number
+          sweetness: number
+          tags: string[]
+          updated_at: string
+          updated_by: string | null
+          warmth: number
+          woody: number
+        }
+        Insert: {
+          avoid_if?: string[]
+          best_used_for?: string[]
+          category_id: string
+          clean?: number
+          created_at?: string
+          created_by?: string | null
+          darkness?: number
+          description?: string | null
+          display_order?: number
+          family?: string | null
+          floral?: number
+          freshness?: number
+          green?: number
+          id?: string
+          image_alt?: string | null
+          image_path?: string | null
+          intensity?: number
+          is_featured?: boolean
+          layers?: string[]
+          legacy_bench_id?: string | null
+          legacy_library_id?: string | null
+          longevity?: number
+          material_type?: string | null
+          media_id?: string | null
+          moods?: string[]
+          name: string
+          pairs_well_with?: string[]
+          powdery?: number
+          slug: string
+          status?: string
+          strangeness?: number
+          sweetness?: number
+          tags?: string[]
+          updated_at?: string
+          updated_by?: string | null
+          warmth?: number
+          woody?: number
+        }
+        Update: {
+          avoid_if?: string[]
+          best_used_for?: string[]
+          category_id?: string
+          clean?: number
+          created_at?: string
+          created_by?: string | null
+          darkness?: number
+          description?: string | null
+          display_order?: number
+          family?: string | null
+          floral?: number
+          freshness?: number
+          green?: number
+          id?: string
+          image_alt?: string | null
+          image_path?: string | null
+          intensity?: number
+          is_featured?: boolean
+          layers?: string[]
+          legacy_bench_id?: string | null
+          legacy_library_id?: string | null
+          longevity?: number
+          material_type?: string | null
+          media_id?: string | null
+          moods?: string[]
+          name?: string
+          pairs_well_with?: string[]
+          powdery?: number
+          slug?: string
+          status?: string
+          strangeness?: number
+          sweetness?: number
+          tags?: string[]
+          updated_at?: string
+          updated_by?: string | null
+          warmth?: number
+          woody?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "materials_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "material_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "materials_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "cms_media"
             referencedColumns: ["id"]
           },
         ]
@@ -773,6 +1043,80 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      send_staff_request_message: {
+        Args: { message_body: string; target_request_id: string }
+        Returns: {
+          attachment_url: string | null
+          created_at: string
+          id: string
+          message: string
+          read_at: string | null
+          request_id: string
+          sender_name: string
+          sender_role: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "request_messages"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      staff_transition_review_request: {
+        Args: {
+          activity_label?: string
+          next_status: string
+          proposal?: Json
+          target_request_id: string
+        }
+        Returns: {
+          approved_at: string | null
+          artisan_review: Json | null
+          base_notes: string[]
+          bottle_size: string
+          completed_at: string | null
+          concentration: string
+          country_code: string
+          created_at: string
+          creation_id: string
+          creation_mode: Database["public"]["Enums"]["creation_mode"]
+          currency: string
+          customer_notes: string
+          estimated_price_max: number
+          estimated_price_min: number
+          estimated_production: string | null
+          final_price: number | null
+          fragrance_brief: string
+          fragrance_direction: string[]
+          heart_notes: string[]
+          id: string
+          included_items: string[]
+          paid_at: string | null
+          perfume_name: string
+          preview_snapshot: Json
+          pricing_region: string
+          recommended_adjustments: string[]
+          request_number: string
+          reviewed_at: string | null
+          revisions_included: number | null
+          shipped_at: string | null
+          status: string
+          story_card_data: Json
+          submission_id: string | null
+          submission_snapshot: Json | null
+          submitted_at: string | null
+          top_notes: string[]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "review_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       submit_review_request: {
         Args: { target_request_id: string }
         Returns: {
@@ -962,3 +1306,4 @@ export const Constants = {
     },
   },
 } as const
+

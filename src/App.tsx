@@ -16,6 +16,7 @@ import MyDraftsPage from "./pages/MyDraftsPage";
 import OrderDetailPage from "./features/orders/OrderDetailPage";
 import CheckoutPage from "./features/orders/CheckoutPage";
 import DescribeCreationPage from "./features/describe-creation/DescribeCreationPage";
+import AdminPortalPage from "./features/admin/AdminPortalPage";
 
 export default function App() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
       <Route path="/artisan-reset-password" element={<ArtisanResetPasswordPage />} />
       <Route path="/my-artisan-id" element={<MyArtisanIdPage />} />
       <Route path="/hall-archive" element={<HallArchive />} />
+      <Route path="/admin" element={<AdminPortalPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

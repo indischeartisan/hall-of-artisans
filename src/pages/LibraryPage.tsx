@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect } from "react";
 import GlobalHeader from "../components/GlobalHeader";
+import { loadLibraryCatalog, type LibraryMaterial } from "../features/library/libraryCatalogService";
 
 const libraryStyles = [
   "/assets/css/styles.css?v=17",
@@ -7,11 +8,18 @@ const libraryStyles = [
   "/assets/css/header-consistency.css?v=1"
 ];
 
-const libraryScripts = [
+const libraryDataScripts = [
   "/assets/js/library-data.js?v=4",
-  "/assets/js/library-note-details.js?v=1",
-  "/assets/js/library-modal.js?v=3"
+  "/assets/js/library-note-details.js?v=1"
 ];
+
+const libraryUiScript = "/assets/js/library-modal.js?v=4";
+
+type LibraryWindow = Window & {
+  LIBRARY_CATEGORIES?: string[];
+  LIBRARY_FEATURED_IDS?: string[];
+  LIBRARY_MATERIALS?: LibraryMaterial[];
+};
 
 function loadScript(src: string) {
   return new Promise<HTMLScriptElement>((resolve, reject) => {
@@ -49,11 +57,31 @@ export default function LibraryPage() {
     const loadedScripts: HTMLScriptElement[] = [];
 
     const startLibrary = async () => {
-      for (const src of libraryScripts) {
+      for (const src of libraryDataScripts) {
         const script = await loadScript(src);
         loadedScripts.push(script);
-        if (cancelled) break;
+        if (cancelled) return;
       }
+
+      try {
+        const catalog = await loadLibraryCatalog();
+        if (catalog && !cancelled) {
+          const libraryWindow = window as LibraryWindow;
+          libraryWindow.LIBRARY_CATEGORIES = catalog.categories;
+          libraryWindow.LIBRARY_FEATURED_IDS = catalog.featuredIds;
+          libraryWindow.LIBRARY_MATERIALS = catalog.materials;
+          document.body.dataset.libraryCatalogSource = "supabase";
+        } else {
+          document.body.dataset.libraryCatalogSource = "legacy";
+        }
+      } catch (error) {
+        document.body.dataset.libraryCatalogSource = "legacy";
+        console.warn("Supabase material catalog unavailable; using the local Library catalog.", error);
+      }
+
+      if (cancelled) return;
+      const uiScript = await loadScript(libraryUiScript);
+      loadedScripts.push(uiScript);
     };
 
     void startLibrary().catch((error) => {
@@ -62,6 +90,7 @@ export default function LibraryPage() {
 
     return () => {
       cancelled = true;
+      delete document.body.dataset.libraryCatalogSource;
       loadedScripts.forEach((script) => script.remove());
     };
   }, []);

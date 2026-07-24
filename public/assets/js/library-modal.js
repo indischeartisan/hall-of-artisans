@@ -14,6 +14,26 @@
   let activeCategory = "Featured Materials";
   let query = "";
 
+  function escapeHtml(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function safeImageSource(value) {
+    const source = String(value || "").trim();
+    if (!source) return "";
+    try {
+      const url = new URL(source, window.location.origin);
+      return url.protocol === "http:" || url.protocol === "https:" ? source : "";
+    } catch (_error) {
+      return "";
+    }
+  }
+
   function normalize(value) {
     return String(value || "").toLowerCase().trim();
   }
@@ -48,23 +68,24 @@
   }
 
   function materialIconMarkup(material) {
-    if (material.iconImage) {
-      return `<img src="${material.iconImage}" alt="" loading="lazy" decoding="async">`;
+    const imageSource = safeImageSource(material.iconImage);
+    if (imageSource) {
+      return `<img src="${escapeHtml(imageSource)}" alt="${escapeHtml(material.imageAlt || "")}" loading="lazy" decoding="async">`;
     }
 
-    return material.icon || "✦";
+    return escapeHtml(material.icon || "✦");
   }
 
   function materialCard(material) {
-    const tags = (material.mood || []).slice(0, 3).map((tag) => `<span>${tag}</span>`).join("");
+    const tags = (material.mood || []).slice(0, 3).map((tag) => `<span>${escapeHtml(tag)}</span>`).join("");
     return `
-      <article class="library-card" data-material-id="${material.id}">
+      <article class="library-card" data-material-id="${escapeHtml(material.id)}">
         <div class="library-card-ornament" aria-hidden="true"></div>
         <div class="material-illustration" aria-hidden="true">${materialIconMarkup(material)}</div>
-        <h2>${material.name}</h2>
-        <p class="material-family">${(material.families || [material.type])[0]}</p>
+        <h2>${escapeHtml(material.name)}</h2>
+        <p class="material-family">${escapeHtml((material.families || [material.type])[0])}</p>
         <div class="material-tags">${tags}</div>
-        <button class="library-open-button" type="button" data-open-material="${material.id}">Open</button>
+        <button class="library-open-button" type="button" data-open-material="${escapeHtml(material.id)}">Open</button>
       </article>
     `;
   }
@@ -72,9 +93,9 @@
   function lockedCard(material) {
     return `
       <article class="locked-material" aria-disabled="true">
-        <div class="locked-art" aria-hidden="true">${material.icon || "✦"}</div>
+        <div class="locked-art" aria-hidden="true">${escapeHtml(material.icon || "✦")}</div>
         <span class="lock-mark" aria-hidden="true">🔒</span>
-        <h3>${material.name}</h3>
+        <h3>${escapeHtml(material.name)}</h3>
         <p>Coming Soon</p>
       </article>
     `;
@@ -83,7 +104,7 @@
   function renderChips() {
     chipRail.innerHTML = categories.map((category) => {
       const active = category === activeCategory ? " active" : "";
-      return `<button class="category-chip${active}" type="button" data-category="${category}">${category}</button>`;
+      return `<button class="category-chip${active}" type="button" data-category="${escapeHtml(category)}">${escapeHtml(category)}</button>`;
     }).join("");
   }
 
@@ -108,8 +129,8 @@
     const list = toList(items);
     return `
       <section class="detail-field">
-        <h3>${title}</h3>
-        <p>${list.join(", ")}</p>
+        <h3>${escapeHtml(title)}</h3>
+        <p>${list.map(escapeHtml).join(", ")}</p>
       </section>
     `;
   }
@@ -122,8 +143,8 @@
       <div class="detail-heading">
         <div class="detail-icon" aria-hidden="true">${materialIconMarkup(material)}</div>
         <div>
-          <p class="detail-kicker">${material.type}</p>
-          <h2>${material.name}</h2>
+          <p class="detail-kicker">${escapeHtml(material.type)}</p>
+          <h2>${escapeHtml(material.name)}</h2>
         </div>
       </div>
       <div class="detail-grid">
@@ -136,7 +157,7 @@
       </div>
       <section class="detail-description">
         <h3>Description</h3>
-        <p>${material.description}</p>
+        <p>${escapeHtml(material.description)}</p>
       </section>
     `;
 

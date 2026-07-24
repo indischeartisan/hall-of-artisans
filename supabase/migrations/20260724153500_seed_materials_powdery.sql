@@ -1,0 +1,63 @@
+-- Generated from public/assets/js/fragrance-data.js and library-data.js.
+with source as (
+  select * from jsonb_to_recordset($materials$[{"slug":"iris","legacy_library_id":"iris","legacy_bench_id":"iris","category_slug":"powdery","name":"Iris","material_type":"Note","family":"Powdery","layers":["base"],"tags":["rooty","elegant","powder","iris"],"moods":["Elegant","Petal-soft","Romantic"],"description":"Iris gives a soft powdery impression with cosmetic elegance and a muted vintage texture. It can blur sharp edges and make floral, musk, or gourmand ideas feel more intimate.","best_used_for":["Floral hearts","Signature bouquets","Powdery structures","Soft emotional accords"],"pairs_well_with":["Bergamot","Violet Leaf","White Musk","Cedarwood","Vanilla","Patchouli"],"avoid_if":["You dislike petal, pollen, or classic perfume character"],"image_path":null,"image_alt":null,"freshness":4,"sweetness":4,"warmth":3,"green":2,"floral":5,"woody":2,"powdery":9,"clean":4,"darkness":1,"strangeness":2,"intensity":6,"longevity":8,"is_featured":false,"display_order":45,"status":"active"},{"slug":"orris","legacy_library_id":"orris","legacy_bench_id":"orris","category_slug":"powdery","name":"Orris","material_type":"Note","family":"Powdery","layers":["base"],"tags":["buttery","rooty","luxury","orris"],"moods":["Soft","Cosmetic","Nostalgic"],"description":"Orris gives a soft powdery impression with cosmetic elegance and a muted vintage texture. It can blur sharp edges and make floral, musk, or gourmand ideas feel more intimate.","best_used_for":["Powdery hearts","Vintage elegance","Soft skin effects","Iris, violet, and musk compositions"],"pairs_well_with":["Orris","Violet","White Musk","Rose","Almond","Vanilla"],"avoid_if":["You dislike talc, makeup, dry powder, or vintage cosmetic softness"],"image_path":null,"image_alt":null,"freshness":4,"sweetness":4,"warmth":3,"green":2,"floral":4,"woody":2,"powdery":10,"clean":4,"darkness":1,"strangeness":2,"intensity":6,"longevity":9,"is_featured":false,"display_order":46,"status":"active"},{"slug":"rice-powder","legacy_library_id":"rice-powder","legacy_bench_id":"rice_powder","category_slug":"powdery","name":"Rice Powder","material_type":"Note","family":"Powdery","layers":["heart","base"],"tags":["soft","cosmetic","velvet","rice","powder"],"moods":["Soft","Clean","Nostalgic"],"description":"A delicate powdery material with a soft cosmetic texture, useful for making florals, musks, and gentle gourmand ideas feel smoother and more intimate.","best_used_for":["Powdery hearts","Soft skin effects","Gentle floral musks","Quiet vintage compositions"],"pairs_well_with":["Orris","Violet Powder","White Musk","Almond Powder","Rose","Vanilla"],"avoid_if":["You dislike talc-like softness or cosmetic powder texture"],"image_path":null,"image_alt":null,"freshness":2,"sweetness":4,"warmth":4,"green":0,"floral":3,"woody":1,"powdery":9,"clean":5,"darkness":1,"strangeness":2,"intensity":4,"longevity":6,"is_featured":false,"display_order":209,"status":"active"},{"slug":"white-powder-accord","legacy_library_id":"white-powder-accord","legacy_bench_id":"white_powder_accord","category_slug":"powdery","name":"White Powder Accord","material_type":"Accord","family":"Powdery","layers":["heart","base"],"tags":["soft","cosmetic","velvet","white","powder"],"moods":["Soft","Cosmetic","Nostalgic"],"description":"White Powder Accord gives a soft powdery impression with cosmetic elegance and a muted vintage texture. It can blur sharp edges and make floral, musk, or gourmand ideas feel more intimate.","best_used_for":["Powdery hearts","Vintage elegance","Soft skin effects","Iris, violet, and musk compositions"],"pairs_well_with":["Orris","Violet","White Musk","Rose","Almond","Vanilla"],"avoid_if":["You dislike talc, makeup, dry powder, or vintage cosmetic softness"],"image_path":null,"image_alt":null,"freshness":2,"sweetness":4,"warmth":4,"green":0,"floral":3,"woody":1,"powdery":9,"clean":5,"darkness":1,"strangeness":2,"intensity":4,"longevity":6,"is_featured":false,"display_order":210,"status":"active"},{"slug":"cosmetic-powder","legacy_library_id":"cosmetic-powder","legacy_bench_id":"cosmetic_powder","category_slug":"powdery","name":"Cosmetic Powder","material_type":"Note","family":"Powdery","layers":["heart","base"],"tags":["soft","cosmetic","velvet","powder"],"moods":["Soft","Cosmetic","Nostalgic"],"description":"Cosmetic Powder gives a soft powdery impression with cosmetic elegance and a muted vintage texture. It can blur sharp edges and make floral, musk, or gourmand ideas feel more intimate.","best_used_for":["Powdery hearts","Vintage elegance","Soft skin effects","Iris, violet, and musk compositions"],"pairs_well_with":["Orris","Violet","White Musk","Rose","Almond","Vanilla"],"avoid_if":["You dislike talc, makeup, dry powder, or vintage cosmetic softness"],"image_path":null,"image_alt":null,"freshness":2,"sweetness":4,"warmth":4,"green":0,"floral":3,"woody":1,"powdery":9,"clean":5,"darkness":1,"strangeness":2,"intensity":4,"longevity":6,"is_featured":false,"display_order":211,"status":"active"},{"slug":"baby-powder","legacy_library_id":"baby-powder","legacy_bench_id":"baby_powder","category_slug":"powdery","name":"Baby Powder","material_type":"Note","family":"Powdery","layers":["heart","base"],"tags":["soft","cosmetic","velvet","baby","powder"],"moods":["Soft","Cosmetic","Nostalgic"],"description":"Baby Powder gives a soft powdery impression with cosmetic elegance and a muted vintage texture. It can blur sharp edges and make floral, musk, or gourmand ideas feel more intimate.","best_used_for":["Powdery hearts","Vintage elegance","Soft skin effects","Iris, violet, and musk compositions"],"pairs_well_with":["Orris","Violet","White Musk","Rose","Almond","Vanilla"],"avoid_if":["You dislike talc, makeup, dry powder, or vintage cosmetic softness"],"image_path":null,"image_alt":null,"freshness":2,"sweetness":4,"warmth":4,"green":0,"floral":3,"woody":1,"powdery":9,"clean":5,"darkness":1,"strangeness":2,"intensity":4,"longevity":6,"is_featured":false,"display_order":212,"status":"active"},{"slug":"lipstick-accord","legacy_library_id":"lipstick-accord","legacy_bench_id":"lipstick_accord","category_slug":"powdery","name":"Lipstick Accord","material_type":"Accord","family":"Powdery","layers":["heart","base"],"tags":["cosmetic","retro","waxy","lipstick","accord"],"moods":["Soft","Cosmetic","Nostalgic"],"description":"Lipstick Accord is a powdery material used to shape the perfume's mood, structure, and storytelling direction.","best_used_for":["Powdery hearts","Vintage elegance","Soft skin effects","Iris, violet, and musk compositions"],"pairs_well_with":["Orris","Violet","White Musk","Rose","Almond","Vanilla"],"avoid_if":["You dislike talc, makeup, dry powder, or vintage cosmetic softness"],"image_path":null,"image_alt":null,"freshness":2,"sweetness":4,"warmth":4,"green":0,"floral":4,"woody":1,"powdery":8,"clean":5,"darkness":1,"strangeness":2,"intensity":4,"longevity":6,"is_featured":false,"display_order":213,"status":"active"},{"slug":"almond-powder","legacy_library_id":"almond-powder","legacy_bench_id":"almond_powder","category_slug":"powdery","name":"Almond Powder","material_type":"Note","family":"Powdery","layers":["heart","base"],"tags":["soft","cosmetic","velvet","almond","powder"],"moods":["Soft","Cosmetic","Nostalgic"],"description":"Almond Powder gives a soft powdery impression with cosmetic elegance and a muted vintage texture. It can blur sharp edges and make floral, musk, or gourmand ideas feel more intimate.","best_used_for":["Powdery hearts","Vintage elegance","Soft skin effects","Iris, violet, and musk compositions"],"pairs_well_with":["Orris","Violet","White Musk","Rose","Almond","Vanilla"],"avoid_if":["You dislike talc, makeup, dry powder, or vintage cosmetic softness"],"image_path":null,"image_alt":null,"freshness":2,"sweetness":4,"warmth":4,"green":0,"floral":3,"woody":1,"powdery":9,"clean":5,"darkness":1,"strangeness":2,"intensity":4,"longevity":6,"is_featured":false,"display_order":214,"status":"active"},{"slug":"violet-powder","legacy_library_id":"violet-powder","legacy_bench_id":"violet_powder","category_slug":"powdery","name":"Violet Powder","material_type":"Note","family":"Powdery","layers":["heart","base"],"tags":["soft","cosmetic","velvet","violet","powder"],"moods":["Soft","Cosmetic","Nostalgic"],"description":"Violet Powder gives a soft powdery impression with cosmetic elegance and a muted vintage texture. It can blur sharp edges and make floral, musk, or gourmand ideas feel more intimate.","best_used_for":["Powdery hearts","Vintage elegance","Soft skin effects","Iris, violet, and musk compositions"],"pairs_well_with":["Orris","Violet","White Musk","Rose","Almond","Vanilla"],"avoid_if":["You dislike talc, makeup, dry powder, or vintage cosmetic softness"],"image_path":null,"image_alt":null,"freshness":2,"sweetness":4,"warmth":4,"green":0,"floral":3,"woody":1,"powdery":9,"clean":5,"darkness":1,"strangeness":2,"intensity":4,"longevity":6,"is_featured":false,"display_order":215,"status":"active"},{"slug":"soft-talc","legacy_library_id":"soft-talc","legacy_bench_id":"soft_talc","category_slug":"powdery","name":"Soft Talc","material_type":"Note","family":"Powdery","layers":["heart","base"],"tags":["soft","cosmetic","velvet","talc"],"moods":["Soft","Cosmetic","Nostalgic"],"description":"Soft Talc is a powdery material used to shape the perfume's mood, structure, and storytelling direction.","best_used_for":["Powdery hearts","Vintage elegance","Soft skin effects","Iris, violet, and musk compositions"],"pairs_well_with":["Orris","Violet","White Musk","Rose","Almond","Vanilla"],"avoid_if":["You dislike talc, makeup, dry powder, or vintage cosmetic softness"],"image_path":null,"image_alt":null,"freshness":2,"sweetness":4,"warmth":4,"green":0,"floral":3,"woody":1,"powdery":9,"clean":5,"darkness":1,"strangeness":2,"intensity":4,"longevity":6,"is_featured":false,"display_order":216,"status":"active"}]$materials$::jsonb)
+    as x(
+      slug text, legacy_library_id text, legacy_bench_id text, category_slug text,
+      name text, material_type text, family text, layers text[], tags text[], moods text[],
+      description text, best_used_for text[], pairs_well_with text[], avoid_if text[],
+      image_path text, image_alt text,
+      freshness smallint, sweetness smallint, warmth smallint, green smallint,
+      floral smallint, woody smallint, powdery smallint, clean smallint,
+      darkness smallint, strangeness smallint, intensity smallint, longevity smallint,
+      is_featured boolean, display_order integer, status text
+    )
+)
+insert into public.materials (
+  slug, legacy_library_id, legacy_bench_id, category_id, name, material_type, family,
+  layers, tags, moods, description, best_used_for, pairs_well_with, avoid_if,
+  image_path, image_alt, freshness, sweetness, warmth, green, floral, woody,
+  powdery, clean, darkness, strangeness, intensity, longevity,
+  is_featured, display_order, status
+)
+select
+  source.slug, source.legacy_library_id, source.legacy_bench_id, categories.id,
+  source.name, source.material_type, source.family, source.layers, source.tags,
+  source.moods, source.description, source.best_used_for, source.pairs_well_with,
+  source.avoid_if, source.image_path, source.image_alt, source.freshness,
+  source.sweetness, source.warmth, source.green, source.floral, source.woody,
+  source.powdery, source.clean, source.darkness, source.strangeness,
+  source.intensity, source.longevity, source.is_featured, source.display_order,
+  source.status
+from source
+join public.material_categories categories on categories.slug = source.category_slug
+on conflict (slug) do update set
+  legacy_library_id = excluded.legacy_library_id,
+  legacy_bench_id = excluded.legacy_bench_id,
+  category_id = excluded.category_id,
+  name = excluded.name,
+  material_type = excluded.material_type,
+  family = excluded.family,
+  layers = excluded.layers,
+  tags = excluded.tags,
+  moods = excluded.moods,
+  description = excluded.description,
+  best_used_for = excluded.best_used_for,
+  pairs_well_with = excluded.pairs_well_with,
+  avoid_if = excluded.avoid_if,
+  image_path = excluded.image_path,
+  image_alt = excluded.image_alt,
+  freshness = excluded.freshness,
+  sweetness = excluded.sweetness,
+  warmth = excluded.warmth,
+  green = excluded.green,
+  floral = excluded.floral,
+  woody = excluded.woody,
+  powdery = excluded.powdery,
+  clean = excluded.clean,
+  darkness = excluded.darkness,
+  strangeness = excluded.strangeness,
+  intensity = excluded.intensity,
+  longevity = excluded.longevity,
+  is_featured = excluded.is_featured,
+  display_order = excluded.display_order,
+  status = excluded.status;
