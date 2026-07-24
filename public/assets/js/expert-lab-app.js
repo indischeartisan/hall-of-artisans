@@ -739,6 +739,13 @@ $('saveDraft').addEventListener('click', () => {
   window.dispatchEvent(new CustomEvent('hoa:artisan-bench-save-request', { detail: buildBenchSnapshot() }));
 });
 
+window.addEventListener('hoa:artisan-bench-preview-request', () => {
+  renderMessages();
+  renderBrief();
+  scheduleStoryCardPreview();
+  emitBenchState();
+}, { signal: bridgeController.signal });
+
 updateAll();
 renderMessages();
 renderBrief();

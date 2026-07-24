@@ -108,6 +108,132 @@ export type Database = {
           },
         ]
       }
+      customer_orders: {
+        Row: {
+          amount: number
+          checkout_details: Json
+          created_at: string
+          currency: string
+          id: string
+          order_number: string
+          payment_status: string
+          production_status: string
+          shipping_preference: string
+          shipping_status: string
+          tracking_number: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          checkout_details: Json
+          created_at?: string
+          currency: string
+          id?: string
+          order_number: string
+          payment_status?: string
+          production_status?: string
+          shipping_preference?: string
+          shipping_status?: string
+          tracking_number?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          checkout_details?: Json
+          created_at?: string
+          currency?: string
+          id?: string
+          order_number?: string
+          payment_status?: string
+          production_status?: string
+          shipping_preference?: string
+          shipping_status?: string
+          tracking_number?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          amount: number
+          created_at: string
+          creation_name: string
+          currency: string
+          id: string
+          order_id: string
+          production_status: string
+          review_request_id: string
+          shipping_status: string
+          submission_id: string
+          submission_snapshot: Json
+          tracking_number: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          creation_name: string
+          currency: string
+          id?: string
+          order_id: string
+          production_status?: string
+          review_request_id: string
+          shipping_status?: string
+          submission_id: string
+          submission_snapshot: Json
+          tracking_number?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          creation_name?: string
+          currency?: string
+          id?: string
+          order_id?: string
+          production_status?: string
+          review_request_id?: string
+          shipping_status?: string
+          submission_id?: string
+          submission_snapshot?: Json
+          tracking_number?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_review_request_id_fkey"
+            columns: ["review_request_id"]
+            isOneToOne: true
+            referencedRelation: "review_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -143,6 +269,233 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      request_activity: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          label: string
+          metadata: Json
+          request_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          label: string
+          metadata?: Json
+          request_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          label?: string
+          metadata?: Json
+          request_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_activity_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "review_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      request_messages: {
+        Row: {
+          attachment_url: string | null
+          created_at: string
+          id: string
+          message: string
+          read_at: string | null
+          request_id: string
+          sender_name: string
+          sender_role: string
+          user_id: string
+        }
+        Insert: {
+          attachment_url?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          read_at?: string | null
+          request_id: string
+          sender_name: string
+          sender_role: string
+          user_id: string
+        }
+        Update: {
+          attachment_url?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          read_at?: string | null
+          request_id?: string
+          sender_name?: string
+          sender_role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_messages_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "review_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      review_requests: {
+        Row: {
+          approved_at: string | null
+          artisan_review: Json | null
+          base_notes: string[]
+          bottle_size: string
+          completed_at: string | null
+          concentration: string
+          country_code: string
+          created_at: string
+          creation_id: string
+          creation_mode: Database["public"]["Enums"]["creation_mode"]
+          currency: string
+          customer_notes: string
+          estimated_price_max: number
+          estimated_price_min: number
+          estimated_production: string | null
+          final_price: number | null
+          fragrance_brief: string
+          fragrance_direction: string[]
+          heart_notes: string[]
+          id: string
+          included_items: string[]
+          paid_at: string | null
+          perfume_name: string
+          preview_snapshot: Json
+          pricing_region: string
+          recommended_adjustments: string[]
+          request_number: string
+          reviewed_at: string | null
+          revisions_included: number | null
+          shipped_at: string | null
+          status: string
+          story_card_data: Json
+          submission_id: string | null
+          submission_snapshot: Json | null
+          submitted_at: string | null
+          top_notes: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          artisan_review?: Json | null
+          base_notes?: string[]
+          bottle_size: string
+          completed_at?: string | null
+          concentration: string
+          country_code?: string
+          created_at?: string
+          creation_id?: string
+          creation_mode: Database["public"]["Enums"]["creation_mode"]
+          currency?: string
+          customer_notes?: string
+          estimated_price_max?: number
+          estimated_price_min?: number
+          estimated_production?: string | null
+          final_price?: number | null
+          fragrance_brief?: string
+          fragrance_direction?: string[]
+          heart_notes?: string[]
+          id?: string
+          included_items?: string[]
+          paid_at?: string | null
+          perfume_name: string
+          preview_snapshot: Json
+          pricing_region?: string
+          recommended_adjustments?: string[]
+          request_number?: string
+          reviewed_at?: string | null
+          revisions_included?: number | null
+          shipped_at?: string | null
+          status?: string
+          story_card_data?: Json
+          submission_id?: string | null
+          submission_snapshot?: Json | null
+          submitted_at?: string | null
+          top_notes?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          artisan_review?: Json | null
+          base_notes?: string[]
+          bottle_size?: string
+          completed_at?: string | null
+          concentration?: string
+          country_code?: string
+          created_at?: string
+          creation_id?: string
+          creation_mode?: Database["public"]["Enums"]["creation_mode"]
+          currency?: string
+          customer_notes?: string
+          estimated_price_max?: number
+          estimated_price_min?: number
+          estimated_production?: string | null
+          final_price?: number | null
+          fragrance_brief?: string
+          fragrance_direction?: string[]
+          heart_notes?: string[]
+          id?: string
+          included_items?: string[]
+          paid_at?: string | null
+          perfume_name?: string
+          preview_snapshot?: Json
+          pricing_region?: string
+          recommended_adjustments?: string[]
+          request_number?: string
+          reviewed_at?: string | null
+          revisions_included?: number | null
+          shipped_at?: string | null
+          status?: string
+          story_card_data?: Json
+          submission_id?: string | null
+          submission_snapshot?: Json | null
+          submitted_at?: string | null
+          top_notes?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -221,6 +574,132 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      create_order_checkout: {
+        Args: { checkout_payload: Json; request_ids: string[] }
+        Returns: {
+          amount: number
+          checkout_details: Json
+          created_at: string
+          currency: string
+          id: string
+          order_number: string
+          payment_status: string
+          production_status: string
+          shipping_preference: string
+          shipping_status: string
+          tracking_number: string | null
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "customer_orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_review_preview: {
+        Args: { request_payload: Json }
+        Returns: {
+          approved_at: string | null
+          artisan_review: Json | null
+          base_notes: string[]
+          bottle_size: string
+          completed_at: string | null
+          concentration: string
+          country_code: string
+          created_at: string
+          creation_id: string
+          creation_mode: Database["public"]["Enums"]["creation_mode"]
+          currency: string
+          customer_notes: string
+          estimated_price_max: number
+          estimated_price_min: number
+          estimated_production: string | null
+          final_price: number | null
+          fragrance_brief: string
+          fragrance_direction: string[]
+          heart_notes: string[]
+          id: string
+          included_items: string[]
+          paid_at: string | null
+          perfume_name: string
+          preview_snapshot: Json
+          pricing_region: string
+          recommended_adjustments: string[]
+          request_number: string
+          reviewed_at: string | null
+          revisions_included: number | null
+          shipped_at: string | null
+          status: string
+          story_card_data: Json
+          submission_id: string | null
+          submission_snapshot: Json | null
+          submitted_at: string | null
+          top_notes: string[]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "review_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      customer_transition_review_request: {
+        Args: {
+          activity_label?: string
+          next_status: string
+          target_request_id: string
+        }
+        Returns: {
+          approved_at: string | null
+          artisan_review: Json | null
+          base_notes: string[]
+          bottle_size: string
+          completed_at: string | null
+          concentration: string
+          country_code: string
+          created_at: string
+          creation_id: string
+          creation_mode: Database["public"]["Enums"]["creation_mode"]
+          currency: string
+          customer_notes: string
+          estimated_price_max: number
+          estimated_price_min: number
+          estimated_production: string | null
+          final_price: number | null
+          fragrance_brief: string
+          fragrance_direction: string[]
+          heart_notes: string[]
+          id: string
+          included_items: string[]
+          paid_at: string | null
+          perfume_name: string
+          preview_snapshot: Json
+          pricing_region: string
+          recommended_adjustments: string[]
+          request_number: string
+          reviewed_at: string | null
+          revisions_included: number | null
+          shipped_at: string | null
+          status: string
+          story_card_data: Json
+          submission_id: string | null
+          submission_snapshot: Json | null
+          submitted_at: string | null
+          top_notes: string[]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "review_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       issue_artisan_id: {
         Args: never
         Returns: {
@@ -273,6 +752,75 @@ export type Database = {
           target_user_id: string
         }
         Returns: undefined
+      }
+      send_customer_request_message: {
+        Args: { message_body: string; target_request_id: string }
+        Returns: {
+          attachment_url: string | null
+          created_at: string
+          id: string
+          message: string
+          read_at: string | null
+          request_id: string
+          sender_name: string
+          sender_role: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "request_messages"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      submit_review_request: {
+        Args: { target_request_id: string }
+        Returns: {
+          approved_at: string | null
+          artisan_review: Json | null
+          base_notes: string[]
+          bottle_size: string
+          completed_at: string | null
+          concentration: string
+          country_code: string
+          created_at: string
+          creation_id: string
+          creation_mode: Database["public"]["Enums"]["creation_mode"]
+          currency: string
+          customer_notes: string
+          estimated_price_max: number
+          estimated_price_min: number
+          estimated_production: string | null
+          final_price: number | null
+          fragrance_brief: string
+          fragrance_direction: string[]
+          heart_notes: string[]
+          id: string
+          included_items: string[]
+          paid_at: string | null
+          perfume_name: string
+          preview_snapshot: Json
+          pricing_region: string
+          recommended_adjustments: string[]
+          request_number: string
+          reviewed_at: string | null
+          revisions_included: number | null
+          shipped_at: string | null
+          status: string
+          story_card_data: Json
+          submission_id: string | null
+          submission_snapshot: Json | null
+          submitted_at: string | null
+          top_notes: string[]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "review_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {

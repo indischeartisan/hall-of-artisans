@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import GlobalHeader from "../components/GlobalHeader";
+import DraftsModal from "../components/DraftsModal";
 import { useDrafts } from "../contexts/DraftContext";
 import { authService } from "../features/auth/authService";
+import { orderService } from "../features/orders/orderService";
 import { isArtisanBenchDraft, type ArtisanBenchState, type NewDraftData } from "../types/perfumeDraft";
 
 type Theme = "dark" | "bright";
@@ -40,7 +42,7 @@ const scripts = [
   "/assets/js/fragrance-data.js?v=4",
   "/assets/js/formula-engine.js?v=5",
   "/assets/js/story-card-generator.js?v=1",
-  "/assets/js/expert-lab-app.js?v=12"
+  "/assets/js/expert-lab-app.js?v=13"
 ];
 
 function loadScript(src: string) {
@@ -54,17 +56,6 @@ function loadScript(src: string) {
   });
 }
 
-function hasArtisanIdentity() {
-  try {
-    const stored = window.localStorage.getItem("hallArtisanProfile") || window.localStorage.getItem("hallOfArtisans.perfumerId") || window.localStorage.getItem("hallOfArtisans.artisanId");
-    if (!stored) return false;
-    const identity = JSON.parse(stored) as { artisanId?: string; perfumerId?: string };
-    return Boolean(identity.artisanId || identity.perfumerId);
-  } catch {
-    return false;
-  }
-}
-
 export default function ArtisanBenchPage() {
   const navigate = useNavigate();
   const { activeDraft: activeCreationDraft, clearActiveDraft, createDraft, saveDraft, source } = useDrafts();
@@ -72,9 +63,11 @@ export default function ArtisanBenchPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [draftSaveStatus, setDraftSaveStatus] = useState("");
+  const [draftsOpen, setDraftsOpen] = useState(false);
   const savedSignature = useRef(activeDraft ? JSON.stringify(activeDraft.benchState) : "");
   const hasBaseline = useRef(Boolean(activeDraft));
   const pendingRestore = useRef(activeDraft?.benchState ?? null);
+  const latestBenchState = useRef<ArtisanBenchState>(activeDraft?.benchState ?? createEmptyBenchState());
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = window.localStorage.getItem("hoa-theme");
     return saved === "dark" || saved === "bright" ? saved : "bright";
@@ -163,6 +156,7 @@ export default function ArtisanBenchPage() {
     const emptyState = createEmptyBenchState();
     clearActiveDraft();
     pendingRestore.current = null;
+    latestBenchState.current = emptyState;
     savedSignature.current = JSON.stringify(emptyState);
     hasBaseline.current = false;
     setIsDirty(false);
@@ -174,6 +168,7 @@ export default function ArtisanBenchPage() {
     const onState = (event: Event) => {
       const snapshot = (event as CustomEvent<ArtisanBenchState>).detail;
       if (!snapshot || !Array.isArray(snapshot.formula) || !snapshot.formulaMetadata) return;
+      latestBenchState.current = snapshot;
       if (!hasBaseline.current) {
         savedSignature.current = JSON.stringify(snapshot);
         hasBaseline.current = true;
@@ -259,8 +254,34 @@ export default function ArtisanBenchPage() {
     window.localStorage.setItem("hoa-theme", nextTheme);
   };
 
-  const openMakeItReal = () => {
-    navigate(hasArtisanIdentity() ? "/bespoke-atelier" : "/artisan-register");
+  const previewCreation = async () => {
+    window.dispatchEvent(new CustomEvent("hoa:artisan-bench-preview-request"));
+    const snapshot = latestBenchState.current;
+    const bridgeWindow = window as typeof window & {
+      fragranceData?: { materials?: Array<{ id: string; name: string }> };
+    };
+    const materialNames = Object.fromEntries((bridgeWindow.fragranceData?.materials ?? []).map(material => [material.id, material.name]));
+    setDraftSaveStatus("Creating your preview in My Orders...");
+    try {
+      const name = activeDraft?.draftName || snapshot.perfumeName.trim() || "Untitled Artisan Bench Draft";
+      const linkedDraft = activeDraft
+        ? await saveDraft(activeDraft.id, draftData(snapshot, name))
+        : await createDraft(draftData(snapshot, name));
+      if (!linkedDraft) throw new Error("The current draft could not be linked to this preview.");
+      savedSignature.current = JSON.stringify(snapshot);
+      setIsDirty(false);
+      const request = await orderService.createArtisanBenchPreview(snapshot, linkedDraft.id, materialNames);
+      navigate(`/my-orders/${request.id}`);
+    } catch (requestError) {
+      const detail = requestError instanceof Error ? requestError.message : "The preview could not be created.";
+      if (detail.toLowerCase().includes("sign in")) {
+        window.localStorage.setItem("hallOfArtisans.pendingArtisanBenchPreview", JSON.stringify(snapshot));
+        setDraftSaveStatus("Sign in or register to add this preview to My Orders.");
+        navigate("/artisan-login");
+        return;
+      }
+      setDraftSaveStatus(detail);
+    }
   };
 
   const themeToggle = (
@@ -417,8 +438,8 @@ export default function ArtisanBenchPage() {
             <div className="next-actions">
               <button className="panel-button" type="button" onClick={startNewDraft}>New Draft</button>
               <button id="saveDraft" className="panel-button" type="button">Save Draft</button>
-              <button className="panel-button" type="button" onClick={() => navigate("/my-drafts")}>My Drafts</button>
-              <button className="gold gold-button" type="button" onClick={openMakeItReal}>Preview</button>
+              <button className="panel-button" type="button" onClick={() => setDraftsOpen(true)}>My Drafts</button>
+              <button className="gold gold-button" type="button" onClick={previewCreation}>Preview</button>
             </div>
             <p className="story-card-message" role="status" aria-live="polite">{draftSaveStatus}</p>
           </section>
@@ -442,6 +463,7 @@ export default function ArtisanBenchPage() {
           <div id="dialogMaterials" />
         </form>
       </dialog>
+      <DraftsModal open={draftsOpen} onClose={() => setDraftsOpen(false)} initialMode="artisan_bench" />
     </>
   );
 }

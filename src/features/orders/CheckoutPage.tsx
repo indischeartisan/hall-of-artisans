@@ -16,12 +16,13 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     orderService.ensureDemoData();
-    const available = orderService.getCheckoutEligibleRequests();
-    setEligible(available);
-    const stored = orderService.getCheckoutSelection().filter((id) => available.some((item) => item.id === id));
-    const initial = requestId && available.some((item) => item.id === requestId) ? [...new Set([requestId, ...stored])] : stored;
-    setSelectedIds(initial);
-    orderService.setCheckoutSelection(initial);
+    void orderService.getCheckoutEligibleRequests().then(available => {
+      setEligible(available);
+      const stored = orderService.getCheckoutSelection().filter((id) => available.some((item) => item.id === id));
+      const initial = requestId && available.some((item) => item.id === requestId) ? [...new Set([requestId, ...stored])] : stored;
+      setSelectedIds(initial);
+      orderService.setCheckoutSelection(initial);
+    }).catch(error => setError(error instanceof Error ? error.message : "Checkout could not be loaded."));
   }, [requestId]);
 
   const selected = useMemo(() => eligible.filter((item) => selectedIds.includes(item.id)), [eligible, selectedIds]);

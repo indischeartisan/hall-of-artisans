@@ -9,6 +9,7 @@ import "./styles/artisan-bench-shell.css";
 import "./styles/artisan-profile.css";
 import "./styles/my-artisan-id.css";
 import "./styles/my-drafts.css";
+import "./styles/drafts-modal.css";
 import "./styles/order-detail.css";
 import "./styles/order-detail-overrides.css";
 import "./styles/describe-creation.css";

@@ -17,8 +17,8 @@ export interface DescribedCreationInput { creationTitle: string; story: string; 
 const makeId = () => `snapshot-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`}`;
 const clone = <T,>(value:T):T => JSON.parse(JSON.stringify(value)) as T;
 
-export function createDescribedCreationSnapshot(input: DescribedCreationInput, createdAt = new Date().toISOString()): CreationSubmissionSnapshot {
-  return clone({schemaVersion:SUBMISSION_SNAPSHOT_SCHEMA_VERSION,snapshotId:makeId(),sourceDraftId:null,creationMode:"described",title:input.creationTitle.trim(),perfumeName:input.creationTitle.trim(),concentration:"To be interpreted",formulaMaterials:[],formulaMetadata:null,fragranceBrief:null,storyCardData:null,writtenStory:input.story.trim(),preferredNotes:[...input.preferredNotes],notesToAvoid:[...input.notesToAvoid],moodOrDirection:[...input.preferredNotes],additionalNotes:input.additionalNotes.trim(),createdAt});
+export function createDescribedCreationSnapshot(input: DescribedCreationInput, createdAt = new Date().toISOString(), sourceDraftId: string | null = null): CreationSubmissionSnapshot {
+  return clone({schemaVersion:SUBMISSION_SNAPSHOT_SCHEMA_VERSION,snapshotId:makeId(),sourceDraftId,creationMode:"described",title:input.creationTitle.trim(),perfumeName:input.creationTitle.trim(),concentration:"To be interpreted",formulaMaterials:[],formulaMetadata:null,fragranceBrief:null,storyCardData:null,writtenStory:input.story.trim(),preferredNotes:[...input.preferredNotes],notesToAvoid:[...input.notesToAvoid],moodOrDirection:[...input.preferredNotes],additionalNotes:input.additionalNotes.trim(),createdAt});
 }
 
 export function createArtisanBenchSubmissionSnapshot(draft: PerfumeDraft, materialNames: Record<string,string> = {}, createdAt = new Date().toISOString()): CreationSubmissionSnapshot {
