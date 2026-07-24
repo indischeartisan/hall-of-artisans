@@ -1,0 +1,16 @@
+.global-header {
+  z-index: 2000 !important;
+}
+
+.global-header .account-menu,
+.global-header .account-dropdown {
+  z-index: 2010;
+}
+
+.order-preparation-shell > .od-identity {
+  z-index: 50;
+}
+
+.order-preparation-shell .od-order-menu {
+  z-index: 60;
+}
