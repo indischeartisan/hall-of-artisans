@@ -86,7 +86,7 @@ export default function ContentManager() {
 
   return <div className="cms-layout">
     <aside className="cms-list">
-      <header><span>Editorial CMS</span><h2>Content</h2><button type="button" onClick={createNew}>+ New Content</button></header>
+      <header><span>Editorial CMS</span><h2>Content</h2><a className="cms-library-link" href="/admin/library">Manage Library Materials</a><a className="cms-library-link" href="/admin/hall-archive">Manage Hall Archive</a><button type="button" onClick={createNew}>+ New Content</button></header>
       {entries.length ? entries.map(entry => <button type="button" className={entry.id === selectedId ? "active" : ""} key={entry.id} onClick={() => choose(entry)}><span><strong>{entry.title}</strong><small>{labels[entry.content_type as CmsContentType]} · /{entry.slug}</small></span><em className={entry.status}>{entry.status}</em></button>) : <p>No content has been created yet.</p>}
     </aside>
     <main className="cms-editor">

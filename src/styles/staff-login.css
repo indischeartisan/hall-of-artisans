@@ -1,0 +1,56 @@
+.staff-login-body { margin: 0; background: #0c1711; }
+.staff-login-shell {
+  --staff-accent: #c49a4a;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 104px 24px 46px;
+  color: #f8eed5;
+  background:
+    linear-gradient(90deg, rgba(7, 18, 12, .9), rgba(10, 18, 13, .55)),
+    url("/assets/images/artisan-register-hero-bg.webp") center / cover fixed;
+}
+.staff-login-perfumer { --staff-accent: #d7ae62; background-image: linear-gradient(90deg, rgba(9, 14, 25, .93), rgba(13, 24, 25, .58)), url("/assets/images/artisan-register-hero-bg.webp"); }
+.staff-login-brand { position: fixed; z-index: 2; top: 22px; left: clamp(22px, 4vw, 64px); display: flex; align-items: center; gap: 13px; color: #fff4dc; text-decoration: none; text-transform: uppercase; }
+.staff-login-brand img { width: 48px; height: 48px; object-fit: contain; }
+.staff-login-brand span { display: grid; }
+.staff-login-brand strong { font: 600 clamp(16px, 2vw, 22px)/1.1 "Cormorant Garamond", Georgia, serif; letter-spacing: .12em; }
+.staff-login-brand small { margin-top: 4px; color: var(--staff-accent); font: 10px/1 Inter, sans-serif; letter-spacing: .23em; text-transform: none; }
+.staff-login-panel { width: min(100%, 980px); display: grid; grid-template-columns: 1fr 1fr; border: 1px solid rgba(211, 170, 91, .52); background: rgba(11, 23, 16, .9); box-shadow: 0 30px 90px rgba(0, 0, 0, .55); backdrop-filter: blur(10px); }
+.staff-login-intro, .staff-login-panel form { padding: clamp(32px, 5vw, 64px); }
+.staff-login-intro { display: flex; flex-direction: column; justify-content: center; border-right: 1px solid rgba(211, 170, 91, .3); background: linear-gradient(145deg, rgba(39, 77, 50, .74), rgba(8, 22, 14, .38)); }
+.staff-login-perfumer .staff-login-intro { background: linear-gradient(145deg, rgba(24, 51, 55, .78), rgba(8, 20, 21, .4)); }
+.staff-login-intro > span, .staff-login-panel form header > span { color: var(--staff-accent); font: 700 10px/1.2 Inter, sans-serif; letter-spacing: .22em; text-transform: uppercase; }
+.staff-login-intro h1 { margin: 12px 0 16px; font: 500 clamp(45px, 6vw, 72px)/.9 "Cormorant Garamond", Georgia, serif; }
+.staff-login-intro > p { max-width: 390px; color: rgba(255, 246, 225, .76); font: 16px/1.65 Georgia, serif; }
+.staff-login-intro dl { display: grid; gap: 11px; margin: 36px 0 0; }
+.staff-login-intro dl div { display: grid; grid-template-columns: 86px 1fr; gap: 10px; padding-top: 11px; border-top: 1px solid rgba(215, 174, 98, .22); }
+.staff-login-intro dt { color: var(--staff-accent); font: 700 9px Inter, sans-serif; letter-spacing: .13em; text-transform: uppercase; }
+.staff-login-intro dd { margin: 0; color: rgba(255, 246, 225, .76); font: 12px Inter, sans-serif; }
+.staff-login-panel form { color: #302317; background: linear-gradient(rgba(250, 243, 224, .97), rgba(238, 224, 193, .98)), url("/assets/images/artisan-register-paper-bg.webp") center / cover; }
+.staff-login-panel form header h2 { margin: 8px 0 6px; color: #173a24; font: 600 36px/1 "Cormorant Garamond", Georgia, serif; }
+.staff-login-panel form header p { margin: 0 0 25px; color: #6c5a43; font: 13px/1.5 Inter, sans-serif; }
+.staff-login-panel form > label { display: grid; gap: 7px; margin-top: 15px; }
+.staff-login-panel form > label span { font: 700 10px Inter, sans-serif; letter-spacing: .09em; text-transform: uppercase; }
+.staff-login-panel input { min-height: 47px; padding: 11px 13px; border: 1px solid rgba(126, 84, 29, .35); color: #2c2015; background: rgba(255, 252, 242, .74); outline: none; }
+.staff-login-panel input:focus { border-color: #9c6a22; box-shadow: 0 0 0 3px rgba(156, 106, 34, .13); }
+.staff-forgot-link { display: block; width: fit-content; margin: 10px 0 0 auto; color: #705025; font: 11px Inter, sans-serif; }
+.staff-login-message { min-height: 34px; margin: 13px 0 0; color: #873d2b; font: 12px/1.4 Inter, sans-serif; }
+.staff-login-submit { width: 100%; min-height: 49px; border: 1px solid #b1853a; color: #f7dda2; background: linear-gradient(180deg, #285638, #12321f); font: 700 11px Inter, sans-serif; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; }
+.staff-login-perfumer .staff-login-submit { background: linear-gradient(180deg, #254f53, #102d31); }
+.staff-login-submit:disabled { opacity: .66; cursor: wait; }
+.staff-login-panel form footer { display: flex; justify-content: space-between; gap: 18px; margin-top: 22px; padding-top: 18px; border-top: 1px solid rgba(126, 84, 29, .22); }
+.staff-login-panel form footer a { color: #69491f; font: 11px Inter, sans-serif; }
+.staff-session-note { margin-bottom: 16px; padding: 12px 14px; border: 1px solid rgba(144, 83, 42, .3); background: rgba(144, 83, 42, .08); }
+.staff-session-note p { margin: 0 0 8px; font: 12px/1.5 Inter, sans-serif; }
+.staff-session-note button { padding: 0; border: 0; color: #7e3d2b; background: none; font: 700 11px Inter, sans-serif; text-decoration: underline; cursor: pointer; }
+@media (max-width: 760px) {
+  .staff-login-shell { padding: 94px 14px 24px; }
+  .staff-login-brand { top: 18px; left: 18px; }
+  .staff-login-panel { grid-template-columns: 1fr; }
+  .staff-login-intro { padding: 30px 26px; border-right: 0; border-bottom: 1px solid rgba(211, 170, 91, .3); }
+  .staff-login-intro h1 { font-size: 48px; }
+  .staff-login-intro dl { display: none; }
+  .staff-login-panel form { padding: 30px 24px; }
+  .staff-login-panel form footer { flex-direction: column; align-items: center; }
+}

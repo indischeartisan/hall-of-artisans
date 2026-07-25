@@ -12,25 +12,24 @@ try {
   const rooms = await server.ssrLoadModule("/src/features/orders/orderRoom.ts");
   const grouping = await server.ssrLoadModule("/src/features/orders/orderGrouping.ts");
 
-  assert.equal(workflow.WORKFLOW_STATUSES.length, 13, "All workflow statuses must be configured");
+  assert.equal(workflow.WORKFLOW_STATUSES.length, 11, "All workflow statuses must be configured");
   assert.deepEqual(workflow.getAllowedTransitions("DRAFT_PREVIEW", "customer"), ["SUBMITTED", "CANCELLED"]);
   assert.equal(workflow.canTransition("SUBMITTED", "UNDER_REVIEW", "reviewer"), true);
   assert.equal(workflow.canTransition("SUBMITTED", "PAID", "customer"), false);
-  assert.equal(workflow.canCustomerCancel("READY_FOR_CHECKOUT"), true);
+  assert.equal(workflow.canCustomerCancel("READY_FOR_PAYMENT"), true);
   assert.equal(workflow.canCustomerCancel("PAYMENT_PENDING"), false);
-  assert.equal(workflow.isCheckoutAvailable("READY_FOR_CHECKOUT"), true);
+  assert.equal(workflow.isCheckoutAvailable("READY_FOR_PAYMENT"), true);
   assert.equal(workflow.isCheckoutAvailable("IN_PRODUCTION"), false);
-  assert.equal(workflow.isChatAvailable("UNDER_REVIEW"), true);
+  assert.equal(workflow.isChatAvailable("UNDER_REVIEW"), false);
+  assert.equal(workflow.isChatAvailable("CONSULTATION"), true);
   assert.equal(workflow.isChatAvailable("CANCELLED"), false);
 
   const expectedRooms = {
     DRAFT_PREVIEW: "preparation",
     SUBMITTED: "review",
     UNDER_REVIEW: "review",
-    WAITING_FOR_REPLY: "review",
-    REVISION_REQUESTED: "review",
-    READY_FOR_APPROVAL: "approval",
-    READY_FOR_CHECKOUT: "fulfillment",
+    CONSULTATION: "review",
+    READY_FOR_PAYMENT: "fulfillment",
     PAYMENT_PENDING: "fulfillment",
     PAID: "fulfillment",
     IN_PRODUCTION: "fulfillment",
@@ -51,7 +50,7 @@ try {
   assert.deepEqual(grouped.previews.map((item) => item.id), ["preview"]);
   assert.deepEqual(grouped.closed.map((item) => item.id), ["closed"]);
 
-  console.log("Workflow contract check passed: 13 statuses, Project Rooms, and My Orders grouping.");
+  console.log("Workflow contract check passed: 11 statuses, Project Rooms, and My Orders grouping.");
 } finally {
   await server.close();
 }

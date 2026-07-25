@@ -1,0 +1,5 @@
+/* Bright mode typography: titles stay crisp and shadow-free across every page. */
+body[data-theme="bright"] :is(h1, h2, h3, .page-title, .section-title, [class$="-title"]),
+body:not([data-theme]):not(.staff-login-body) :is(h1, h2, h3, .page-title, .section-title, [class$="-title"]) {
+  text-shadow: none !important;
+}

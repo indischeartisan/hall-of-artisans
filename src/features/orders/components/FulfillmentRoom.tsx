@@ -11,11 +11,11 @@ type FulfillmentRoomProps = {
   onCancel: () => void;
 };
 
-const roomPhases = ["Artisan Review", "Your Approval", "Payment & Creation", "Delivery"];
-const fulfillmentRank = { READY_FOR_CHECKOUT: 0, PAYMENT_PENDING: 1, PAID: 2, IN_PRODUCTION: 2, SHIPPED: 3, COMPLETED: 4 } as const;
+const roomPhases = ["Artisan Review", "Consultation", "Payment & Creation", "Delivery"];
+const fulfillmentRank = { READY_FOR_PAYMENT: 0, PAYMENT_PENDING: 1, PAID: 2, IN_PRODUCTION: 2, SHIPPED: 3, COMPLETED: 4 } as const;
 
 const statusCopy = {
-  READY_FOR_CHECKOUT: { eyebrow: "Proposal Approved", title: "Your commission is ready for checkout.", text: "Confirm delivery and payment details when you are ready. Production does not begin until payment is confirmed.", next: "Continue to checkout" },
+  READY_FOR_PAYMENT: { eyebrow: "Consultation Complete", title: "Your artisan is ready to begin production.", text: "Your selected package and exact price are confirmed. Complete payment to unlock production.", next: "Continue to payment" },
   PAYMENT_PENDING: { eyebrow: "Checkout Created", title: "Your order is awaiting payment confirmation.", text: "Your approved creation and order details are preserved. Production remains paused until the payment provider confirms the transaction.", next: "Review checkout details" },
   PAID: { eyebrow: "Payment Confirmed", title: "Your commission is entering the atelier.", text: "Payment has been recorded. The production team will schedule formula preparation and update this room when work begins.", next: "Await production scheduling" },
   IN_PRODUCTION: { eyebrow: "Creation in Progress", title: "Your fragrance is being crafted.", text: "Formula development, maturation, finishing, and presentation are handled as one continuous atelier process.", next: "Follow production updates" },
@@ -24,13 +24,13 @@ const statusCopy = {
 } as const;
 
 export default function FulfillmentRoom({ request, order, messages, activity, busy, onCheckout, onCancel }: FulfillmentRoomProps) {
-  const status = statusCopy[request.status as keyof typeof statusCopy] ?? statusCopy.READY_FOR_CHECKOUT;
+  const status = statusCopy[request.status as keyof typeof statusCopy] ?? statusCopy.READY_FOR_PAYMENT;
   const rank = fulfillmentRank[request.status as keyof typeof fulfillmentRank] ?? 0;
   const deliveryActive = rank >= 3;
   const item = order?.items?.find((entry) => entry.reviewRequestId === request.id);
   const tracking = item?.trackingNumber || order?.trackingNumber;
-  const canCheckout = request.status === "READY_FOR_CHECKOUT" || request.status === "PAYMENT_PENDING";
-  const canCancel = request.status === "READY_FOR_CHECKOUT";
+  const canCheckout = request.status === "READY_FOR_PAYMENT" || request.status === "PAYMENT_PENDING";
+  const canCancel = request.status === "READY_FOR_PAYMENT";
   const steps = [
     ["Approval locked", "Your accepted artisan proposal is preserved."],
     ["Payment confirmation", "Checkout details and payment are confirmed."],
@@ -49,14 +49,14 @@ export default function FulfillmentRoom({ request, order, messages, activity, bu
 
     <section className={`fulfillment-hero ${deliveryActive ? "delivery" : ""}`}>
       <div><p>{status.eyebrow}</p><h1>{status.title}</h1><span>{status.text}</span></div>
-      <aside><small>Current focus</small><strong>{status.next}</strong>{canCheckout && <button type="button" disabled={busy} onClick={onCheckout}>{request.status === "READY_FOR_CHECKOUT" ? "Continue to Checkout" : "Open Checkout"}<span>→</span></button>}</aside>
+      <aside><small>Current focus</small><strong>{status.next}</strong>{canCheckout && <button type="button" disabled={busy} onClick={onCheckout}>{request.status === "READY_FOR_PAYMENT" ? "Continue to Payment" : "Open Payment"}<span>→</span></button>}</aside>
     </section>
 
     <div className="fulfillment-layout">
       <main>
         <section className="fulfillment-panel fulfillment-commission">
           <header><p>Your Commission</p><h2>{request.perfumeName}</h2><span>{request.concentration} · {request.bottleSize} · {request.requestNumber}</span></header>
-          <div className="fulfillment-commission-grid"><div><small>Approved price</small><strong>{money(request.finalPrice, request.currency)}</strong></div><div><small>Production estimate</small><strong>{request.estimatedProduction || "To be confirmed"}</strong></div><div><small>Order number</small><strong>{order?.orderNumber || "Created after checkout"}</strong></div></div>
+          <div className="fulfillment-commission-grid"><div><small>Package price</small><strong>{money(request.finalPrice, request.currency)}</strong></div><div><small>Selected package</small><strong>{request.packageSnapshot?.name || "Bespoke commission"}</strong></div><div><small>Order number</small><strong>{order?.orderNumber || "Created after payment starts"}</strong></div></div>
           <div className="fulfillment-included"><h3>Commission details</h3>{request.includedItems.length ? <ul>{request.includedItems.map((entry) => <li key={entry}><i>✓</i>{entry}</li>)}</ul> : <p>Your approved artisan proposal and submitted creation are preserved with this project.</p>}</div>
         </section>
 
@@ -69,7 +69,7 @@ export default function FulfillmentRoom({ request, order, messages, activity, bu
       <aside className="fulfillment-sidebar">
         <section className="fulfillment-panel fulfillment-progress"><p>{deliveryActive ? "Delivery Journey" : "Payment & Creation"}</p><h2>Commission progress</h2><ol>{steps.map(([label, description], index) => { const complete = rank > index; const active = rank === index; return <li className={complete ? "done" : active ? "active" : ""} key={label}><i>{complete ? "✓" : String(index + 1).padStart(2, "0")}</i><span>{label}<small>{description}</small></span></li>; })}</ol></section>
 
-        <section className="fulfillment-panel fulfillment-order"><p>Order Record</p><h2>{order?.orderNumber || "Not created yet"}</h2><dl><div><dt>Payment</dt><dd>{order?.paymentStatus?.replaceAll("_", " ") || (request.status === "READY_FOR_CHECKOUT" ? "Not started" : "Pending")}</dd></div><div><dt>Production</dt><dd>{item?.productionStatus?.replaceAll("_", " ") || order?.productionStatus?.replaceAll("_", " ") || "Not started"}</dd></div><div><dt>Shipment</dt><dd>{item?.shippingStatus?.replaceAll("_", " ") || order?.shippingStatus?.replaceAll("_", " ") || "Not shipped"}</dd></div><div><dt>Last update</dt><dd>{formatDate(request.lastUpdatedAt)}</dd></div></dl></section>
+        <section className="fulfillment-panel fulfillment-order"><p>Order Record</p><h2>{order?.orderNumber || "Not created yet"}</h2><dl><div><dt>Payment</dt><dd>{order?.paymentStatus?.replaceAll("_", " ") || (request.status === "READY_FOR_PAYMENT" ? "Not started" : "Pending")}</dd></div><div><dt>Production</dt><dd>{item?.productionStatus?.replaceAll("_", " ") || order?.productionStatus?.replaceAll("_", " ") || "Not started"}</dd></div><div><dt>Shipment</dt><dd>{item?.shippingStatus?.replaceAll("_", " ") || order?.shippingStatus?.replaceAll("_", " ") || "Not shipped"}</dd></div><div><dt>Last update</dt><dd>{formatDate(request.lastUpdatedAt)}</dd></div></dl></section>
 
         {deliveryActive && <section className="fulfillment-panel fulfillment-shipment"><p>Shipment</p><h2>{request.status === "COMPLETED" ? "Delivered" : "On its way"}</h2><dl><dt>Tracking number</dt><dd>{tracking || "Will appear when provided by the courier"}</dd></dl><span>Keep this Project Room as your single reference until the delivery is complete.</span></section>}
 

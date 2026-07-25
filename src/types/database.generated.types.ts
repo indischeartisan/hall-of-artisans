@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      archive_records: {
+        Row: {
+          archive_number: string
+          created_at: string
+          creator: string
+          display_order: number
+          id: string
+          image_alt: string | null
+          image_path: string | null
+          is_featured: boolean
+          moods: string[]
+          owner_id: string | null
+          slug: string
+          status: string
+          story: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          archive_number: string
+          created_at?: string
+          creator: string
+          display_order?: number
+          id?: string
+          image_alt?: string | null
+          image_path?: string | null
+          is_featured?: boolean
+          moods?: string[]
+          owner_id?: string | null
+          slug: string
+          status?: string
+          story?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          archive_number?: string
+          created_at?: string
+          creator?: string
+          display_order?: number
+          id?: string
+          image_alt?: string | null
+          image_path?: string | null
+          is_featured?: boolean
+          moods?: string[]
+          owner_id?: string | null
+          slug?: string
+          status?: string
+          story?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       artisan_ids: {
         Row: {
           created_at: string
@@ -154,6 +208,60 @@ export type Database = {
           storage_path?: string
           updated_at?: string
           updated_by?: string | null
+        }
+        Relationships: []
+      }
+      commission_packages: {
+        Row: {
+          bottle_size: string
+          concentration: string
+          consultations_included: number
+          created_at: string
+          currency: string
+          description: string
+          display_order: number
+          estimated_production: string
+          id: string
+          included_items: string[]
+          is_active: boolean
+          name: string
+          price: number
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          bottle_size: string
+          concentration: string
+          consultations_included?: number
+          created_at?: string
+          currency?: string
+          description?: string
+          display_order?: number
+          estimated_production: string
+          id?: string
+          included_items?: string[]
+          is_active?: boolean
+          name: string
+          price: number
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          bottle_size?: string
+          concentration?: string
+          consultations_included?: number
+          created_at?: string
+          currency?: string
+          description?: string
+          display_order?: number
+          estimated_production?: string
+          id?: string
+          included_items?: string[]
+          is_active?: boolean
+          name?: string
+          price?: number
+          slug?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -640,10 +748,14 @@ export type Database = {
         Row: {
           approved_at: string | null
           artisan_review: Json | null
+          assigned_at: string | null
+          assigned_reviewer_id: string | null
           base_notes: string[]
           bottle_size: string
           completed_at: string | null
           concentration: string
+          consultation_completed_at: string | null
+          consultation_started_at: string | null
           country_code: string
           created_at: string
           creation_id: string
@@ -659,14 +771,17 @@ export type Database = {
           heart_notes: string[]
           id: string
           included_items: string[]
+          package_snapshot: Json | null
           paid_at: string | null
           perfume_name: string
           preview_snapshot: Json
           pricing_region: string
+          ready_for_payment_at: string | null
           recommended_adjustments: string[]
           request_number: string
           reviewed_at: string | null
           revisions_included: number | null
+          selected_package_id: string | null
           shipped_at: string | null
           status: string
           story_card_data: Json
@@ -680,10 +795,14 @@ export type Database = {
         Insert: {
           approved_at?: string | null
           artisan_review?: Json | null
+          assigned_at?: string | null
+          assigned_reviewer_id?: string | null
           base_notes?: string[]
           bottle_size: string
           completed_at?: string | null
           concentration: string
+          consultation_completed_at?: string | null
+          consultation_started_at?: string | null
           country_code?: string
           created_at?: string
           creation_id?: string
@@ -699,14 +818,17 @@ export type Database = {
           heart_notes?: string[]
           id?: string
           included_items?: string[]
+          package_snapshot?: Json | null
           paid_at?: string | null
           perfume_name: string
           preview_snapshot: Json
           pricing_region?: string
+          ready_for_payment_at?: string | null
           recommended_adjustments?: string[]
           request_number?: string
           reviewed_at?: string | null
           revisions_included?: number | null
+          selected_package_id?: string | null
           shipped_at?: string | null
           status?: string
           story_card_data?: Json
@@ -720,10 +842,14 @@ export type Database = {
         Update: {
           approved_at?: string | null
           artisan_review?: Json | null
+          assigned_at?: string | null
+          assigned_reviewer_id?: string | null
           base_notes?: string[]
           bottle_size?: string
           completed_at?: string | null
           concentration?: string
+          consultation_completed_at?: string | null
+          consultation_started_at?: string | null
           country_code?: string
           created_at?: string
           creation_id?: string
@@ -739,14 +865,17 @@ export type Database = {
           heart_notes?: string[]
           id?: string
           included_items?: string[]
+          package_snapshot?: Json | null
           paid_at?: string | null
           perfume_name?: string
           preview_snapshot?: Json
           pricing_region?: string
+          ready_for_payment_at?: string | null
           recommended_adjustments?: string[]
           request_number?: string
           reviewed_at?: string | null
           revisions_included?: number | null
+          selected_package_id?: string | null
           shipped_at?: string | null
           status?: string
           story_card_data?: Json
@@ -758,6 +887,20 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "review_requests_assigned_reviewer_id_fkey"
+            columns: ["assigned_reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_requests_selected_package_id_fkey"
+            columns: ["selected_package_id"]
+            isOneToOne: false
+            referencedRelation: "commission_packages"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "review_requests_user_id_fkey"
             columns: ["user_id"]
@@ -824,6 +967,118 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      assign_review_request: {
+        Args: { reviewer_id: string; target_request_id: string }
+        Returns: {
+          approved_at: string | null
+          artisan_review: Json | null
+          assigned_at: string | null
+          assigned_reviewer_id: string | null
+          base_notes: string[]
+          bottle_size: string
+          completed_at: string | null
+          concentration: string
+          consultation_completed_at: string | null
+          consultation_started_at: string | null
+          country_code: string
+          created_at: string
+          creation_id: string
+          creation_mode: Database["public"]["Enums"]["creation_mode"]
+          currency: string
+          customer_notes: string
+          estimated_price_max: number
+          estimated_price_min: number
+          estimated_production: string | null
+          final_price: number | null
+          fragrance_brief: string
+          fragrance_direction: string[]
+          heart_notes: string[]
+          id: string
+          included_items: string[]
+          package_snapshot: Json | null
+          paid_at: string | null
+          perfume_name: string
+          preview_snapshot: Json
+          pricing_region: string
+          ready_for_payment_at: string | null
+          recommended_adjustments: string[]
+          request_number: string
+          reviewed_at: string | null
+          revisions_included: number | null
+          selected_package_id: string | null
+          shipped_at: string | null
+          status: string
+          story_card_data: Json
+          submission_id: string | null
+          submission_snapshot: Json | null
+          submitted_at: string | null
+          top_notes: string[]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "review_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      claim_review_request: {
+        Args: { target_request_id: string }
+        Returns: {
+          approved_at: string | null
+          artisan_review: Json | null
+          assigned_at: string | null
+          assigned_reviewer_id: string | null
+          base_notes: string[]
+          bottle_size: string
+          completed_at: string | null
+          concentration: string
+          consultation_completed_at: string | null
+          consultation_started_at: string | null
+          country_code: string
+          created_at: string
+          creation_id: string
+          creation_mode: Database["public"]["Enums"]["creation_mode"]
+          currency: string
+          customer_notes: string
+          estimated_price_max: number
+          estimated_price_min: number
+          estimated_production: string | null
+          final_price: number | null
+          fragrance_brief: string
+          fragrance_direction: string[]
+          heart_notes: string[]
+          id: string
+          included_items: string[]
+          package_snapshot: Json | null
+          paid_at: string | null
+          perfume_name: string
+          preview_snapshot: Json
+          pricing_region: string
+          ready_for_payment_at: string | null
+          recommended_adjustments: string[]
+          request_number: string
+          reviewed_at: string | null
+          revisions_included: number | null
+          selected_package_id: string | null
+          shipped_at: string | null
+          status: string
+          story_card_data: Json
+          submission_id: string | null
+          submission_snapshot: Json | null
+          submitted_at: string | null
+          top_notes: string[]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "review_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       complete_profile: {
         Args: { new_display_name: string }
         Returns: {
@@ -873,10 +1128,14 @@ export type Database = {
         Returns: {
           approved_at: string | null
           artisan_review: Json | null
+          assigned_at: string | null
+          assigned_reviewer_id: string | null
           base_notes: string[]
           bottle_size: string
           completed_at: string | null
           concentration: string
+          consultation_completed_at: string | null
+          consultation_started_at: string | null
           country_code: string
           created_at: string
           creation_id: string
@@ -892,14 +1151,17 @@ export type Database = {
           heart_notes: string[]
           id: string
           included_items: string[]
+          package_snapshot: Json | null
           paid_at: string | null
           perfume_name: string
           preview_snapshot: Json
           pricing_region: string
+          ready_for_payment_at: string | null
           recommended_adjustments: string[]
           request_number: string
           reviewed_at: string | null
           revisions_included: number | null
+          selected_package_id: string | null
           shipped_at: string | null
           status: string
           story_card_data: Json
@@ -926,10 +1188,14 @@ export type Database = {
         Returns: {
           approved_at: string | null
           artisan_review: Json | null
+          assigned_at: string | null
+          assigned_reviewer_id: string | null
           base_notes: string[]
           bottle_size: string
           completed_at: string | null
           concentration: string
+          consultation_completed_at: string | null
+          consultation_started_at: string | null
           country_code: string
           created_at: string
           creation_id: string
@@ -945,14 +1211,17 @@ export type Database = {
           heart_notes: string[]
           id: string
           included_items: string[]
+          package_snapshot: Json | null
           paid_at: string | null
           perfume_name: string
           preview_snapshot: Json
           pricing_region: string
+          ready_for_payment_at: string | null
           recommended_adjustments: string[]
           request_number: string
           reviewed_at: string | null
           revisions_included: number | null
+          selected_package_id: string | null
           shipped_at: string | null
           status: string
           story_card_data: Json
@@ -991,6 +1260,13 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      list_active_reviewers: {
+        Args: never
+        Returns: {
+          display_name: string
+          user_id: string
+        }[]
+      }
       manage_artisan_id: {
         Args: {
           new_status: Database["public"]["Enums"]["artisan_id_status"]
@@ -1022,6 +1298,62 @@ export type Database = {
           target_user_id: string
         }
         Returns: undefined
+      }
+      select_review_package: {
+        Args: { target_package_id: string; target_request_id: string }
+        Returns: {
+          approved_at: string | null
+          artisan_review: Json | null
+          assigned_at: string | null
+          assigned_reviewer_id: string | null
+          base_notes: string[]
+          bottle_size: string
+          completed_at: string | null
+          concentration: string
+          consultation_completed_at: string | null
+          consultation_started_at: string | null
+          country_code: string
+          created_at: string
+          creation_id: string
+          creation_mode: Database["public"]["Enums"]["creation_mode"]
+          currency: string
+          customer_notes: string
+          estimated_price_max: number
+          estimated_price_min: number
+          estimated_production: string | null
+          final_price: number | null
+          fragrance_brief: string
+          fragrance_direction: string[]
+          heart_notes: string[]
+          id: string
+          included_items: string[]
+          package_snapshot: Json | null
+          paid_at: string | null
+          perfume_name: string
+          preview_snapshot: Json
+          pricing_region: string
+          ready_for_payment_at: string | null
+          recommended_adjustments: string[]
+          request_number: string
+          reviewed_at: string | null
+          revisions_included: number | null
+          selected_package_id: string | null
+          shipped_at: string | null
+          status: string
+          story_card_data: Json
+          submission_id: string | null
+          submission_snapshot: Json | null
+          submitted_at: string | null
+          top_notes: string[]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "review_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       send_customer_request_message: {
         Args: { message_body: string; target_request_id: string }
@@ -1073,10 +1405,14 @@ export type Database = {
         Returns: {
           approved_at: string | null
           artisan_review: Json | null
+          assigned_at: string | null
+          assigned_reviewer_id: string | null
           base_notes: string[]
           bottle_size: string
           completed_at: string | null
           concentration: string
+          consultation_completed_at: string | null
+          consultation_started_at: string | null
           country_code: string
           created_at: string
           creation_id: string
@@ -1092,14 +1428,17 @@ export type Database = {
           heart_notes: string[]
           id: string
           included_items: string[]
+          package_snapshot: Json | null
           paid_at: string | null
           perfume_name: string
           preview_snapshot: Json
           pricing_region: string
+          ready_for_payment_at: string | null
           recommended_adjustments: string[]
           request_number: string
           reviewed_at: string | null
           revisions_included: number | null
+          selected_package_id: string | null
           shipped_at: string | null
           status: string
           story_card_data: Json
@@ -1122,10 +1461,14 @@ export type Database = {
         Returns: {
           approved_at: string | null
           artisan_review: Json | null
+          assigned_at: string | null
+          assigned_reviewer_id: string | null
           base_notes: string[]
           bottle_size: string
           completed_at: string | null
           concentration: string
+          consultation_completed_at: string | null
+          consultation_started_at: string | null
           country_code: string
           created_at: string
           creation_id: string
@@ -1141,14 +1484,17 @@ export type Database = {
           heart_notes: string[]
           id: string
           included_items: string[]
+          package_snapshot: Json | null
           paid_at: string | null
           perfume_name: string
           preview_snapshot: Json
           pricing_region: string
+          ready_for_payment_at: string | null
           recommended_adjustments: string[]
           request_number: string
           reviewed_at: string | null
           revisions_included: number | null
+          selected_package_id: string | null
           shipped_at: string | null
           status: string
           story_card_data: Json

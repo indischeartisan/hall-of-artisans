@@ -5,9 +5,15 @@ export type SenderRole = "customer" | "artisan" | "system";
 
 export interface StoryCardData { title: string; subtitle: string; imageUrl?: string }
 export interface ArtisanReview { summary: string; olfactiveDirection: string; drydown: string }
+export interface CommissionPackage {
+  id: string; slug: string; name: string; description: string; price: number; currency: string;
+  concentration: string; bottleSize: string; includedItems: string[]; consultationsIncluded: number;
+  estimatedProduction: string; displayOrder: number;
+}
 
 export interface ReviewRequest {
   id: string; userId: string; creationId: string; requestNumber: string; status: ReviewRequestStatus;
+  assignedReviewerId: string | null; assignedAt: string | null;
   creationMode?: CreationMode;
   previewSnapshot?: CreationSubmissionSnapshot;
   submissionId?: string | null;
@@ -16,9 +22,11 @@ export interface ReviewRequest {
   topNotes: string[]; heartNotes: string[]; baseNotes: string[]; fragranceBrief: string;
   storyCardData: StoryCardData; customerNotes: string; countryCode: string; pricingRegion: string;
   currency: string; estimatedPriceMin: number; estimatedPriceMax: number; finalPrice: number | null;
+  selectedPackageId: string | null; packageSnapshot: CommissionPackage | null;
   artisanReview: ArtisanReview | null; recommendedAdjustments: string[]; includedItems: string[];
   estimatedProduction: string | null; revisionsIncluded: number | null; submittedAt: string | null;
-  reviewedAt: string | null; approvedAt: string | null; paidAt: string | null; shippedAt: string | null;
+  reviewedAt: string | null; approvedAt: string | null; consultationStartedAt: string | null;
+  consultationCompletedAt: string | null; readyForPaymentAt: string | null; paidAt: string | null; shippedAt: string | null;
   completedAt: string | null; lastUpdatedAt: string;
 }
 

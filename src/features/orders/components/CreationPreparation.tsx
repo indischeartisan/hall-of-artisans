@@ -1,9 +1,12 @@
-import type { ReviewRequest } from "../types";
+import type { CommissionPackage, ReviewRequest } from "../types";
 
 type CreationPreparationProps = {
   request: ReviewRequest;
   busy: boolean;
+  packages: CommissionPackage[];
+  selectedPackageId: string | null;
   onEdit: () => void;
+  onSelectPackage: (packageId: string) => void;
   onSubmit: () => void;
 };
 
@@ -13,8 +16,8 @@ const money = (amount: number, currency: string) => currency === "IDR"
 
 const journey = [
   { number: "01", title: "Artisan Review", text: "An artisan studies your story, formula, preferences, and creative direction." },
-  { number: "02", title: "Your Approval", text: "You receive an interpretation, recommendations, timing, and final price to review." },
-  { number: "03", title: "Payment & Creation", text: "After your approval, checkout confirms the commission and production can begin." },
+  { number: "02", title: "Consultation", text: "You and the artisan clarify the creation together in one private conversation." },
+  { number: "03", title: "Payment & Creation", text: "When the artisan confirms readiness, payment unlocks production." },
   { number: "04", title: "Delivery", text: "Progress and shipment are recorded here until your creation reaches you." }
 ];
 
@@ -24,7 +27,7 @@ function Tags({ values, empty }: { values: string[]; empty: string }) {
     : <p className="prep-empty-value">{empty}</p>;
 }
 
-export default function CreationPreparation({ request, busy, onEdit, onSubmit }: CreationPreparationProps) {
+export default function CreationPreparation({ request, busy, packages, selectedPackageId, onEdit, onSelectPackage, onSubmit }: CreationPreparationProps) {
   const snapshot = request.previewSnapshot;
   const described = request.creationMode === "described";
   const formula = snapshot?.formulaMaterials ?? [];
@@ -66,9 +69,9 @@ export default function CreationPreparation({ request, busy, onEdit, onSubmit }:
       </section>
 
       <aside className="prep-sidebar">
-        <section className="prep-panel prep-ready"><p className="prep-kicker">Before You Send</p><h2>Ready for Artisan Review?</h2><ul>{readiness.map(([label, complete]) => <li className={complete ? "is-ready" : "needs-review"} key={label}><i>{complete ? "✓" : "○"}</i><span>{label}<small>{complete ? "Ready" : "Review before sending"}</small></span></li>)}</ul><button className="prep-edit" type="button" onClick={onEdit}>Edit Your Draft</button><button className="prep-submit" type="button" disabled={busy} onClick={onSubmit}>{busy ? "Sending..." : "Send for Review"}<span>→</span></button><small className="prep-no-charge">No payment is collected at this stage.</small></section>
+        <section className="prep-panel prep-ready"><p className="prep-kicker">Before You Send</p><h2>Ready for Artisan Review?</h2><ul>{readiness.map(([label, complete]) => <li className={complete ? "is-ready" : "needs-review"} key={label}><i>{complete ? "✓" : "○"}</i><span>{label}<small>{complete ? "Ready" : "Review before sending"}</small></span></li>)}</ul><button className="prep-edit" type="button" onClick={onEdit}>Edit Your Draft</button><button className="prep-submit" type="button" disabled={busy || !selectedPackageId} onClick={onSubmit}>{busy ? "Sending..." : selectedPackageId ? "Send for Review" : "Choose a Package First"}<span>→</span></button><small className="prep-no-charge">No payment is collected at this stage.</small></section>
 
-        <section className="prep-panel prep-price"><p className="prep-kicker">Estimated Budget</p><h2>{money(request.estimatedPriceMin, request.currency)} – {money(request.estimatedPriceMax, request.currency)}</h2><p>Your final price is prepared only after the artisan reviews your creation.</p><details><summary>What may affect the final price?</summary><ul><li>Perfume concentration</li><li>Selected materials and rarity</li><li>Formula complexity</li><li>Bottle size and personalization</li></ul></details></section>
+        <section className="prep-panel prep-packages"><p className="prep-kicker">Choose Your Package</p><h2>One exact price before review.</h2><p>Select the commission that fits your journey. The price is locked when you submit.</p><div>{packages.map(item => <button type="button" className={selectedPackageId === item.id ? "selected" : ""} disabled={busy} onClick={() => onSelectPackage(item.id)} key={item.id}><span><strong>{item.name}</strong><small>{item.concentration} · {item.bottleSize}</small></span><b>{money(item.price, item.currency)}</b><em>{item.description}</em></button>)}</div>{!packages.length && <p className="prep-empty-value">Packages are currently unavailable.</p>}</section>
       </aside>
     </div>
 

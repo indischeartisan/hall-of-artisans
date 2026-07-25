@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import GlobalHeader from "../components/GlobalHeader";
-import { archiveRecords, type ArchiveRecord } from "../data/archiveRecords";
+import type { ArchiveRecord } from "../data/archiveRecords";
+import { archiveCatalogService } from "../features/archive/archiveCatalogService";
+import { supabase } from "../lib/supabase";
 import "../styles/hallArchive.css";
 
 type ArchiveScope = "public" | "mine";
 type SortOrder = "latest" | "oldest" | "title" | "creator";
 type ViewMode = "grid" | "list";
-
-const myArchiveNumbers = new Set(["HOA-0127"]);
 
 export default function HallArchive() {
   const navigate = useNavigate();
@@ -17,6 +17,9 @@ export default function HallArchive() {
   const [sortOrder, setSortOrder] = useState<SortOrder>("latest");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [activeRecord, setActiveRecord] = useState<ArchiveRecord | null>(null);
+  const [records, setRecords] = useState<ArchiveRecord[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     document.title = "Hall Archive | The Hall of Artisans";
@@ -32,6 +35,16 @@ export default function HallArchive() {
   }, []);
 
   useEffect(() => {
+    void Promise.all([
+      archiveCatalogService.listPublic(),
+      supabase?.auth.getUser() ?? Promise.resolve({ data: { user: null } }),
+    ]).then(([catalog, auth]) => {
+      setRecords(catalog);
+      setUserId(auth.data.user?.id ?? null);
+    }).finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
     document.body.classList.toggle("archive-modal-open", Boolean(activeRecord));
     const close = (event: KeyboardEvent) => event.key === "Escape" && setActiveRecord(null);
     document.addEventListener("keydown", close);
@@ -43,20 +56,20 @@ export default function HallArchive() {
 
   const visibleRecords = useMemo(() => {
     const term = query.trim().toLowerCase();
-    const records = archiveRecords.filter((record) => {
-      if (scope === "mine" && !myArchiveNumbers.has(record.archiveNumber)) return false;
+    const filtered = records.filter((record) => {
+      if (scope === "mine" && (!userId || record.ownerId !== userId)) return false;
       if (!term) return true;
       return [record.archiveNumber, record.title, record.creator, ...record.mood]
         .some((value) => value.toLowerCase().includes(term));
     });
 
-    return [...records].sort((a, b) => {
+    return [...filtered].sort((a, b) => {
       if (sortOrder === "oldest") return a.archiveNumber.localeCompare(b.archiveNumber);
       if (sortOrder === "title") return a.title.localeCompare(b.title);
       if (sortOrder === "creator") return a.creator.localeCompare(b.creator);
       return b.archiveNumber.localeCompare(a.archiveNumber);
     });
-  }, [query, scope, sortOrder]);
+  }, [records, query, scope, sortOrder, userId]);
 
   const changeScope = (nextScope: ArchiveScope) => {
     setScope(nextScope);
@@ -83,7 +96,7 @@ export default function HallArchive() {
           <button className="archive-create inner-panel" type="button" onClick={() => navigate("/chamber-of-creation")}><span aria-hidden="true">♙</span> Create Your Perfume <b aria-hidden="true">›</b></button>
         </div>
         <div className="archive-secondary-tools">
-          <p><strong>{scope === "public" && !query ? "142" : visibleRecords.length}</strong> {scope === "mine" ? "creations in my archive" : "official archived creations"}</p>
+          <p><strong>{visibleRecords.length}</strong> {scope === "mine" ? "creations in my archive" : "official archived creations"}</p>
           <div className="archive-view-tools">
             <label className="inner-panel archive-tool-panel archive-sort-panel"><span className="sr-only">Sort archive</span><select value={sortOrder} onChange={(event) => setSortOrder(event.target.value as SortOrder)}><option value="latest">Latest archived</option><option value="oldest">Oldest archived</option><option value="title">Title A–Z</option><option value="creator">Creator A–Z</option></select></label>
             <button type="button" className={`inner-panel archive-tool-panel${viewMode === "grid" ? " active" : ""}`} aria-label="Grid view" aria-pressed={viewMode === "grid"} onClick={() => setViewMode("grid")}>⊞</button>
@@ -92,10 +105,10 @@ export default function HallArchive() {
         </div>
       </section>
 
-      {visibleRecords.length ? <section className={`archive-grid archive-grid--${viewMode}`} aria-label="Official archived perfume creations">
+      {loading ? <section className="archive-empty"><span aria-hidden="true">HA</span><h2>Opening the archive…</h2></section> : visibleRecords.length ? <section className={`archive-grid archive-grid--${viewMode}`} aria-label="Official archived perfume creations">
         {visibleRecords.map((record) => <button className="archive-card inner-panel" type="button" key={record.archiveNumber} onClick={() => setActiveRecord(record)} aria-label={`Open ${record.title} archive record`}>
           <span className="archive-card-number">{record.archiveNumber}</span>
-          <span className="archive-bottle-stage"><img src={record.image} alt={`${record.title} perfume bottle`} /></span>
+          <span className="archive-bottle-stage"><img src={record.image} alt={record.imageAlt ?? `${record.title} perfume bottle`} /></span>
           <span className="archive-card-title">{record.title}</span>
           <span className="archive-card-divider" aria-hidden="true">◆</span>
           <span className="archive-card-creator"><small>Created by</small>{record.creator}</span>

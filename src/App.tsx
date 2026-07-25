@@ -17,6 +17,9 @@ import OrderDetailPage from "./features/orders/OrderDetailPage";
 import CheckoutPage from "./features/orders/CheckoutPage";
 import DescribeCreationPage from "./features/describe-creation/DescribeCreationPage";
 import AdminPortalPage from "./features/admin/AdminPortalPage";
+import AdminLibraryPage from "./features/admin/AdminLibraryPage";
+import AdminHallArchivePage from "./features/admin/AdminHallArchivePage";
+import StaffLoginPage from "./features/admin/StaffLoginPage";
 
 export default function App() {
   return (
@@ -39,6 +42,10 @@ export default function App() {
       <Route path="/my-artisan-id" element={<MyArtisanIdPage />} />
       <Route path="/hall-archive" element={<HallArchive />} />
       <Route path="/admin" element={<AdminPortalPage />} />
+      <Route path="/admin/login" element={<StaffLoginPage kind="admin" />} />
+      <Route path="/perfumer/login" element={<StaffLoginPage kind="perfumer" />} />
+      <Route path="/admin/library" element={<AdminLibraryPage />} />
+      <Route path="/admin/hall-archive" element={<AdminHallArchivePage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

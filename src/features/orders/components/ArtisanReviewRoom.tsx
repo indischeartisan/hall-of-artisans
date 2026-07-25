@@ -20,23 +20,17 @@ const phaseStatuses = {
     eyebrow: "Artisan Review in Progress",
     title: "An artisan is studying your creation.",
     text: "The atmosphere, materials, structure, and details you shared are being translated into an olfactive direction.",
-    next: "You will receive an interpretation, recommendations, estimated timing, and final price."
+    next: "When the internal review is complete, your private consultation will open."
   },
-  WAITING_FOR_REPLY: {
-    eyebrow: "Your Reply Is Needed",
-    title: "The artisan needs one detail from you.",
-    text: "Open the conversation below and reply so the interpretation can continue without losing its direction.",
-    next: "Review resumes after your message is received."
-  },
-  REVISION_REQUESTED: {
-    eyebrow: "Revision Requested",
-    title: "Your requested changes are recorded.",
-    text: "The project remains inside the review room while an artisan prepares the next interpretation.",
-    next: "The revised proposal will appear here when it is ready."
+  CONSULTATION: {
+    eyebrow: "Private Consultation",
+    title: "Shape the final direction with your artisan.",
+    text: "Use the conversation below to answer questions and refine the creation before production.",
+    next: "When your artisan understands the complete brief, payment will open."
   }
 } as const;
 
-const roomPhases = ["Artisan Review", "Your Approval", "Payment & Creation", "Delivery"];
+const roomPhases = ["Artisan Review", "Consultation", "Payment & Creation", "Delivery"];
 
 function SubmissionSummary({ request }: { request: ReviewRequest }) {
   const snapshot = request.submissionSnapshot ?? request.previewSnapshot;
@@ -53,7 +47,7 @@ function SubmissionSummary({ request }: { request: ReviewRequest }) {
 
 export default function ArtisanReviewRoom({ request, messages, activity, busy, onCancel }: ArtisanReviewRoomProps) {
   const status = phaseStatuses[request.status as keyof typeof phaseStatuses] ?? phaseStatuses.SUBMITTED;
-  const waiting = request.status === "WAITING_FOR_REPLY";
+  const consulting = request.status === "CONSULTATION";
   const scrollToConversation = () => document.querySelector<HTMLInputElement>(".review-conversation .od-compose input")?.scrollIntoView({ behavior: "smooth", block: "center" });
 
   return <>
@@ -61,24 +55,24 @@ export default function ArtisanReviewRoom({ request, messages, activity, busy, o
       {roomPhases.map((phase, index) => <div className={index === 0 ? "active" : ""} key={phase}><i>{String(index + 1).padStart(2, "0")}</i><span>{phase}<small>{index === 0 ? "Current phase" : "Later"}</small></span></div>)}
     </nav>
 
-    <section className={`review-room-status${waiting ? " needs-reply" : ""}`}>
+    <section className={`review-room-status${consulting ? " needs-reply" : ""}`}>
       <div><p>{status.eyebrow}</p><h1>{status.title}</h1><span>{status.text}</span></div>
-      <aside><small>What happens next</small><strong>{status.next}</strong>{waiting && <button type="button" onClick={scrollToConversation}>Reply to Artisan</button>}</aside>
+      <aside><small>What happens next</small><strong>{status.next}</strong>{consulting && <button type="button" onClick={scrollToConversation}>Open Consultation</button>}</aside>
     </section>
 
     <div className="review-room-layout">
       <main>
         <SubmissionSummary request={request} />
         <section className="review-room-panel review-conversation">
-          <header><p>Project Conversation</p><h2>Letters with your artisan</h2><span>All questions and updates for this creation stay together here.</span></header>
+          <header><p>{consulting ? "Consultation Open" : "Project Conversation"}</p><h2>Letters with your artisan</h2><span>{consulting ? "Ask questions and refine the brief here before production." : "Conversation opens after the artisan completes the internal review."}</span></header>
           <ChatPanel requestId={request.id} status={request.status} messages={messages} />
         </section>
       </main>
 
       <aside className="review-room-sidebar">
-        <section className="review-room-panel review-progress"><p>Inside Artisan Review</p><h2>Review progress</h2><ol><li className="done"><i>✓</i><span>Creation received<small>Your submitted details are locked and preserved.</small></span></li><li className={request.status !== "SUBMITTED" ? "active" : ""}><i>02</i><span>Artisan interpretation<small>Story, formula, and preferences are being studied.</small></span></li><li><i>03</i><span>Proposal prepared<small>Recommendations, timing, and final price follow.</small></span></li></ol></section>
+        <section className="review-room-panel review-progress"><p>Inside The Hall</p><h2>Project progress</h2><ol><li className="done"><i>✓</i><span>Creation received<small>Your submitted details and package are preserved.</small></span></li><li className={request.status === "UNDER_REVIEW" ? "active" : consulting ? "done" : ""}><i>{consulting ? "✓" : "02"}</i><span>Artisan review<small>Story, formula, and preferences are being studied.</small></span></li><li className={consulting ? "active" : ""}><i>03</i><span>Consultation<small>Customer and artisan confirm the complete direction.</small></span></li></ol></section>
 
-        <section className="review-room-panel review-budget"><p>Budget Guidance</p><h2>{money(request.estimatedPriceMin, request.currency)} – {money(request.estimatedPriceMax, request.currency)}</h2><span>This remains an estimate. No payment is requested until you review and approve the artisan proposal.</span></section>
+        <section className="review-room-panel review-budget"><p>Selected Package</p><h2>{request.packageSnapshot?.name || "Commission package"}</h2><strong>{money(request.finalPrice, request.currency)}</strong><span>{request.concentration} · {request.bottleSize}. Payment opens only after consultation is complete.</span></section>
 
         <section className="review-room-panel review-activity"><p>Project Activity</p><h2>Recorded updates</h2><ActivityPanel activity={activity} /></section>
 

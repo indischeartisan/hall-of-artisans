@@ -1,0 +1,6 @@
+.admin-archive-grid .admin-material-image{height:17rem;background:linear-gradient(145deg,#efe5cd,#fffaf0)}
+.admin-archive-grid .admin-material-image img{width:100%;height:100%;object-fit:contain}
+.admin-archive-grid .admin-material-copy p{min-height:auto}
+.admin-archive-modal textarea{min-height:7rem}
+.admin-archive-modal .material-upload-preview img{max-height:12rem;object-fit:contain}
+@media(max-width:700px){.admin-archive-grid .admin-material-image{height:14rem}}

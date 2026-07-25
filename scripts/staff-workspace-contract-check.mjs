@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const migration = await readFile(
-  new URL("../supabase/migrations/20260724111629_create_staff_review_workspace.sql", import.meta.url),
+  new URL("../supabase/migrations/20260725080000_revise_package_consultation_workflow.sql", import.meta.url),
   "utf8"
 );
 
@@ -21,8 +21,8 @@ for (const guard of requiredGuards) {
 
 const reviewerTransitions = [
   "result.status = 'SUBMITTED' and next_status = 'UNDER_REVIEW'",
-  "result.status = 'UNDER_REVIEW' and next_status in ('WAITING_FOR_REPLY', 'READY_FOR_APPROVAL')",
-  "result.status = 'REVISION_REQUESTED' and next_status = 'UNDER_REVIEW'"
+  "result.status='UNDER_REVIEW' and next_status='CONSULTATION'",
+  "result.status='CONSULTATION' and next_status='READY_FOR_PAYMENT'"
 ];
 
 const adminTransitions = [
@@ -32,12 +32,12 @@ const adminTransitions = [
   "result.status = 'SHIPPED' and next_status = 'COMPLETED'"
 ];
 
-for (const transition of reviewerTransitions) assert.ok(migration.includes(transition));
+for (const transition of reviewerTransitions) assert.ok(migration.replaceAll(" ", "").includes(transition.replaceAll(" ", "")));
 for (const transition of adminTransitions) {
-  assert.ok(migration.includes(`actor_is_admin and ${transition}`), `Admin-only transition must remain protected: ${transition}`);
+  assert.ok(migration.replaceAll(" ", "").includes(`actor_is_admin and ${transition}`.replaceAll(" ", "")), `Admin-only transition must remain protected: ${transition}`);
 }
 
-assert.ok(migration.includes("A structured artisan proposal is required"));
+assert.ok(migration.includes("Conversation opens when consultation begins"));
 assert.ok(migration.includes("Message must contain 1 to 5000 characters"));
 
 console.log("Staff workspace contract check passed: role guards, RPC security, and workflow boundaries.");

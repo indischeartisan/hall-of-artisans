@@ -45,12 +45,12 @@ export default function CheckoutPage() {
     <section>
       <div className="checkout-creations">
         <p>THE HALL OF ARTISANS</p><h1>Your Creations</h1>
-        <p className="checkout-intro">Choose every approved creation you want to place in this order.</p>
+        <p className="checkout-intro">Choose every consultation-complete creation you want to pay for.</p>
         {eligible.length ? <div className="checkout-item-list">{eligible.map((item) => <label key={item.id} className={selectedIds.includes(item.id) ? "selected" : ""}>
           <input type="checkbox" checked={selectedIds.includes(item.id)} onChange={() => toggle(item.id)}/>
-          <span><strong>{item.perfumeName}</strong><small>{item.concentration} · {item.bottleSize}</small></span>
+          <span><strong>{item.perfumeName}</strong><small>{item.packageSnapshot?.name || "Commission package"} · {item.bottleSize}</small></span>
           <b>{money(item.finalPrice, item.currency)}</b>
-        </label>)}</div> : <div className="checkout-empty"><strong>No creation is ready yet.</strong><p>An artisan must approve the creation and lock its final price before checkout.</p></div>}
+        </label>)}</div> : <div className="checkout-empty"><strong>No creation is ready yet.</strong><p>Your artisan must complete consultation and mark the project ready for payment.</p></div>}
         {selected.length > 1 && <p className="checkout-batch-note">One payment, {selected.length} independent creations. Each creation keeps its own production status.</p>}
       </div>
       <form onSubmit={(event) => { event.preventDefault(); void confirm(); }}>

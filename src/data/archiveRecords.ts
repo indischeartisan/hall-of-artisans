@@ -1,10 +1,13 @@
 export type ArchiveRecord = {
+  id?: string;
   archiveNumber: string;
   title: string;
   creator: string;
   mood: string[];
   story: string;
   image: string;
+  imageAlt?: string;
+  ownerId?: string | null;
   status: "Archived";
 };
 
