@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "node scripts/workflow-contract-check.mjs && node scripts/staff-workspace-contract-check.mjs",
     "test:workflow": "node scripts/workflow-contract-check.mjs",
-    "test:staff": "node scripts/staff-workspace-contract-check.mjs"
+    "test:staff": "node scripts/staff-workspace-contract-check.mjs",
+    "test:beta": "node scripts/beta-readiness-check.mjs && pnpm test && pnpm build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.7",

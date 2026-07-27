@@ -29,6 +29,9 @@ export default function AdminDashboardLayout() {
         <NavLink end to="/admin"><LinkIcon>⌂</LinkIcon>Overview</NavLink>
         <NavLink to="/admin/creations"><LinkIcon>✦</LinkIcon>Creations</NavLink>
         <NavLink to="/admin/orders"><LinkIcon>▣</LinkIcon>Orders</NavLink>
+        <NavLink to="/admin/revision-requests"><LinkIcon>↺</LinkIcon>Revisions</NavLink>
+        <NavLink to="/admin/repeat-orders"><LinkIcon>∞</LinkIcon>Repeat Orders</NavLink>
+        <NavLink to="/admin/completed-orders"><LinkIcon>✓</LinkIcon>Completed</NavLink>
         <span className="disabled"><LinkIcon>♙</LinkIcon>Artisans<small>Later</small></span>
         <NavLink to="/admin/library"><LinkIcon>◈</LinkIcon>Library</NavLink>
         <NavLink to="/admin/hall-archive"><LinkIcon>▤</LinkIcon>Hall Archive</NavLink>

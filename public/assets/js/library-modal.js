@@ -11,6 +11,35 @@
   const modalPanel = document.querySelector("[data-library-modal-panel]");
   const closeButton = document.querySelector("[data-library-close]");
 
+  const libraryHeader = document.querySelector("#siteHeader");
+  libraryHeader?.classList.remove("global-header--light");
+  libraryHeader?.classList.add("global-header--transparent");
+  const savedTheme = localStorage.getItem("hoa-theme") === "dark" ? "dark" : "bright";
+  document.body.dataset.theme = savedTheme;
+  if (libraryHeader && !libraryHeader.querySelector(".library-theme-toggle")) {
+    const themeToggle = document.createElement("button");
+    themeToggle.className = "theme-toggle theme-toggle--slider library-theme-toggle";
+    themeToggle.type = "button";
+    themeToggle.innerHTML = '<span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-option theme-toggle-sun">&#9728;</span><span class="theme-toggle-option theme-toggle-moon">&#9790;</span><span class="theme-toggle-thumb"></span></span>';
+    const syncThemeToggle = () => {
+      const dark = document.body.dataset.theme === "dark";
+      themeToggle.setAttribute("aria-pressed", String(dark));
+      themeToggle.setAttribute("aria-label", dark ? "Switch to bright mode" : "Switch to dark mode");
+    };
+    themeToggle.addEventListener("click", () => {
+      const next = document.body.dataset.theme === "dark" ? "bright" : "dark";
+      document.body.dataset.theme = next;
+      localStorage.setItem("hoa-theme", next);
+      syncThemeToggle();
+    });
+    syncThemeToggle();
+    libraryHeader.append(themeToggle);
+  }
+
+  document.querySelector(".indische-section")?.classList.add("inner-panel");
+  document.querySelector(".library-cta")?.classList.add("inner-panel");
+  document.querySelector(".library-cta a")?.classList.add("inner-panel");
+
   let activeCategory = "Featured Materials";
   let query = "";
 
@@ -78,14 +107,14 @@
 
   function materialCard(material) {
     const tags = (material.mood || []).slice(0, 3).map((tag) => `<span>${escapeHtml(tag)}</span>`).join("");
+    const classification = (material.families || [material.category || material.type])[0];
     return `
-      <article class="library-card" data-material-id="${escapeHtml(material.id)}">
+      <article class="library-card inner-panel" data-material-id="${escapeHtml(material.id)}" data-open-material="${escapeHtml(material.id)}" role="button" tabindex="0" aria-label="Open ${escapeHtml(material.name)}">
         <div class="library-card-ornament" aria-hidden="true"></div>
         <div class="material-illustration" aria-hidden="true">${materialIconMarkup(material)}</div>
         <h2>${escapeHtml(material.name)}</h2>
-        <p class="material-family">${escapeHtml((material.families || [material.type])[0])}</p>
         <div class="material-tags">${tags}</div>
-        <button class="library-open-button" type="button" data-open-material="${escapeHtml(material.id)}">Open</button>
+        <p class="material-classification">${escapeHtml(classification)}</p>
       </article>
     `;
   }
@@ -188,9 +217,17 @@
   });
 
   grid.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-open-material]");
-    if (!button) return;
-    openMaterial(button.dataset.openMaterial);
+    const card = event.target.closest("[data-open-material]");
+    if (!card) return;
+    openMaterial(card.dataset.openMaterial);
+  });
+
+  grid.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const card = event.target.closest("[data-open-material]");
+    if (!card) return;
+    event.preventDefault();
+    openMaterial(card.dataset.openMaterial);
   });
 
   closeButton.addEventListener("click", closeModal);

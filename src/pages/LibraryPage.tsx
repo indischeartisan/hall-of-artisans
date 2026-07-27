@@ -1,10 +1,10 @@
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import GlobalHeader from "../components/GlobalHeader";
 import { loadLibraryCatalog, type LibraryMaterial } from "../features/library/libraryCatalogService";
 
 const libraryStyles = [
   "/assets/css/styles.css?v=17",
-  "/assets/css/library.css?v=8",
+  "/assets/css/library.css?v=9",
   "/assets/css/header-consistency.css?v=1"
 ];
 
@@ -13,7 +13,7 @@ const libraryDataScripts = [
   "/assets/js/library-note-details.js?v=1"
 ];
 
-const libraryUiScript = "/assets/js/library-modal.js?v=4";
+const libraryUiScript = "/assets/js/library-modal.js?v=5";
 
 type LibraryWindow = Window & {
   LIBRARY_CATEGORIES?: string[];
@@ -33,9 +33,13 @@ function loadScript(src: string) {
 }
 
 export default function LibraryPage() {
+  const [theme, setTheme] = useState<"bright" | "dark">(() => window.localStorage.getItem("hoa-theme") === "dark" ? "dark" : "bright");
+  const isDark = theme === "dark";
+
   useLayoutEffect(() => {
     document.title = "The Library | The Hall of Artisans";
     document.body.classList.add("library-body");
+    document.body.dataset.theme = theme;
 
     const links = libraryStyles.map((href) => {
       const link = document.createElement("link");
@@ -48,9 +52,23 @@ export default function LibraryPage() {
 
     return () => {
       document.body.classList.remove("library-body", "library-modal-open", "show-indische-only");
+      delete document.body.dataset.theme;
       links.forEach((link) => link.remove());
     };
   }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = isDark ? "bright" : "dark";
+    setTheme(nextTheme);
+    document.body.dataset.theme = nextTheme;
+    window.localStorage.setItem("hoa-theme", nextTheme);
+  };
+
+  const themeToggle = (
+    <button className="theme-toggle theme-toggle--slider library-theme-toggle" type="button" aria-label={isDark ? "Switch to bright mode" : "Switch to dark mode"} aria-pressed={isDark} onClick={toggleTheme}>
+      <span className="theme-toggle-track" aria-hidden="true"><span className="theme-toggle-option theme-toggle-sun">☀</span><span className="theme-toggle-option theme-toggle-moon">☾</span><span className="theme-toggle-thumb" /></span>
+    </button>
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -97,7 +115,7 @@ export default function LibraryPage() {
 
   return (
     <>
-      <GlobalHeader activeLabel="The Library" variant="light" />
+      <GlobalHeader activeLabel="The Library" variant="transparent" action={themeToggle} />
       <main className="library-page" id="library">
         <div className="library-shell">
           <section className="library-hero" aria-labelledby="library-title">

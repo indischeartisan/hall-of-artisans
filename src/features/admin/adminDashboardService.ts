@@ -2,6 +2,7 @@ import { getSupabaseClient } from "../../lib/supabase";
 import type { Json, Tables } from "../../types/database.types";
 import type { ReviewRequest } from "../orders/types";
 import { staffService, type StaffReviewer } from "./staffService";
+import { aftercareService, type AftercareCase } from "../aftercare/aftercareService";
 
 type OrderRow = Tables<"customer_orders">;
 type OrderItemRow = Tables<"order_items">;
@@ -56,6 +57,12 @@ export interface AdminActivityItem {
   createdAt: string;
 }
 
+export interface AdminAftercareCase extends AftercareCase {
+  creationName: string;
+  requestNumber: string;
+  customer: AdminCustomer;
+}
+
 export interface AdminMessageItem {
   id: string;
   requestId: string;
@@ -71,6 +78,7 @@ export interface AdminDashboardSnapshot {
   reviewers: StaffReviewer[];
   activity: AdminActivityItem[];
   customerMessages: AdminMessageItem[];
+  aftercare: AdminAftercareCase[];
 }
 
 const jsonObject = (value: Json): Record<string, unknown> =>
@@ -118,13 +126,14 @@ export const adminDashboardService = {
   },
   async getSnapshot(): Promise<AdminDashboardSnapshot> {
     const client = getSupabaseClient();
-    const [requests, reviewers, orderRows, orderItemRows, activityRows, messageRows] = await Promise.all([
+    const [requests, reviewers, orderRows, orderItemRows, activityRows, messageRows, aftercareRows] = await Promise.all([
       staffService.getQueue(),
       staffService.getReviewers().catch(() => []),
       client.from("customer_orders").select("*").order("updated_at", { ascending: false }),
       client.from("order_items").select("*").order("created_at", { ascending: false }),
       client.from("request_activity").select("id,request_id,label,created_at").order("created_at", { ascending: false }).limit(20),
-      client.from("request_messages").select("id,request_id,message,sender_name,created_at").eq("sender_role", "customer").order("created_at", { ascending: false }).limit(20)
+      client.from("request_messages").select("id,request_id,message,sender_name,created_at").eq("sender_role", "customer").order("created_at", { ascending: false }).limit(20),
+      aftercareService.getAssigned()
     ]);
     if (orderRows.error || orderItemRows.error || activityRows.error || messageRows.error) {
       throw orderRows.error ?? orderItemRows.error ?? activityRows.error ?? messageRows.error;
@@ -134,6 +143,7 @@ export const adminDashboardService = {
     const customers = await customerMap(users);
     const reviewerNames = new Map(reviewers.map(item => [item.userId, item.displayName]));
     const requestNames = new Map(requests.map(item => [item.id, item.perfumeName]));
+    const requestNumbers = new Map(requests.map(item => [item.id, item.requestNumber]));
     const requestPaidAt = new Map(requests.map(item => [item.id, item.paidAt]));
     const orderItems = new Map<string, AdminOrderItem[]>();
     (orderItemRows.data ?? []).forEach(row => orderItems.set(row.order_id, [...(orderItems.get(row.order_id) ?? []), mapOrderItem(row)]));
@@ -159,7 +169,8 @@ export const adminDashboardService = {
       orders,
       reviewers,
       activity: (activityRows.data ?? []).map(item => ({ ...item, requestId: item.request_id, creationName: requestNames.get(item.request_id) ?? "Creation" })),
-      customerMessages: (messageRows.data ?? []).map(item => ({ ...item, requestId: item.request_id, creationName: requestNames.get(item.request_id) ?? "Creation", senderName: item.sender_name }))
+      customerMessages: (messageRows.data ?? []).map(item => ({ ...item, requestId: item.request_id, creationName: requestNames.get(item.request_id) ?? "Creation", senderName: item.sender_name })),
+      aftercare: aftercareRows.map(item => ({ ...item, creationName: requestNames.get(item.reviewRequestId) ?? "Completed creation", requestNumber: requestNumbers.get(item.reviewRequestId) ?? "—", customer: customers.get(item.userId)! }))
     };
   }
 };

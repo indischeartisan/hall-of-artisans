@@ -1,0 +1,71 @@
+.artisan-modal__dialog {
+  max-height: min(820px, calc(100dvh - 56px));
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  touch-action: pan-y;
+}
+
+.drafts-modal__dialog {
+  max-height: min(820px, calc(100dvh - 56px));
+  display: flex !important;
+  flex-direction: column;
+  overflow: hidden !important;
+}
+
+.drafts-modal__dialog > .artisan-modal__header,
+.drafts-modal__dialog > .drafts-modal__tabs,
+.drafts-modal__dialog > .drafts-modal__error {
+  flex: 0 0 auto;
+}
+
+.drafts-modal__list {
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-auto-rows: max-content;
+  align-content: start;
+  padding: 16px 8px 16px 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  touch-action: pan-y;
+}
+
+.drafts-modal__list > .drafts-modal__card {
+  min-height: max-content;
+  flex-shrink: 0;
+}
+
+@media (max-width: 620px) {
+  .artisan-modal__dialog,
+  .drafts-modal__dialog {
+    max-height: calc(100dvh - 16px);
+  }
+
+  /* Personal records use the overlay as the scroll container on mobile.
+     This lets the parchment panel grow around the complete orders/archive
+     list instead of clipping its background at one viewport height. */
+  .artisan-modal:not(.drafts-modal) {
+    display: block;
+    padding: 8px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    touch-action: pan-y;
+  }
+
+  .artisan-modal:not(.drafts-modal) > .artisan-modal__backdrop {
+    position: fixed;
+  }
+
+  .artisan-modal:not(.drafts-modal) > .artisan-modal__dialog {
+    width: 100%;
+    min-height: calc(100dvh - 16px);
+    max-height: none;
+    margin: 0 auto;
+    overflow: visible !important;
+  }
+}

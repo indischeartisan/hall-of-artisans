@@ -18,12 +18,14 @@ import CheckoutPage from "./features/orders/CheckoutPage";
 import DescribeCreationPage from "./features/describe-creation/DescribeCreationPage";
 import AdminDashboardLayout from "./features/admin/AdminDashboardLayout";
 import { AdminCreationsPage, AdminOrdersPage, AdminOverviewPage } from "./features/admin/AdminDashboardPages";
+import { AdminCompletedOrdersPage, AdminRepeatOrdersPage, AdminRevisionRequestsPage } from "./features/admin/AdminLifecyclePages";
 import AdminLibraryPage from "./features/admin/AdminLibraryPage";
 import AdminHallArchivePage from "./features/admin/AdminHallArchivePage";
 import StaffLoginPage from "./features/admin/StaffLoginPage";
 import PerfumerWorkspaceLayout from "./features/perfumer/PerfumerWorkspaceLayout";
 import { PerfumerCompletedWorksPage, PerfumerCreationsPage, PerfumerOverviewPage, PerfumerProfilePage } from "./features/perfumer/PerfumerWorkspacePages";
 import AftercarePreviewPage from "./features/aftercare/AftercarePreviewPage";
+import BetaBadge from "./components/BetaBadge";
 
 function LegacyPerfumerMessagesRedirect() {
   const location = useLocation();
@@ -37,7 +39,7 @@ function LocalAftercarePreview() {
 
 export default function App() {
   return (
-    <Routes>
+    <><BetaBadge/><Routes>
       <Route path="/" element={<EntranceHallPage />} />
       <Route path="/hall" element={<LobbyPage />} />
       <Route path="/chamber-of-creation" element={<ChamberOfCreationPage />} />
@@ -60,6 +62,9 @@ export default function App() {
         <Route index element={<AdminOverviewPage />} />
         <Route path="creations" element={<AdminCreationsPage />} />
         <Route path="orders" element={<AdminOrdersPage />} />
+        <Route path="revision-requests" element={<AdminRevisionRequestsPage />} />
+        <Route path="repeat-orders" element={<AdminRepeatOrdersPage />} />
+        <Route path="completed-orders" element={<AdminCompletedOrdersPage />} />
       </Route>
       <Route path="/admin/login" element={<StaffLoginPage kind="admin" />} />
       <Route path="/perfumer/login" element={<StaffLoginPage kind="perfumer" />} />
@@ -73,6 +78,6 @@ export default function App() {
       <Route path="/admin/library" element={<AdminLibraryPage />} />
       <Route path="/admin/hall-archive" element={<AdminHallArchivePage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    </Routes></>
   );
 }

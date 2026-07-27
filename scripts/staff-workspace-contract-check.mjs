@@ -1,10 +1,15 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const migration = await readFile(
-  new URL("../supabase/migrations/20260725080000_revise_package_consultation_workflow.sql", import.meta.url),
+const workflowMigration = await readFile(
+  new URL("../supabase/migrations/20260725120844_revise_package_consultation_workflow.sql", import.meta.url),
   "utf8"
 );
+const assignmentMigration = await readFile(
+  new URL("../supabase/migrations/20260725042308_add_reviewer_assignment.sql", import.meta.url),
+  "utf8"
+);
+const migration = `${workflowMigration}\n${assignmentMigration}`;
 
 const requiredGuards = [
   "not private.is_reviewer_or_admin()",

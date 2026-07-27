@@ -1,27 +1,64 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import GlobalHeader from "./AdminHeader";
 import { staffService, type StaffAccess } from "./staffService";
 import { archiveCatalogAdminService, type ArchiveRecordInput, type CatalogArchiveRecord } from "./archiveCatalogAdminService";
+import { adminDashboardService, type AdminCreation, type AdminOrder, type AdminOrderItem } from "./adminDashboardService";
 
 const emptyForm = { archiveNumber: "", title: "", slug: "", creator: "", moods: "", story: "", imagePath: "", imageAlt: "", status: "active", featured: false, displayOrder: "0" };
 type EditorForm = typeof emptyForm;
+type ArchiveSeed = Partial<EditorForm>;
+type ArchiveCandidate = { order: AdminOrder; item: AdminOrderItem; creation?: AdminCreation };
 const slugify = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const listValue = (value: string) => value.split(/[,\n]/).map(item => item.trim()).filter(Boolean);
 const fromRecord = (item: CatalogArchiveRecord): EditorForm => ({ archiveNumber: item.archive_number, title: item.title, slug: item.slug, creator: item.creator, moods: item.moods.join(", "), story: item.story, imagePath: item.image_path ?? "", imageAlt: item.image_alt ?? "", status: item.status, featured: item.is_featured, displayOrder: String(item.display_order) });
+const nextArchiveNumber = (records: CatalogArchiveRecord[]) => {
+  const next = Math.max(0, ...records.map(item => Number(item.archive_number.match(/\d+/)?.[0] ?? 0))) + 1;
+  return `HOA-${String(next).padStart(4, "0")}`;
+};
+const seedFromCandidate = (candidate: ArchiveCandidate, records: CatalogArchiveRecord[]): ArchiveSeed => {
+  const request = candidate.creation?.request;
+  const snapshot = request?.submissionSnapshot ?? request?.previewSnapshot;
+  const story = request?.fragranceBrief || snapshot?.writtenStory || request?.artisanReview?.summary || `A completed bespoke commission preserved from order ${candidate.order.orderNumber}.`;
+  const moods = request?.fragranceDirection?.length ? request.fragranceDirection : [...(request?.topNotes ?? []), ...(request?.heartNotes ?? []), ...(request?.baseNotes ?? [])].slice(0, 6);
+  return {
+    archiveNumber: nextArchiveNumber(records),
+    title: candidate.item.creationName,
+    slug: slugify(candidate.item.creationName),
+    creator: candidate.order.customer.name,
+    moods: moods.join(", "),
+    story,
+    imagePath: request?.storyCardData?.imageUrl ?? "",
+    imageAlt: `${candidate.item.creationName} perfume bottle`,
+    status: "active",
+    displayOrder: String(Math.max(-1, ...records.map(item => item.display_order)) + 1)
+  };
+};
 
 function AccessGate({ access }: { access: StaffAccess | null }) {
   const navigate = useNavigate();
   return <><GlobalHeader variant="light"/><main className="admin-access"><span>Hall Archive CMS</span><h1>Administrator access is required.</h1><p>This workspace controls the records visible in the public Hall Archive.</p><div><button onClick={() => navigate("/admin/login?returnTo=/admin/hall-archive")}>Admin Sign In</button><button className="secondary" onClick={() => navigate("/hall-archive")}>Open Hall Archive</button></div></main></>;
 }
 
-function ArchiveEditor({ record, onClose, onSaved }: { record: CatalogArchiveRecord | null; onClose: () => void; onSaved: () => Promise<void> }) {
-  const [form, setForm] = useState<EditorForm>(() => record ? fromRecord(record) : emptyForm);
+function ArchiveEditor({ record, seed, onClose, onSaved }: { record: CatalogArchiveRecord | null; seed?: ArchiveSeed; onClose: () => void; onSaved: () => Promise<void> }) {
+  const [form, setForm] = useState<EditorForm>(() => record ? fromRecord(record) : { ...emptyForm, ...seed });
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const preview = useMemo(() => file ? URL.createObjectURL(file) : form.imagePath, [file, form.imagePath]);
   useEffect(() => () => { if (preview.startsWith("blob:")) URL.revokeObjectURL(preview); }, [preview]);
+  useEffect(() => {
+    if (record || seed) return;
+    const candidateId = new URLSearchParams(window.location.search).get("candidate");
+    if (!candidateId) return;
+    void Promise.all([adminDashboardService.getSnapshot(), archiveCatalogAdminService.list()]).then(([snapshot, archiveRecords]) => {
+      const order = snapshot.orders.find(entry => entry.items.some(item => item.reviewRequestId === candidateId));
+      const item = order?.items.find(entry => entry.reviewRequestId === candidateId);
+      if (!order || !item) return;
+      const creation = snapshot.creations.find(entry => entry.request.id === candidateId);
+      setForm(current => ({ ...current, ...seedFromCandidate({ order, item, creation }, archiveRecords) }));
+    }).catch(cause => setError(cause instanceof Error ? cause.message : "Completed creation could not be prepared."));
+  }, [record, seed]);
   const change = <K extends keyof EditorForm>(key: K, value: EditorForm[K]) => setForm(current => ({ ...current, [key]: value }));
   const submit = async (event: FormEvent) => {
     event.preventDefault(); setBusy(true); setError("");
@@ -43,6 +80,7 @@ function ArchiveEditor({ record, onClose, onSaved }: { record: CatalogArchiveRec
 
 export default function AdminHallArchivePage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [access, setAccess] = useState<StaffAccess | null>(null);
   const [records, setRecords] = useState<CatalogArchiveRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,10 +88,27 @@ export default function AdminHallArchivePage() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("active");
   const [editing, setEditing] = useState<CatalogArchiveRecord | "new" | null>(null);
+  const [candidateSeed, setCandidateSeed] = useState<ArchiveSeed | null>(null);
+  const [completedOrders, setCompletedOrders] = useState<AdminOrder[]>([]);
+  const [creations, setCreations] = useState<AdminCreation[]>([]);
+  const [handledCandidate, setHandledCandidate] = useState("");
   const load = async () => setRecords(await archiveCatalogAdminService.list());
-  useEffect(() => { void staffService.getAccess().then(async result => { setAccess(result); if (result.role === "admin" || result.role === "super_admin") await load(); }).catch(cause => setError(cause instanceof Error ? cause.message : "Archive could not be loaded.")).finally(() => setLoading(false)); }, []);
+  useEffect(() => { void staffService.getAccess().then(async result => { setAccess(result); if (result.role === "admin" || result.role === "super_admin") { const [, snapshot] = await Promise.all([load(), adminDashboardService.getSnapshot()]); setCompletedOrders(snapshot.orders.filter(order => order.productionStatus === "completed" || order.shippingStatus === "delivered")); setCreations(snapshot.creations); } }).catch(cause => setError(cause instanceof Error ? cause.message : "Archive could not be loaded.")).finally(() => setLoading(false)); }, []);
   const filtered = useMemo(() => records.filter(item => (status === "all" || item.status === status) && (item.archive_number + " " + item.title + " " + item.creator + " " + item.moods.join(" ")).toLowerCase().includes(search.toLowerCase())), [records, search, status]);
   const run = async (operation: () => Promise<unknown>) => { setError(""); try { await operation(); await load(); } catch (cause) { setError(cause instanceof Error ? cause.message : "Archive action failed."); } };
+  const candidates: ArchiveCandidate[] = completedOrders.flatMap(order => order.items.map(item => ({ order, item, creation: creations.find(entry => entry.request.id === item.reviewRequestId) })));
+  const openCandidate = (candidate: ArchiveCandidate) => {
+    setCandidateSeed(seedFromCandidate(candidate, records));
+    setHandledCandidate(candidate.item.reviewRequestId);
+    setEditing("new");
+    setSearchParams(current => { const next = new URLSearchParams(current); next.set("candidate", candidate.item.reviewRequestId); return next; }, { replace: true });
+  };
+  useEffect(() => {
+    const candidateId = searchParams.get("candidate");
+    if (loading || editing || !candidateId || candidateId === handledCandidate || !candidates.length) return;
+    const candidate = candidates.find(entry => entry.item.reviewRequestId === candidateId);
+    if (candidate) openCandidate(candidate);
+  }, [loading, candidates.length, searchParams, records.length, handledCandidate]);
   if (loading) return <div className="admin-loading">Opening Hall Archive CMS…</div>;
   if (access?.role !== "admin" && access?.role !== "super_admin") return <AccessGate access={access}/>;
   return <div className="admin-shell admin-library-shell admin-archive-shell"><GlobalHeader activeLabel="Hall Archive" variant="light"/><header className="admin-library-hero"><div><span>Administrator Workspace</span><h1>Hall Archive CMS</h1><p>Edit the same official records shown in the public Hall Archive.</p></div><div><button className="secondary" onClick={() => navigate("/admin")}>← Admin Portal</button><button onClick={() => setEditing("new")}>+ Add Record</button></div></header><section className="admin-library-toolbar"><label><span>Search</span><input type="search" value={search} placeholder="Number, title, creator, or mood…" onChange={e => setSearch(e.target.value)}/></label><label><span>Status</span><select value={status} onChange={e => setStatus(e.target.value)}><option value="active">Active</option><option value="archived">Archived</option><option value="all">All statuses</option></select></label></section>{error && <p className="admin-error" role="alert">{error}</p>}<main className="admin-material-grid admin-archive-grid">{filtered.map(item => <article key={item.id} className={item.status === "archived" ? "archived" : ""}><div className="admin-material-image">{item.image_path ? <img src={item.image_path} alt={item.image_alt ?? ""}/> : <span>HA</span>}<em>{item.status}</em></div><div className="admin-material-copy"><small>{item.archive_number}</small><h2>{item.title}</h2><p>Created by {item.creator}</p><div>{item.moods.slice(0,3).map(mood => <span key={mood}>{mood}</span>)}</div></div><footer><button onClick={() => setEditing(item)}>Edit</button><button onClick={() => void run(() => item.status === "archived" ? archiveCatalogAdminService.restore(item.id) : archiveCatalogAdminService.archive(item.id))}>{item.status === "archived" ? "Restore" : "Archive"}</button><button className="danger" onClick={() => { if (window.confirm("Permanently delete " + item.title + "?")) void run(() => archiveCatalogAdminService.remove(item.id)); }}>Delete</button></footer></article>)}{!filtered.length && <section className="admin-library-empty"><h2>No archive records match this view.</h2><p>Change the filters or add a new official record.</p></section>}</main>{editing && <ArchiveEditor record={editing === "new" ? null : editing} onClose={() => setEditing(null)} onSaved={load}/>}</div>;

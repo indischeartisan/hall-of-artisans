@@ -1,0 +1,22 @@
+.hoa-table-action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 11px;
+  color: #f4dfad;
+  background: #17443d;
+  border: 1px solid #b68b45;
+  text-decoration: none;
+  font: 9px Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+
+.hoa-detail-drawer .hoa-primary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #f4dfad;
+  text-decoration: none;
+}
