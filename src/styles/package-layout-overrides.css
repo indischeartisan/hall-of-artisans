@@ -1,0 +1,7 @@
+@media (min-width: 981px) {
+  .prep-layout .prep-sidebar { display: contents; }
+  .prep-layout .prep-ready { grid-column: 2; grid-row: 1; }
+  .prep-layout .prep-packages { grid-column: 1 / -1; grid-row: 2; }
+  .prep-layout .prep-packages > div { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .prep-layout .prep-packages button { min-height: 118px; align-content: start; }
+}

@@ -1,0 +1,12 @@
+.hoa-perfumer-select {
+  width: 100%;
+  min-width: 145px;
+  min-height: 34px;
+  padding: 0 28px 0 9px;
+  border: 1px solid rgba(159, 116, 52, .38);
+  background: #fffaf0;
+  color: #2d4237;
+  font: 11px Arial, sans-serif;
+}
+.hoa-perfumer-select:focus { outline: 2px solid rgba(21, 72, 50, .22); border-color: #376d51; }
+.hoa-perfumer-select:disabled { opacity: .58; cursor: wait; }

@@ -1,5 +1,6 @@
 import type { Order, RequestActivity, RequestMessage, ReviewRequest } from "../types";
 import { ActivityPanel, ChatPanel, formatDate, money } from "./OrderComponents";
+import CustomerAftercarePanel from "../../aftercare/CustomerAftercarePanel";
 
 type FulfillmentRoomProps = {
   request: ReviewRequest;
@@ -64,6 +65,7 @@ export default function FulfillmentRoom({ request, order, messages, activity, bu
           <header><p>Project Conversation</p><h2>Letters with The Hall</h2><span>Questions about payment, production, or delivery remain attached to this commission.</span></header>
           <ChatPanel requestId={request.id} status={request.status} messages={messages} />
         </section>
+        {request.status === "COMPLETED" && <CustomerAftercarePanel requestId={request.id} />}
       </main>
 
       <aside className="fulfillment-sidebar">

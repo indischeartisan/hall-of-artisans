@@ -1267,6 +1267,14 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_assigned_customer_summaries: {
+        Args: never
+        Returns: {
+          artisan_id: string | null
+          display_name: string
+          user_id: string
+        }[]
+      }
       manage_artisan_id: {
         Args: {
           new_status: Database["public"]["Enums"]["artisan_id_status"]
@@ -1652,4 +1660,3 @@ export const Constants = {
     },
   },
 } as const
-

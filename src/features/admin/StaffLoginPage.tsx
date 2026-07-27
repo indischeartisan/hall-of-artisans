@@ -32,8 +32,9 @@ const roleIsAllowed = (kind: StaffLoginKind, role: StaffRole | null) =>
   kind === "admin" ? role === "admin" || role === "super_admin" : role === "reviewer";
 
 const destinationFor = (kind: StaffLoginKind, requested: string | null) => {
-  if (requested?.startsWith("/admin") && !requested.startsWith("//")) return requested;
-  return "/admin";
+  const prefix = kind === "admin" ? "/admin" : "/perfumer";
+  if (requested?.startsWith(prefix) && !requested.startsWith("//")) return requested;
+  return prefix;
 };
 
 export default function StaffLoginPage({ kind }: StaffLoginPageProps) {
