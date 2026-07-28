@@ -40,14 +40,14 @@ async function authenticatedUserId(): Promise<string | null> {
 }
 
 function payloadFor(draft: CreationDraft): Json {
-  if (draft.mode === "described") return { letter: clone(draft.letter) } as Json;
+  if (draft.mode === "described") return { letter: clone(draft.letter) } as unknown as Json;
   return {
     formula: clone(draft.formula),
     formulaMetadata: clone(draft.formulaMetadata),
     fragranceBrief: draft.fragranceBrief ? clone(draft.fragranceBrief) : null,
     storyCard: draft.storyCard ? clone(draft.storyCard) : null,
     benchState: clone(draft.benchState)
-  } as Json;
+  } as unknown as Json;
 }
 
 function rowToDraft(row: DraftRow): CreationDraft | null {

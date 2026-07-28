@@ -52,9 +52,9 @@ function reviewFromRow(row: ReviewRow): ReviewRequest {
     id: row.id, userId: row.user_id, creationId: row.creation_id, requestNumber: row.request_number,
     assignedReviewerId: row.assigned_reviewer_id, assignedAt: row.assigned_at,
     status: row.status as ReviewRequest["status"], creationMode: row.creation_mode,
-    previewSnapshot: clone(row.preview_snapshot) as ReviewRequest["previewSnapshot"],
+    previewSnapshot: clone(row.preview_snapshot) as unknown as ReviewRequest["previewSnapshot"],
     submissionId: row.submission_id,
-    submissionSnapshot: row.submission_snapshot ? clone(row.submission_snapshot) as ReviewRequest["submissionSnapshot"] : null,
+    submissionSnapshot: row.submission_snapshot ? clone(row.submission_snapshot) as unknown as ReviewRequest["submissionSnapshot"] : null,
     perfumeName: row.perfume_name, concentration: row.concentration, bottleSize: row.bottle_size,
     fragranceDirection: [...row.fragrance_direction], topNotes: [...row.top_notes], heartNotes: [...row.heart_notes], baseNotes: [...row.base_notes],
     fragranceBrief: row.fragrance_brief,
@@ -102,7 +102,7 @@ function previewPayload(request: ReviewRequest): Json {
     fragranceBrief: request.fragranceBrief, storyCardData: clone(request.storyCardData), customerNotes: request.customerNotes,
     countryCode: request.countryCode, pricingRegion: request.pricingRegion, currency: request.currency,
     estimatedPriceMin: request.estimatedPriceMin, estimatedPriceMax: request.estimatedPriceMax
-  } as Json;
+  } as unknown as Json;
 }
 
 async function importLegacyRequests(userId: string, existingIds: Set<string>): Promise<boolean> {
@@ -141,7 +141,7 @@ async function loadRequests(includeDemo = false, allowMigration = true): Promise
 async function rpcReview(name: "submit_review_request" | "customer_transition_review_request", args: Record<string, unknown>): Promise<ServiceResult<ReviewRequest>> {
   const response = name === "submit_review_request"
     ? await getSupabaseClient().rpc(name, args as { target_request_id: string })
-    : await getSupabaseClient().rpc(name, args as { target_request_id: string; next_status: string; activity_label?: string | null });
+    : await getSupabaseClient().rpc(name, args as { target_request_id: string; next_status: string; activity_label?: string });
   if (response.error || !response.data) return { ok: false, error: response.error?.message ?? "The request could not be updated." };
   emitChange();
   return { ok: true, data: reviewFromRow(response.data) };
@@ -181,6 +181,7 @@ export const orderService = {
     const snapshot = createDescribedCreationSnapshot(input, stamp, sourceDraftId ?? null);
     const provisional: ReviewRequest = {
       id: existingPreviewId ?? `bespoke-${globalThis.crypto.randomUUID()}`, userId: "", creationId: `creation-${globalThis.crypto.randomUUID()}`,
+      assignedReviewerId: null, assignedAt: null,
       requestNumber: "Preview only", status: "DRAFT_PREVIEW", creationMode: "described", previewSnapshot: snapshot,
       submissionId: null, submissionSnapshot: null, perfumeName: snapshot.perfumeName, concentration: snapshot.concentration,
       bottleSize: "To be confirmed", fragranceDirection: snapshot.preferredNotes, topNotes: [], heartNotes: [], baseNotes: [],
@@ -225,6 +226,7 @@ export const orderService = {
     };
     const provisional: ReviewRequest = {
       id: `bespoke-${globalThis.crypto.randomUUID()}`, userId: "", creationId: `creation-${globalThis.crypto.randomUUID()}`,
+      assignedReviewerId: null, assignedAt: null,
       requestNumber: "Preview only", status: "DRAFT_PREVIEW", creationMode: "artisan_bench", previewSnapshot: snapshot,
       submissionId: null, submissionSnapshot: null, perfumeName: snapshot.perfumeName, concentration: state.fragranceBrief?.concentration || state.concentration.toUpperCase(),
       bottleSize: "To be confirmed", fragranceDirection: snapshot.moodOrDirection, topNotes: notesFor("top"), heartNotes: notesFor("heart"), baseNotes: notesFor("base"),
@@ -269,7 +271,7 @@ export const orderService = {
     const detail = await this.getDetail(requestId);
     if (!detail) return { ok: false, error: "Request not found." };
     if (!canTransition(detail.request.status, status, actor)) return { ok: false, error: `Customer cannot move ${detail.request.status} to ${status}.` };
-    return rpcReview("customer_transition_review_request", { target_request_id: requestId, next_status: status, activity_label: label ?? null });
+    return rpcReview("customer_transition_review_request", { target_request_id: requestId, next_status: status, activity_label: label });
   },
 
   async setFinalPrice(): Promise<ServiceResult> { return { ok: false, error: "Final pricing requires the upcoming administrative backend." }; },
