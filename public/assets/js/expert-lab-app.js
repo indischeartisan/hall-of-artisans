@@ -601,7 +601,7 @@ document.addEventListener('click', (event) => {
     $('dialogMaterialSearch').value = '';
     renderDialog();
     $('materialDialog').showModal();
-    window.setTimeout(() => $('dialogMaterialSearch').focus(), 0);
+    $('materialDialog').querySelector('.dialog-close')?.focus({ preventScroll: true });
   }
 
   const dialogMaterial = target.dataset.dialogMaterial;

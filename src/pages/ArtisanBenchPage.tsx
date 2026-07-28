@@ -42,7 +42,7 @@ const scripts = [
   "/assets/js/fragrance-data.js?v=4",
   "/assets/js/formula-engine.js?v=5",
   "/assets/js/story-card-generator.js?v=1",
-  "/assets/js/expert-lab-app.js?v=13"
+  "/assets/js/expert-lab-app.js?v=14"
 ];
 
 function loadScript(src: string) {
