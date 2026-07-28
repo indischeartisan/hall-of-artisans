@@ -22,3 +22,6 @@ dist/
 .env
 .env.local
 .env.*.local
+
+# Supabase CLI project link cache (contains environment-specific connection metadata)
+supabase/.temp/

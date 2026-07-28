@@ -26,8 +26,8 @@ const reviewFromRow = (row: ReviewRow): ReviewRequest => ({
   id: row.id, userId: row.user_id, creationId: row.creation_id, requestNumber: row.request_number,
   assignedReviewerId: row.assigned_reviewer_id, assignedAt: row.assigned_at,
   status: row.status as ReviewRequest["status"], creationMode: row.creation_mode,
-  previewSnapshot: clone(row.preview_snapshot) as ReviewRequest["previewSnapshot"], submissionId: row.submission_id,
-  submissionSnapshot: row.submission_snapshot ? clone(row.submission_snapshot) as ReviewRequest["submissionSnapshot"] : null,
+  previewSnapshot: clone(row.preview_snapshot) as unknown as ReviewRequest["previewSnapshot"], submissionId: row.submission_id,
+  submissionSnapshot: row.submission_snapshot ? clone(row.submission_snapshot) as unknown as ReviewRequest["submissionSnapshot"] : null,
   perfumeName: row.perfume_name, concentration: row.concentration, bottleSize: row.bottle_size,
   fragranceDirection: [...row.fragrance_direction], topNotes: [...row.top_notes], heartNotes: [...row.heart_notes], baseNotes: [...row.base_notes],
   fragranceBrief: row.fragrance_brief, storyCardData: clone(row.story_card_data) as unknown as ReviewRequest["storyCardData"],
@@ -68,7 +68,9 @@ export const staffService = {
   async getReviewers(): Promise<StaffReviewer[]> {
     const response = await getSupabaseClient().rpc("list_active_reviewers");
     if (response.error) throw response.error;
-    return (response.data ?? []).map(item => ({ userId: item.user_id, displayName: item.display_name }));
+    return (response.data ?? []).flatMap(item => item.user_id
+      ? [{ userId: item.user_id, displayName: item.display_name ?? "Staff reviewer" }]
+      : []);
   },
 
   async claim(requestId: string) {
@@ -78,7 +80,7 @@ export const staffService = {
   },
 
   async assign(requestId: string, reviewerId: string | null) {
-    const response = await getSupabaseClient().rpc("assign_review_request", { target_request_id: requestId, reviewer_id: reviewerId });
+    const response = await (getSupabaseClient() as any).rpc("assign_review_request", { target_request_id: requestId, reviewer_id: reviewerId });
     if (response.error) throw response.error;
     return reviewFromRow(response.data);
   },
