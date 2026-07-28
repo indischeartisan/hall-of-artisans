@@ -68,7 +68,9 @@ export const staffService = {
   async getReviewers(): Promise<StaffReviewer[]> {
     const response = await getSupabaseClient().rpc("list_active_reviewers");
     if (response.error) throw response.error;
-    return (response.data ?? []).map(item => ({ userId: item.user_id, displayName: item.display_name ?? "Staff reviewer" }));
+    return (response.data ?? []).flatMap(item => item.user_id
+      ? [{ userId: item.user_id, displayName: item.display_name ?? "Staff reviewer" }]
+      : []);
   },
 
   async claim(requestId: string) {
