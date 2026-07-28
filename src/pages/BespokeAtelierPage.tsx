@@ -102,7 +102,6 @@ export default function BespokeAtelierPage() {
               <li>Story-based fragrance development</li><li>One original fragrance formula</li><li>30ml fragrance</li>
               <li>Personalized fragrance name</li><li>Artisan ID</li><li>Hall Archive Registration</li><li>Digital Story Card</li>
             </ul>
-            <p className="package-price">Rp599.000</p>
           </div>
           <fieldset className="design-options">
             <legend>Choose Your Design</legend>
