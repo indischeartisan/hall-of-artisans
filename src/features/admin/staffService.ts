@@ -80,7 +80,7 @@ export const staffService = {
   },
 
   async assign(requestId: string, reviewerId: string | null) {
-    const response = await getSupabaseClient().rpc("assign_review_request", { target_request_id: requestId, reviewer_id: reviewerId });
+    const response = await (getSupabaseClient() as any).rpc("assign_review_request", { target_request_id: requestId, reviewer_id: reviewerId });
     if (response.error) throw response.error;
     return reviewFromRow(response.data);
   },
