@@ -1,19 +1,26 @@
-import { Link, useParams } from "react-router";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
+import { useAuth } from "../../../contexts/AuthContext";
+import { enrollInFreeCourse } from "../services/academyEnrollmentService";
+import { getCourseBySlug, getCourseCurriculum, resolveCourseAccess, type CourseWithTranslations, type ModuleWithCurriculum } from "../services/academyCatalogService";
 import { useAcademyLocale } from "../hooks/useAcademyLocale";
-import { formatRouteLabel } from "../utils/formatRouteLabel";
+import { jsonStringArray, resolveAcademyTranslation } from "../utils/resolveAcademyTranslation";
 
-export default function AcademyCourseDetailPage() {
-  const { courseSlug } = useParams();
-  const { t } = useAcademyLocale();
-  const title = formatRouteLabel(courseSlug, t("introductionCourse"));
-  return (
-    <main className="academy-page" aria-labelledby="academy-course-title">
-      <article className="academy-reader-shell">
-        <p className="academy-eyebrow">{t("courseDetail")}</p>
-        <h1 id="academy-course-title">{title}</h1>
-        <p>{t("coursePlaceholder")}</p>
-        <Link className="academy-button" to="/academy/courses">{t("courses")}</Link>
-      </article>
-    </main>
-  );
+export default function AcademyCourseDetailPage(){
+  const {courseSlug=""}=useParams();const {user,loading:authLoading}=useAuth();const {locale,t}=useAcademyLocale();const location=useLocation();const navigate=useNavigate();
+  const [course,setCourse]=useState<CourseWithTranslations|null>(null);const [modules,setModules]=useState<ModuleWithCurriculum[]>([]);const [access,setAccess]=useState<Awaited<ReturnType<typeof resolveCourseAccess>>>("locked");const [loading,setLoading]=useState(true);const [error,setError]=useState("");const [enrolling,setEnrolling]=useState(false);const [success,setSuccess]=useState(false);
+  const load=async()=>{setLoading(true);setError("");try{const found=await getCourseBySlug(courseSlug);setCourse(found);if(!found){setModules([]);setAccess("locked");return;}const [curriculum,resolved]=await Promise.all([getCourseCurriculum(found.id),resolveCourseAccess(courseSlug)]);setModules(curriculum);setAccess(resolved);}catch(reason){setError(reason instanceof Error?reason.message:t("courseUnavailable"));}finally{setLoading(false);}};
+  useEffect(()=>{void load();},[courseSlug,user?.id]);
+  const translation=course?resolveAcademyTranslation(course.academy_course_translations,locale):null;const lessonCount=useMemo(()=>modules.reduce((sum,module)=>sum+module.academy_lessons.length,0),[modules]);const firstLesson=modules.flatMap(module=>module.academy_lessons)[0];
+  const enroll=async()=>{if(enrolling)return;setEnrolling(true);setError("");try{await enrollInFreeCourse(courseSlug);setSuccess(true);await load();navigate(`/my-academy/courses/${courseSlug}`);}catch(reason){setError(reason instanceof Error?reason.message:t("courseUnavailable"));}finally{setEnrolling(false);}};
+  if(loading||authLoading)return <main className="academy-page"><p className="academy-status" role="status">{t("loading")}</p></main>;
+  if(error&&!course)return <main className="academy-page"><section className="academy-empty-state" role="alert"><h1>{t("courseUnavailable")}</h1><p>{error}</p><Link className="academy-button" to="/academy/courses">{t("courses")}</Link></section></main>;
+  if(!course||!translation)return <main className="academy-page"><section className="academy-empty-state"><h1>{course?t("translationUnavailable"):t("courseUnavailable")}</h1><Link className="academy-button" to="/academy/courses">{t("courses")}</Link></section></main>;
+  const outcomes=jsonStringArray(translation.learning_outcomes),audience=jsonStringArray(translation.audience);
+  return <main className="academy-page academy-course-detail" aria-labelledby="academy-course-title"><header className="academy-course-hero"><p className="academy-eyebrow">{t("free")} · {t("limitedBeta")}</p><h1 id="academy-course-title">{translation.title}</h1><p className="academy-lead">{translation.full_description??translation.short_description}</p><dl className="academy-meta"><div><dt>{t("level")}</dt><dd>{course.level}</dd></div><div><dt>{t("duration")}</dt><dd>{course.estimated_minutes} {t("minutes")}</dd></div><div><dt>{t("lessons")}</dt><dd>{lessonCount}</dd></div></dl>
+    {!user?<Link className="academy-button academy-button--primary" to={`/artisan-login?returnTo=${encodeURIComponent(location.pathname)}`}>{t("startFree")}</Link>:access==="free_not_enrolled"?<button className="academy-button academy-button--primary" disabled={enrolling} onClick={()=>void enroll()}>{enrolling?t("enrolling"):t("enrollFree")}</button>:access==="actively_enrolled"?<Link className="academy-button academy-button--primary" to={`/my-academy/courses/${course.slug}`}>{t("continueStudying")}</Link>:access==="admin"&&firstLesson?<Link className="academy-button academy-button--primary" to={`/academy/courses/${course.slug}/lessons/${firstLesson.slug}`}>{t("openLesson")}</Link>:null}
+    {success?<p className="academy-success" role="status">{t("enrollmentSuccess")}</p>:null}{error?<p className="academy-error" role="alert">{error}</p>:null}</header>
+    <section className="academy-detail-grid"><article><h2>{t("learningOutcomes")}</h2><ul>{outcomes.map(item=><li key={item}>{item}</li>)}</ul></article><article><h2>{t("forWhom")}</h2><ul>{audience.map(item=><li key={item}>{item}</li>)}</ul></article></section>
+    <section className="academy-curriculum"><h2>{t("curriculum")}</h2><p>{t("oneLessonAvailable")}</p>{modules.map(module=>{const mt=resolveAcademyTranslation(module.academy_module_translations,locale);return <article key={module.id}><h3>{mt?.title}</h3><ol>{module.academy_lessons.map(lesson=>{const lt=resolveAcademyTranslation(lesson.academy_lesson_translations,locale);return <li key={lesson.id}><span>{lt?.title??lesson.slug}</span><span>{lesson.reading_minutes+lesson.practice_minutes} {t("minutes")}</span></li>;})}</ol></article>;})}</section>
+  </main>;
 }

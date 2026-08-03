@@ -2,59 +2,12 @@ import type { AcademyLocale } from "../types/academyLocale";
 
 export const academyDictionary = {
   en: {
-    title: "The Academy",
-    school: "A School of Scent & Story",
-    homeIntro: "A free introductory course is being prepared for curious noses and new storytellers.",
-    foundationCourse: "Foundations of Creative Perfumery",
-    foundationStatus: "Coming Soon",
-    introductionCourse: "Introduction to the World of Perfumery",
-    preparationStatus: "In Preparation",
-    courses: "Courses",
-    myAcademy: "My Academy",
-    noCourses: "You do not have any active courses yet.",
-    noCoursesHint: "Your learning path will appear here when Academy courses open.",
-    backToHall: "Return to The Hall",
-    viewCourses: "View courses",
-    courseDetail: "Course Preview",
-    coursePlaceholder: "This course page is ready for curriculum content in a later phase.",
-    lessonReader: "Lesson Reader",
-    lessonPlaceholder: "The quiet reading shell is ready. Structured lesson blocks will arrive in a later phase.",
-    notFound: "This Academy page could not be found.",
-    loading: "Opening The Academy…",
-    navigation: "Academy navigation",
-    artisanId: "Artisan ID",
-    welcome: "Welcome",
-    unavailableName: "Artisan"
+    title:"The Academy",school:"A School of Scent & Story",heroIntro:"A conservatory for learning how fragrance moves, speaks, and becomes memory.",beginStudies:"Begin Your Studies",exploreCourses:"Explore Courses",backToHall:"Return to The Hall",courses:"Courses",myAcademy:"My Academy",navigation:"Academy navigation",loading:"Opening The Academy…",retry:"Try again",free:"Free",comingSoon:"Coming Soon",foundationCourse:"Foundations of Creative Perfumery",limitedBeta:"Limited Beta",introductionCourse:"Introduction to the World of Perfumery",introductionTitle:"A quieter way to learn scent",introductionBody:"Self-paced, reading-based studies guided by observation and practical exercises, created as part of The Hall of Artisans.",learningMethod:"The Learning Method",read:"Read",readBody:"Meet each idea through calm, editorial lessons.",observe:"Observe",observeBody:"Return to a fragrance as it changes through time.",record:"Record",recordBody:"Keep notes in your own notebook while Academy journals remain in development.",philosophy:"Academy Philosophy",philosophyBody:"Perfumery begins before formula: with attention, language, patience, and respect for what the nose can teach.",faq:"Frequently Asked Questions",faqVideoQ:"Is this a video course?",faqVideoA:"No. The Academy is primarily reading-based, with guided sensory exercises.",faqBeginnerQ:"Is it suitable for beginners?",faqBeginnerA:"Yes. The introductory course assumes no prior training.",faqMaterialsQ:"Do I need perfume materials?",faqMaterialsA:"For the first lesson, one perfume, a blotter or unscented card, and a notebook are enough.",faqMobileQ:"Can I study on mobile?",faqMobileA:"Yes. Lessons are designed for focused reading on desktop and mobile.",faqPaidQ:"Is the paid course available?",faqPaidA:"Not yet. Foundations of Creative Perfumery is shown only as a coming-soon preview.",catalogIntro:"Published studies available in the Conservatory Library.",noPublishedCourses:"No published courses are available right now.",noPublishedHint:"The conservatory is preparing its next study.",courseLoadError:"We could not open the course catalog.",courseUnavailable:"This course is unavailable.",translationUnavailable:"This study is not available in your selected language.",level:"Level",duration:"Duration",lessons:"Lessons",lesson:"lesson",minutes:"minutes",viewCourse:"View Course",startFree:"Start for Free",enrollFree:"Enroll for Free",enrolling:"Enrolling…",continueStudying:"Continue Studying",enrollmentSuccess:"Your place in the course is ready.",courseOverview:"Course Overview",learningOutcomes:"What You Will Learn",forWhom:"Who This Is For",curriculum:"Curriculum",oneLessonAvailable:"One complete lesson is available in this limited beta. Five further lessons remain in preparation.",notEnrolled:"Enroll to open the complete lesson.",locked:"This lesson is reserved for enrolled students.",backToCourse:"Back to Course",backToMyAcademy:"Back to My Academy",welcome:"Welcome",artisanId:"Artisan ID",unavailableName:"Artisan",continueLearning:"Continue Studying",myCourses:"My Courses",noCourses:"Your studies have not begun yet.",noCoursesHint:"Explore the introductory course and enroll when you are ready.",progress:"Progress",completed:"completed",notStarted:"Not started",inProgress:"In progress",complete:"Completed",openLesson:"Open Lesson",resumeLesson:"Resume Lesson",reader:"Lesson Reader",openingLesson:"Opening lesson…",lessonUnavailable:"This lesson is unavailable or still in preparation.",objectives:"Learning Objectives",materials:"Materials Needed",contents:"Contents",openContents:"Open lesson contents",closeContents:"Close lesson contents",readingTime:"reading",practiceTime:"practice",markComplete:"Mark Lesson Complete",markingComplete:"Saving…",lessonComplete:"Lesson complete",previousLesson:"Previous",nextLesson:"Next",noNextLesson:"You have completed every available lesson.",courseProgress:"Course progress",availableLater:"Available in a later phase"
   },
   id: {
-    title: "The Academy",
-    school: "Sekolah Aroma & Cerita",
-    homeIntro: "Course pengantar gratis sedang disiapkan untuk pencinta aroma dan pencerita baru.",
-    foundationCourse: "Fondasi Perfumery Kreatif",
-    foundationStatus: "Segera Hadir",
-    introductionCourse: "Pengantar Dunia Perfumery",
-    preparationStatus: "Sedang Disiapkan",
-    courses: "Course",
-    myAcademy: "Academy Saya",
-    noCourses: "Anda belum memiliki course aktif.",
-    noCoursesHint: "Jalur belajar Anda akan tampil di sini saat course Academy dibuka.",
-    backToHall: "Kembali ke The Hall",
-    viewCourses: "Lihat course",
-    courseDetail: "Pratinjau Course",
-    coursePlaceholder: "Halaman course ini siap menerima curriculum pada phase berikutnya.",
-    lessonReader: "Pembaca Lesson",
-    lessonPlaceholder: "Ruang baca telah siap. Structured lesson blocks akan hadir pada phase berikutnya.",
-    notFound: "Halaman Academy ini tidak ditemukan.",
-    loading: "Membuka The Academy…",
-    navigation: "Navigasi Academy",
-    artisanId: "Artisan ID",
-    welcome: "Selamat datang",
-    unavailableName: "Artisan"
+    title:"The Academy",school:"Sekolah Aroma & Cerita",heroIntro:"Konservatori untuk mempelajari bagaimana fragrance bergerak, berbicara, dan menjadi ingatan.",beginStudies:"Mulai Belajar",exploreCourses:"Jelajahi Course",backToHall:"Kembali ke The Hall",courses:"Course",myAcademy:"Academy Saya",navigation:"Navigasi Academy",loading:"Membuka The Academy…",retry:"Coba lagi",free:"Gratis",comingSoon:"Segera Hadir",foundationCourse:"Fondasi Perfumery Kreatif",limitedBeta:"Beta Terbatas",introductionCourse:"Pengantar Dunia Parfum",introductionTitle:"Cara yang lebih tenang untuk mempelajari aroma",introductionBody:"Studi mandiri berbasis bacaan yang dipandu pengamatan dan latihan praktis, dibuat sebagai bagian dari The Hall of Artisans.",learningMethod:"Metode Belajar",read:"Baca",readBody:"Temui setiap gagasan melalui lesson editorial yang tenang.",observe:"Amati",observeBody:"Kembali pada fragrance saat ia berubah seiring waktu.",record:"Catat",recordBody:"Gunakan buku catatan Anda sendiri sementara journal Academy masih dikembangkan.",philosophy:"Filosofi Academy",philosophyBody:"Perfumery dimulai sebelum formula: melalui perhatian, bahasa, kesabaran, dan penghormatan pada hal yang dapat diajarkan hidung.",faq:"Pertanyaan Umum",faqVideoQ:"Apakah ini course video?",faqVideoA:"Tidak. Academy terutama berbasis bacaan dengan latihan sensorik terpandu.",faqBeginnerQ:"Apakah cocok untuk pemula?",faqBeginnerA:"Ya. Course pengantar tidak memerlukan pelatihan sebelumnya.",faqMaterialsQ:"Apakah saya membutuhkan bahan parfum?",faqMaterialsA:"Untuk lesson pertama, satu parfum, blotter atau kartu tanpa aroma, serta buku catatan sudah cukup.",faqMobileQ:"Bisakah saya belajar melalui ponsel?",faqMobileA:"Ya. Lesson dirancang untuk bacaan fokus di desktop dan mobile.",faqPaidQ:"Apakah course berbayar sudah tersedia?",faqPaidA:"Belum. Fondasi Perfumery Kreatif hanya tampil sebagai pratinjau segera hadir.",catalogIntro:"Studi terbit yang tersedia di Conservatory Library.",noPublishedCourses:"Belum ada course terbit saat ini.",noPublishedHint:"Konservatori sedang menyiapkan studi berikutnya.",courseLoadError:"Kami tidak dapat membuka katalog course.",courseUnavailable:"Course ini tidak tersedia.",translationUnavailable:"Studi ini tidak tersedia dalam bahasa pilihan Anda.",level:"Tingkat",duration:"Durasi",lessons:"Lesson",lesson:"lesson",minutes:"menit",viewCourse:"Lihat Course",startFree:"Mulai Gratis",enrollFree:"Daftar Gratis",enrolling:"Mendaftarkan…",continueStudying:"Lanjut Belajar",enrollmentSuccess:"Tempat Anda dalam course sudah siap.",courseOverview:"Ringkasan Course",learningOutcomes:"Yang Akan Dipelajari",forWhom:"Untuk Siapa",curriculum:"Curriculum",oneLessonAvailable:"Satu lesson lengkap tersedia dalam beta terbatas ini. Lima lesson berikutnya masih disiapkan.",notEnrolled:"Daftar untuk membuka lesson lengkap.",locked:"Lesson ini khusus untuk student terdaftar.",backToCourse:"Kembali ke Course",backToMyAcademy:"Kembali ke Academy Saya",welcome:"Selamat datang",artisanId:"Artisan ID",unavailableName:"Artisan",continueLearning:"Lanjut Belajar",myCourses:"Course Saya",noCourses:"Studi Anda belum dimulai.",noCoursesHint:"Jelajahi course pengantar dan daftar saat Anda siap.",progress:"Progress",completed:"selesai",notStarted:"Belum dimulai",inProgress:"Sedang dipelajari",complete:"Selesai",openLesson:"Buka Lesson",resumeLesson:"Lanjutkan Lesson",reader:"Pembaca Lesson",openingLesson:"Membuka lesson…",lessonUnavailable:"Lesson ini belum tersedia atau masih disiapkan.",objectives:"Tujuan Belajar",materials:"Bahan yang Dibutuhkan",contents:"Daftar Isi",openContents:"Buka daftar isi lesson",closeContents:"Tutup daftar isi lesson",readingTime:"membaca",practiceTime:"latihan",markComplete:"Tandai Lesson Selesai",markingComplete:"Menyimpan…",lessonComplete:"Lesson selesai",previousLesson:"Sebelumnya",nextLesson:"Berikutnya",noNextLesson:"Anda telah menyelesaikan semua lesson yang tersedia.",courseProgress:"Progress course",availableLater:"Tersedia pada phase berikutnya"
   }
 } as const;
 
 export type AcademyMessageKey = keyof typeof academyDictionary.en;
-
-export function translateAcademy(locale: AcademyLocale, key: AcademyMessageKey): string {
-  return academyDictionary[locale][key] ?? academyDictionary.en[key];
-}
+export function translateAcademy(locale: AcademyLocale, key: AcademyMessageKey): string { return academyDictionary[locale][key] ?? academyDictionary.en[key]; }

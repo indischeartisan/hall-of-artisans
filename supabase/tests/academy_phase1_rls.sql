@@ -31,7 +31,7 @@ insert into public.academy_lesson_blocks(id, lesson_id, block_type, position, st
 ('b4000000-0000-4000-8000-000000000002', 'b3000000-0000-4000-8000-000000000002', 'rich_text', 1, 'published');
 
 set local role anon;
-select pg_temp.assert_true((select count(*) = 2 from public.academy_courses), 'anon reads published courses');
+select pg_temp.assert_true((select count(*) = 2 from public.academy_courses where slug in ('rls-free-course', 'rls-paid-course')), 'anon reads published test courses');
 select pg_temp.assert_true(not exists(select 1 from public.academy_courses where status = 'draft'), 'anon cannot read draft');
 select pg_temp.assert_true((select count(*) = 1 from public.academy_lesson_blocks), 'anon reads preview only');
 reset role;

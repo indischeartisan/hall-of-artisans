@@ -1,31 +1,21 @@
-import { Navigate, useLocation } from "react-router";
+import { useEffect, useMemo, useState } from "react";
+import { Link, Navigate, useLocation } from "react-router";
 import { useAuth } from "../../../contexts/AuthContext";
+import AcademyProgressBar from "../components/AcademyProgressBar";
 import AcademyRouteFallback from "../components/AcademyRouteFallback";
+import { getMyAcademySnapshot } from "../services/academyDashboardService";
+import type { EnrollmentWithCourse } from "../services/academyEnrollmentService";
+import type { AcademyProgress } from "../services/academyProgressService";
+import type { ModuleWithCurriculum } from "../services/academyCatalogService";
 import { useAcademyLocale } from "../hooks/useAcademyLocale";
+import { resolveAcademyTranslation } from "../utils/resolveAcademyTranslation";
 
-export default function MyAcademyPage() {
-  const location = useLocation();
-  const { user, profile, artisanId, loading } = useAuth();
-  const { t } = useAcademyLocale();
-
-  if (loading) return <AcademyRouteFallback />;
-  if (!user) {
-    const returnTo = `${location.pathname}${location.search}`;
-    return <Navigate to={`/artisan-login?returnTo=${encodeURIComponent(returnTo)}`} replace />;
-  }
-
-  const displayName = profile?.display_name?.trim() || user.email?.split("@")[0] || t("unavailableName");
-  return (
-    <main className="academy-page" aria-labelledby="my-academy-title">
-      <section className="academy-reader-shell">
-        <p className="academy-eyebrow">{t("welcome")}, {displayName}</p>
-        <h1 id="my-academy-title">{t("myAcademy")}</h1>
-        {artisanId ? <p className="academy-identity">{t("artisanId")}: <strong>{artisanId.public_id}</strong></p> : null}
-        <div className="academy-empty-state">
-          <h2>{t("noCourses")}</h2>
-          <p>{t("noCoursesHint")}</p>
-        </div>
-      </section>
-    </main>
-  );
+type Snapshot={enrollments:EnrollmentWithCourse[];progress:AcademyProgress[];curricula:Array<{courseId:string;modules:ModuleWithCurriculum[]}>};
+export default function MyAcademyPage(){const location=useLocation();const {user,profile,artisanId,loading:authLoading}=useAuth();const {locale,t}=useAcademyLocale();const [snapshot,setSnapshot]=useState<Snapshot|null>(null);const [error,setError]=useState("");
+  useEffect(()=>{if(!user)return;let active=true;void getMyAcademySnapshot(user.id).then(data=>{if(active)setSnapshot(data);}).catch(reason=>{if(active)setError(reason instanceof Error?reason.message:t("courseLoadError"));});return()=>{active=false;};},[user?.id]);
+  const resume=useMemo(()=>{if(!snapshot)return null;const opened=[...snapshot.progress].filter(row=>row.last_opened_at).sort((a,b)=>(b.last_opened_at??"").localeCompare(a.last_opened_at??""));const sorted=[...opened.filter(row=>row.status!=="completed"),...opened.filter(row=>row.status==="completed")];for(const row of sorted){for(const curriculum of snapshot.curricula){const lesson=curriculum.modules.flatMap(module=>module.academy_lessons).find(item=>item.id===row.lesson_id);const enrollment=snapshot.enrollments.find(item=>item.course_id===curriculum.courseId);if(lesson&&enrollment)return{lesson,enrollment};}}const enrollment=snapshot.enrollments[0];const curriculum=snapshot.curricula.find(item=>item.courseId===enrollment?.course_id);const lesson=curriculum?.modules.flatMap(module=>module.academy_lessons)[0];return enrollment&&lesson?{lesson,enrollment}:null;},[snapshot]);
+  if(authLoading)return <AcademyRouteFallback/>;if(!user)return <Navigate to={`/artisan-login?returnTo=${encodeURIComponent(location.pathname+location.search)}`} replace/>;const displayName=profile?.certificate_name?.trim()||profile?.display_name?.trim()||user.email?.split("@")[0]||t("unavailableName");if(!snapshot&&!error)return <main className="academy-page"><p className="academy-status">{t("loading")}</p></main>;
+  return <main className="academy-page" aria-labelledby="my-academy-title"><header className="academy-page-heading"><p className="academy-eyebrow">{t("welcome")}, {displayName}</p><h1 id="my-academy-title">{t("myAcademy")}</h1>{artisanId?<p className="academy-identity">{t("artisanId")}: <strong>{artisanId.public_id}</strong></p>:null}</header>{error?<p className="academy-error" role="alert">{error}</p>:null}
+    {resume?<section className="academy-course-feature"><div><p className="academy-eyebrow">{t("continueLearning")}</p><h2>{resolveAcademyTranslation(resume.lesson.academy_lesson_translations,locale)?.title}</h2></div><Link className="academy-button academy-button--primary" to={`/academy/courses/${resume.enrollment.academy_courses.slug}/lessons/${resume.lesson.slug}`}>{t("resumeLesson")}</Link></section>:null}
+    <section className="academy-editorial-section"><h2>{t("myCourses")}</h2>{snapshot?.enrollments.length===0?<div className="academy-empty-state"><h3>{t("noCourses")}</h3><p>{t("noCoursesHint")}</p><Link className="academy-button" to="/academy/courses">{t("exploreCourses")}</Link></div>:<div className="academy-course-list">{snapshot?.enrollments.map(enrollment=>{const translation=resolveAcademyTranslation(enrollment.academy_courses.academy_course_translations,locale);const curriculum=snapshot.curricula.find(item=>item.courseId===enrollment.course_id);const lessons=curriculum?.modules.flatMap(module=>module.academy_lessons)??[];const done=lessons.filter(lesson=>snapshot.progress.some(row=>row.lesson_id===lesson.id&&row.status==="completed")).length;return <article className="academy-card" key={enrollment.id}><span>{t("free")}</span><h3>{translation?.title}</h3><AcademyProgressBar completed={done} total={lessons.length} label={t("progress")}/><Link className="academy-button" to={`/my-academy/courses/${enrollment.academy_courses.slug}`}>{t("continueStudying")}</Link></article>;})}</div>}</section></main>;
 }

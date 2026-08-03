@@ -35,6 +35,7 @@ const AcademyCourseDetailPage = lazy(() => import("./features/academy/pages/Acad
 const AcademyLessonPage = lazy(() => import("./features/academy/pages/AcademyLessonPage"));
 const AcademyNotFoundPage = lazy(() => import("./features/academy/pages/AcademyNotFoundPage"));
 const MyAcademyPage = lazy(() => import("./features/academy/pages/MyAcademyPage"));
+const EnrolledCourseOverviewPage = lazy(() => import("./features/academy/pages/EnrolledCourseOverviewPage"));
 
 function LegacyPerfumerMessagesRedirect() {
   const location = useLocation();
@@ -66,6 +67,7 @@ export default function App() {
       </Route>
       <Route path="/my-academy" element={<AcademyLayout />}>
         <Route index element={<MyAcademyPage />} />
+        <Route path="courses/:courseSlug" element={<EnrolledCourseOverviewPage />} />
       </Route>
       <Route path="/bespoke-atelier" element={<BespokeAtelierPage />} />
       <Route path="/library" element={<LibraryPage />} />

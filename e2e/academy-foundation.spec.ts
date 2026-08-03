@@ -1,49 +1,10 @@
-import { expect, test } from "@playwright/test";
+import { expect,test } from "@playwright/test";
+import { consoleErrors,expectHealthyPage } from "./helpers";
 
-const publicRoutes = [
-  ["/academy", "The Academy"],
-  ["/academy/courses", "Courses"],
-  ["/academy/courses/introduction-to-the-world-of-perfumery", "Introduction To The World Of Perfumery"],
-  ["/academy/courses/introduction-to-the-world-of-perfumery/lessons/welcome-to-perfumery", "Welcome To Perfumery"]
-] as const;
-
-for (const [path, heading] of publicRoutes) {
-  test(`${path} loads its Academy placeholder`, async ({ page }) => {
-    await page.goto(path);
-    await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible();
-    await expect(page.locator(".vite-error-overlay, vite-error-overlay")).toHaveCount(0);
-  });
-}
-
-test("My Academy preserves its return path for signed-out visitors", async ({ page }) => {
-  await page.goto("/my-academy");
-  await expect(page).toHaveURL(/\/artisan-login\?returnTo=%2Fmy-academy$/);
-  await expect(page.getByRole("heading", { level: 1, name: "I Already Have an ID" })).toBeVisible();
-});
-
-test("Academy desktop navigation opens the canonical course route", async ({ page }) => {
-  await page.goto("/academy");
-  await page.getByRole("link", { name: "View courses" }).click();
-  await expect(page).toHaveURL(/\/academy\/courses$/);
-  await page.getByRole("link", { name: "Course Preview" }).click();
-  await expect(page).toHaveURL(/\/academy\/courses\/introduction-to-the-world-of-perfumery$/);
-});
-
-test("Academy remains readable at Pixel 7 dimensions", async ({ page }) => {
-  await page.setViewportSize({ width: 412, height: 915 });
-  await page.goto("/academy/courses");
-  await expect(page.locator(".academy-course-list")).toHaveCSS("grid-template-columns", "388px");
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
-  expect(overflow).toBe(false);
-});
-
-test("Academy does not load its retired global runtime", async ({ page }) => {
-  await page.goto("/academy");
-  const retiredAssets = await page.locator([
-    'script[src*="academy-data.js"]',
-    'script[src$="/academy.js"]',
-    'link[href*="/assets/css/academy.css"]'
-  ].join(",")).count();
-  expect(retiredAssets).toBe(0);
-  expect(await page.evaluate(() => "ACADEMY_DATA" in window)).toBe(false);
-});
+test("Academy landing exposes the real V1 journey",async({page})=>{const errors=consoleErrors(page);await page.goto("/academy");await expect(page.getByRole("heading",{level:1,name:"The Academy"})).toBeVisible();await expect(page.getByRole("link",{name:"Begin Your Studies"})).toBeVisible();await expect(page.getByText("Read",{exact:true})).toBeVisible();await expect(page.getByText("Observe",{exact:true})).toBeVisible();await expect(page.getByText("Record",{exact:true})).toBeVisible();await expectHealthyPage(page,errors);});
+test("catalog shows the free beta and a non-transactional coming-soon course",async({page})=>{await page.goto("/academy/courses");await expect(page.getByRole("heading",{name:"Introduction to the World of Perfumery"})).toBeVisible();const coming=page.getByRole("article").filter({hasText:"Foundations of Creative Perfumery"});await expect(coming).toContainText("Coming Soon");await expect(coming.getByText(/checkout|enroll|price/i)).toHaveCount(0);});
+test("guest start preserves the course return path",async({page})=>{await page.goto("/academy/courses/introduction-to-the-world-of-perfumery");await page.getByRole("link",{name:"Start for Free"}).click();await expect(page).toHaveURL(/\/artisan-login\?returnTo=%2Facademy%2Fcourses%2Fintroduction-to-the-world-of-perfumery$/);});
+test("non-enrolled visitor sees the scoped locked lesson",async({page})=>{await page.goto("/academy/courses/introduction-to-the-world-of-perfumery/lessons/how-to-smell-a-perfume");await expect(page.getByRole("heading",{name:"How to Smell a Perfume"})).toBeVisible();await expect(page.getByText("This lesson is reserved for enrolled students.")).toBeVisible();await expect(page.getByText("Before You Spray")).toHaveCount(0);});
+test("draft lesson is not publicly visible",async({page})=>{await page.goto("/academy/courses/introduction-to-the-world-of-perfumery/lessons/what-perfumery-really-is");await expect(page.getByRole("heading",{name:"This lesson is unavailable or still in preparation."})).toBeVisible();});
+test("Academy does not load retired runtime",async({page})=>{await page.goto("/academy");expect(await page.locator('script[src*="academy-data.js"],script[src$="/academy.js"],link[href*="academy.css"]').count()).toBe(0);expect(await page.evaluate(()=>"ACADEMY_DATA" in window)).toBe(false);});
+test("mobile public journey has readable layout without horizontal overflow",async({page})=>{await page.setViewportSize({width:412,height:915});await page.goto("/academy/courses/introduction-to-the-world-of-perfumery");await expect(page.getByRole("heading",{level:1})).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);const size=await page.getByRole("heading",{level:1}).evaluate(element=>Number.parseFloat(getComputedStyle(element).fontSize));expect(size).toBeGreaterThanOrEqual(38);});
