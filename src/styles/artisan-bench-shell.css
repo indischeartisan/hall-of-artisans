@@ -30,6 +30,16 @@ body.expert-lab-page .hero-lab .hero-image {
   will-change: auto;
 }
 
+body.expert-lab-page main {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+body.expert-lab-page .hero-lab {
+  width: 100%;
+  max-width: 100%;
+}
+
 body.expert-lab-page .global-header > .theme-toggle {
   width: 42px;
   min-width: 42px;

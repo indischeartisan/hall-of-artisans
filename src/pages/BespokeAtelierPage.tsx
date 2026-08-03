@@ -1,14 +1,73 @@
-import { useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import GlobalHeader from "../components/GlobalHeader";
+import { orderService } from "../features/orders/orderService";
+import type { CommissionPackage } from "../features/orders/types";
 
 const bespokeStyles = [
   "/assets/css/styles.css?v=22",
-  "/assets/css/ornate-panel-bright.css?v=1",
-  "/assets/css/bespoke-redesign.css?v=1",
+  "/assets/css/bespoke-redesign.css?v=2",
   "/assets/css/header-consistency.css?v=1"
 ];
 
+const heroArtwork = "/assets/images/bespoke-atelier-hero.webp";
+
+const creationMethods = [
+  {
+    image: "/assets/images/atelier-icon-book.webp",
+    title: "Describe Your Creation",
+    subtitle: "Start with a story",
+    description: "Tell us about a memory, place, feeling, person, or imaginary world. No perfume knowledge is required.",
+    action: "Describe My Creation",
+    href: "/describe-your-creation"
+  },
+  {
+    image: "/assets/images/atelier-icon-bottles.webp",
+    title: "Artisan Bench",
+    subtitle: "Build with more control",
+    description: "Choose materials, concentration, fragrance structure, balance, and the direction you want.",
+    action: "Open Artisan Bench",
+    href: "/artisan-bench"
+  }
+] as const;
+
+const processSteps = [
+  ["Create", "Build your idea and save it to your account."],
+  ["Review Together", "Choose your package, send your creation, and discuss it privately with an artisan."],
+  ["Approve and Pay", "Review the artisan's proposal. Payment is made only after you approve it."],
+  ["Crafted and Delivered", "Follow production and shipping inside your Project Room."]
+] as const;
+
+const goodToKnow = [
+  ["Do I need to understand perfume?", "No. You can begin with a story and the artisan will help interpret it."],
+  ["When do I pay?", "Only after you review and approve the proposal."],
+  ["Can I reorder later?", "Yes. Completed creations remain connected to your account for reorder and adjustment requests."]
+] as const;
+
+const fallbackItems = [
+  "Personal fragrance development",
+  "Private artisan review",
+  "Consultation through Project Room",
+  "Proposal before payment",
+  "One 30 ml fragrance",
+  "Project tracking and aftercare"
+];
+
+const formatPrice = (price: number, currency: string) => new Intl.NumberFormat("id-ID", {
+  style: "currency",
+  currency,
+  maximumFractionDigits: 0
+}).format(price);
+
+const cleanPublicText = (value: string) => value
+  .replaceAll("â€“", "–")
+  .replaceAll("â€”", "—")
+  .replaceAll("Â·", "·");
+
 export default function BespokeAtelierPage() {
+  const [activePackage, setActivePackage] = useState<CommissionPackage | null>(null);
+  const [packageLoading, setPackageLoading] = useState(true);
+  const [packageError, setPackageError] = useState("");
+
   useLayoutEffect(() => {
     document.title = "Bespoke Atelier | The Hall of Artisans";
     document.body.classList.add("bespoke-body", "redesign-body");
@@ -28,118 +87,96 @@ export default function BespokeAtelierPage() {
     };
   }, []);
 
+  useEffect(() => {
+    let current = true;
+    void orderService.getCommissionPackages()
+      .then((packages) => {
+        if (!current) return;
+        const preferred = packages.find((item) => item.slug === "personal-bespoke")
+          ?? packages.find((item) => item.name.toLowerCase().includes("personal bespoke"))
+          ?? packages[0]
+          ?? null;
+        setActivePackage(preferred);
+        setPackageError(preferred ? "" : "Package details are being prepared.");
+      })
+      .catch(() => {
+        if (current) setPackageError("Live package details are temporarily unavailable.");
+      })
+      .finally(() => {
+        if (current) setPackageLoading(false);
+      });
+    return () => { current = false; };
+  }, []);
+
+  const includedItems = activePackage?.includedItems.length ? activePackage.includedItems : fallbackItems;
+  const foundingPrice = activePackage?.currency === "IDR" && activePackage.price === 699000;
+  const packageName = activePackage?.slug === "essential-commission"
+    ? "Personal Bespoke"
+    : activePackage?.name ?? "Personal Bespoke";
+
   return (
     <>
       <GlobalHeader activeLabel="Bespoke Atelier" variant="light" />
-      <main>
-        <section className="commission-hero" aria-labelledby="atelierTitle">
-          <div className="hero-copy">
-            <p className="eyebrow">Commission Office</p>
+      <main className="bespoke-info-page">
+        <section className="bespoke-hero" aria-labelledby="atelierTitle">
+          <div className="bespoke-hero-copy">
+            <p className="bespoke-eyebrow">A Private Fragrance Service</p>
             <h1 id="atelierTitle">Bespoke Atelier</h1>
-            <p className="hero-subtitle">Create Your Perfume</p>
-            <p>Create a fragrance crafted exclusively for you.</p>
-            <a className="primary-button" href="#creation-methods">Create My Perfume <i>→</i></a>
+            <p className="bespoke-hero-subtitle">Your idea, made into a personal fragrance.</p>
+            <p className="bespoke-lead">Share a story, memory, or fragrance direction. An artisan will help develop it into a perfume created especially for you.</p>
+            <a className="bespoke-primary-button" href="/chamber-of-creation">Begin Your Creation <span aria-hidden="true">→</span></a>
+            <small className="bespoke-reassurance">No payment is required when you begin.</small>
           </div>
-          <div className="hero-art" aria-hidden="true" />
+          <figure className="bespoke-hero-art">
+            <img src={heroArtwork} alt="A bright botanical fragrance atelier filled with flowers and artisan perfume tools" />
+          </figure>
         </section>
 
-        <section className="creation-section ornate-panel" id="creation-methods" aria-labelledby="creationTitle">
-          <div className="section-title">
-            <p className="eyebrow">The Atelier Awaits</p>
-            <h2 id="creationTitle">How would you like to create your perfume?</h2>
-            <div className="ornament" />
+        <section className="bespoke-section bespoke-methods" aria-labelledby="methodsTitle">
+          <header className="bespoke-section-heading"><p className="bespoke-eyebrow">Your First Step</p><h2 id="methodsTitle">Choose How to Begin</h2></header>
+          <div className="bespoke-method-grid">
+            {creationMethods.map((method) => <article className="bespoke-method-card" key={method.title}>
+              <img src={method.image} alt="" />
+              <div><p>{method.subtitle}</p><h3>{method.title}</h3><span>{method.description}</span></div>
+              <a className="bespoke-secondary-button" href={method.href}>{method.action} <span aria-hidden="true">→</span></a>
+            </article>)}
           </div>
-          <div className="creation-grid">
-            <article className="creation-card ornate-panel">
-              <img className="card-art" src="/assets/images/atelier-icon-bottles.webp" alt="Botanical perfume bottles" />
-              <h3>Build Your Perfume</h3>
-              <span className="mode-badge">Artisan Bench</span>
-              <span className="status available">Available</span>
-              <p>Build your fragrance with full control over materials, notes and structure.</p>
-              <a className="primary-button" href="/artisan-bench">Start Building <i>→</i></a>
-            </article>
-            <article className="creation-card ornate-panel is-muted">
-              <img className="card-art" src="/assets/images/atelier-icon-book.webp" alt="Botanical story book" />
-              <h3>Tell Your Story</h3>
-              <span className="mode-badge">Story Mode</span>
-              <span className="status">Coming Soon</span>
-              <p>Create a fragrance by sharing your story, memory or imagination.</p>
-              <span className="locked-button">Coming Soon</span>
-            </article>
-            <article className="creation-card ornate-panel is-muted">
-              <img className="card-art" src="/assets/images/atelier-icon-story.webp" alt="Artistic story and mood board" />
-              <h3>Create with Images</h3>
-              <span className="mode-badge">Mood Board Mode</span>
-              <span className="status">Coming Soon</span>
-              <p>Visualize your fragrance through images, textures, colors and atmosphere.</p>
-              <span className="locked-button">Coming Soon</span>
-            </article>
-            <article className="creation-card ornate-panel is-muted">
-              <img className="card-art" src="/assets/images/atelier-icon-map.webp" alt="Botanical map and compass" />
-              <h3>Easy Creator</h3>
-              <span className="mode-badge">Guided Mode</span>
-              <span className="status">Coming Soon</span>
-              <p>Answer a few simple questions and we’ll guide you step by step.</p>
-              <span className="locked-button">Coming Soon</span>
-            </article>
-            <article className="creation-card ornate-panel consultation-card">
-              <h3>Talk to a Perfumer</h3>
-              <p>Not sure where to start? Talk to our perfumer and we’ll help shape your idea into a fragrance.</p>
-              <a className="primary-button" href="mailto:atelier@hallofartisans.example?subject=Master%20Artisan%20Consultation">
-                Start Consultation <i>→</i>
-              </a>
-            </article>
-          </div>
+          <p className="bespoke-method-note">Not sure which one to choose? <a href="/describe-your-creation">Start with Describe Your Creation.</a></p>
         </section>
 
-        <section className="package-section ornate-panel" aria-labelledby="packageTitle">
-          <div className="bottle-placeholder" aria-label="Bottle artwork placeholder"><span>Artisan<br />Bottle</span></div>
-          <div className="package-copy">
-            <p className="eyebrow">Your Commission</p>
-            <h2 id="packageTitle">Artisan Commission</h2>
-            <p className="package-subtitle">Your Bespoke Package</p>
-            <ul>
-              <li>Story-based fragrance development</li><li>One original fragrance formula</li><li>30ml fragrance</li>
-              <li>Personalized fragrance name</li><li>Artisan ID</li><li>Hall Archive Registration</li><li>Digital Story Card</li>
-            </ul>
-          </div>
-          <fieldset className="design-options">
-            <legend>Choose Your Design</legend>
-            <label className="design-choice selected">
-              <input type="radio" name="design" defaultChecked />
-              <span><b>Standard Design</b><small>Timeless design with our signature Hall label.</small></span>
-            </label>
-            <label className="design-choice disabled">
-              <input type="radio" name="design" disabled />
-              <span><b>Personalized Design</b><small>Custom label &amp; cap — Coming Soon.</small></span>
-            </label>
-          </fieldset>
-        </section>
-
-        <section className="journey-section ornate-panel" id="hall-archive" aria-labelledby="journeyTitle">
-          <div className="section-title"><p className="eyebrow">Your Commission</p><h2 id="journeyTitle">What happens next?</h2><div className="ornament" /></div>
-          <ol className="journey-track">
-            <li><span>01</span><h3>Create Your Brief</h3><p>Build your fragrance concept with our tools.</p></li>
-            <li><span>02</span><h3>Hall Review</h3><p>Our Master Artisans review your brief.</p></li>
-            <li><span>03</span><h3>Crafting</h3><p>Your fragrance is blended, matured and refined.</p></li>
-            <li><span>04</span><h3>Hall Archive</h3><p>Your creation is registered forever in The Hall.</p></li>
-            <li><span>05</span><h3>Receive Your Perfume</h3><p>Your perfume is carefully bottled and delivered.</p></li>
+        <section className="bespoke-section bespoke-process" aria-labelledby="processTitle">
+          <header className="bespoke-section-heading"><p className="bespoke-eyebrow">From Idea to Delivery</p><h2 id="processTitle">How It Works</h2></header>
+          <ol className="bespoke-timeline">
+            {processSteps.map(([title, description], index) => <li key={title}><i>{String(index + 1).padStart(2, "0")}</i><div><h3>{title}</h3><p>{description}</p></div></li>)}
           </ol>
         </section>
 
-        <section className="continue-section ornate-panel">
-          <div className="continue-left">
-            <p className="eyebrow">After Your Commission</p><h2>Continue Your Journey</h2>
-            <p>Your journey doesn’t end here. Explore what you can do next.</p>
-            <div className="journey-actions"><a href="#reorder">Reorder Your Creation</a><a href="#reformulation">Reformulation Session</a><a href="#hall-archive">View Your Hall Archive</a></div>
-          </div>
-          <div className="share-card">
-            <p className="eyebrow">Share Your Creation</p><h2>Hall Collaboration Program</h2>
-            <p>Outstanding creations may be invited to become part of a future Hall release.</p>
-            <strong>Invitation only.</strong><a className="outline-button" href="#collaboration">Learn More <i>→</i></a>
+        <section className="bespoke-section bespoke-package" aria-labelledby="packageTitle">
+          <div className="bespoke-package-art" aria-hidden="true"><img src="/assets/images/atelier-icon-bottles.webp" alt="" /></div>
+          <div className="bespoke-package-copy">
+            <p className="bespoke-eyebrow">Our Package</p>
+            {packageLoading ? <div className="bespoke-package-loading" role="status">Loading the current package…</div> : <>
+              <div className="bespoke-package-title"><h2 id="packageTitle">{packageName}</h2>{foundingPrice && <span>Founding Price</span>}</div>
+              {activePackage ? <p className="bespoke-package-meta">{cleanPublicText(activePackage.concentration)} · {cleanPublicText(activePackage.bottleSize)} · Estimated production {cleanPublicText(activePackage.estimatedProduction)}</p> : <p className="bespoke-package-meta">A personal fragrance developed privately with an artisan.</p>}
+              {activePackage && <strong className="bespoke-package-price">{formatPrice(activePackage.price, activePackage.currency)}</strong>}
+              {foundingPrice && <p className="bespoke-regular-price">Regular price Rp899.000 after the introductory period.</p>}
+              {packageError && <p className="bespoke-package-error" role="status">{packageError}</p>}
+              <ul>{includedItems.map((item) => <li key={item}>{cleanPublicText(item)}</li>)}</ul>
+              <a className="bespoke-primary-button" href="/chamber-of-creation">Begin Your Creation <span aria-hidden="true">→</span></a>
+              <small className="bespoke-pricing-note">The package price covers the standard scope. If your creation requires materials or services outside the package, any price adjustment will be shown before approval.</small>
+            </>}
           </div>
         </section>
-        <footer className="atelier-footer">Every story has a scent. Let’s create yours.</footer>
+
+        <section className="bespoke-section bespoke-knowledge" aria-labelledby="knowledgeTitle">
+          <header className="bespoke-section-heading"><p className="bespoke-eyebrow">A Simple, Guided Process</p><h2 id="knowledgeTitle">Good to Know</h2></header>
+          <div>{goodToKnow.map(([question, answer]) => <article key={question}><h3>{question}</h3><p>{answer}</p></article>)}</div>
+        </section>
+
+        <section className="bespoke-final-cta" aria-labelledby="finalCtaTitle">
+          <div><p className="bespoke-eyebrow">Begin When You Are Ready</p><h2 id="finalCtaTitle">Your fragrance can begin with one simple idea.</h2></div>
+          <div><a className="bespoke-primary-button" href="/chamber-of-creation">Begin Your Creation <span aria-hidden="true">→</span></a><a className="bespoke-project-link" href="/my-artisan-id">View My Projects</a></div>
+        </section>
       </main>
     </>
   );

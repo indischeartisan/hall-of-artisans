@@ -3,7 +3,6 @@ import { cmsService, type CmsContentType, type CmsEntry, type CmsEntryInput, typ
 
 const labels: Record<CmsContentType, string> = {
   page: "Page",
-  academy_lesson: "Academy Lesson",
   library_entry: "Library Entry",
   archive_record: "Archive Record"
 };

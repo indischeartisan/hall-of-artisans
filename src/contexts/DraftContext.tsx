@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { isSupabaseConfigured, supabase } from "../lib/supabase";
 import { DraftRepositoryError, draftRepository, type DraftStorageSource } from "../services/draftRepository";
+import { useAuth } from "./AuthContext";
 import type {
   CreationDraft,
   DescribedCreationDraft,
@@ -30,6 +30,7 @@ const DraftContext = createContext<DraftContextValue | null>(null);
 const errorMessage = (error: unknown) => error instanceof DraftRepositoryError ? error.message : "The draft request could not be completed.";
 
 export function DraftProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [drafts, setDrafts] = useState<CreationDraft[]>([]);
   const [activeDraft, setActiveDraft] = useState<CreationDraft | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,10 +54,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     void refresh();
-    if (!isSupabaseConfigured || !supabase) return;
-    const { data } = supabase.auth.onAuthStateChange(() => { window.setTimeout(() => { void refresh(); }, 0); });
-    return () => data.subscription.unsubscribe();
-  }, [refresh]);
+  }, [refresh, user?.id]);
 
   const createDraft = useCallback(async (data: NewDraftData) => {
     setError("");

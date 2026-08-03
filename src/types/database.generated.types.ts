@@ -14,6 +14,586 @@ export type Database = {
   }
   public: {
     Tables: {
+      academy_course_translations: {
+        Row: {
+          audience: Json
+          course_id: string
+          created_at: string
+          full_description: string | null
+          learning_outcomes: Json
+          locale: string
+          short_description: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: Json
+          course_id: string
+          created_at?: string
+          full_description?: string | null
+          learning_outcomes?: Json
+          locale: string
+          short_description?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: Json
+          course_id?: string
+          created_at?: string
+          full_description?: string | null
+          learning_outcomes?: Json
+          locale?: string
+          short_description?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_course_translations_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "academy_courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      academy_courses: {
+        Row: {
+          access_type: string
+          cover_path: string | null
+          created_at: string
+          created_by: string | null
+          estimated_minutes: number
+          hero_path: string | null
+          id: string
+          level: string
+          published_at: string | null
+          slug: string
+          status: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          access_type: string
+          cover_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          estimated_minutes?: number
+          hero_path?: string | null
+          id?: string
+          level?: string
+          published_at?: string | null
+          slug: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          access_type?: string
+          cover_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          estimated_minutes?: number
+          hero_path?: string | null
+          id?: string
+          level?: string
+          published_at?: string | null
+          slug?: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      academy_enrollments: {
+        Row: {
+          course_id: string
+          created_at: string
+          enrolled_at: string
+          expires_at: string | null
+          id: string
+          revoked_at: string | null
+          source: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          enrolled_at?: string
+          expires_at?: string | null
+          id?: string
+          revoked_at?: string | null
+          source: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          enrolled_at?: string
+          expires_at?: string | null
+          id?: string
+          revoked_at?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_enrollments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "academy_courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "academy_enrollments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      academy_lesson_block_translations: {
+        Row: {
+          block_id: string
+          content: Json
+          created_at: string
+          locale: string
+          updated_at: string
+        }
+        Insert: {
+          block_id: string
+          content?: Json
+          created_at?: string
+          locale: string
+          updated_at?: string
+        }
+        Update: {
+          block_id?: string
+          content?: Json
+          created_at?: string
+          locale?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_lesson_block_translations_block_id_fkey"
+            columns: ["block_id"]
+            isOneToOne: false
+            referencedRelation: "academy_lesson_blocks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      academy_lesson_blocks: {
+        Row: {
+          block_type: string
+          created_at: string
+          id: string
+          lesson_id: string
+          position: number
+          settings: Json
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          block_type: string
+          created_at?: string
+          id?: string
+          lesson_id: string
+          position: number
+          settings?: Json
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          block_type?: string
+          created_at?: string
+          id?: string
+          lesson_id?: string
+          position?: number
+          settings?: Json
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_lesson_blocks_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "academy_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      academy_lesson_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          last_block_position: number
+          last_opened_at: string | null
+          lesson_id: string
+          started_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          last_block_position?: number
+          last_opened_at?: string | null
+          lesson_id: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          last_block_position?: number
+          last_opened_at?: string | null
+          lesson_id?: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_lesson_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "academy_lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "academy_lesson_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      academy_lesson_translations: {
+        Row: {
+          created_at: string
+          introduction: string | null
+          learning_objectives: Json
+          lesson_id: string
+          locale: string
+          materials_needed: Json
+          opening_line: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          introduction?: string | null
+          learning_objectives?: Json
+          lesson_id: string
+          locale: string
+          materials_needed?: Json
+          opening_line?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          introduction?: string | null
+          learning_objectives?: Json
+          lesson_id?: string
+          locale?: string
+          materials_needed?: Json
+          opening_line?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_lesson_translations_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "academy_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      academy_lessons: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_preview: boolean
+          lesson_type: string
+          module_id: string
+          position: number
+          practice_minutes: number
+          published_at: string | null
+          reading_minutes: number
+          requires_previous_lesson: boolean
+          slug: string
+          status: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_preview?: boolean
+          lesson_type?: string
+          module_id: string
+          position: number
+          practice_minutes?: number
+          published_at?: string | null
+          reading_minutes?: number
+          requires_previous_lesson?: boolean
+          slug: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_preview?: boolean
+          lesson_type?: string
+          module_id?: string
+          position?: number
+          practice_minutes?: number
+          published_at?: string | null
+          reading_minutes?: number
+          requires_previous_lesson?: boolean
+          slug?: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_lessons_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "academy_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      academy_module_translations: {
+        Row: {
+          created_at: string
+          description: string | null
+          learning_outcome: string | null
+          locale: string
+          module_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          learning_outcome?: string | null
+          locale: string
+          module_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          learning_outcome?: string | null
+          locale?: string
+          module_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_module_translations_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "academy_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      academy_modules: {
+        Row: {
+          course_id: string
+          created_at: string
+          estimated_minutes: number
+          id: string
+          illustration_path: string | null
+          position: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          estimated_minutes?: number
+          id?: string
+          illustration_path?: string | null
+          position: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          estimated_minutes?: number
+          id?: string
+          illustration_path?: string | null
+          position?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_modules_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "academy_courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aftercare_cases: {
+        Row: {
+          assigned_reviewer_id: string | null
+          body: string
+          created_at: string
+          id: string
+          kind: string
+          linked_review_request_id: string | null
+          rating: number | null
+          resolved_at: string | null
+          review_request_id: string
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_reviewer_id?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          kind: string
+          linked_review_request_id?: string | null
+          rating?: number | null
+          resolved_at?: string | null
+          review_request_id: string
+          status?: string
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_reviewer_id?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          linked_review_request_id?: string | null
+          rating?: number | null
+          resolved_at?: string | null
+          review_request_id?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aftercare_cases_assigned_reviewer_id_fkey"
+            columns: ["assigned_reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aftercare_cases_linked_review_request_id_fkey"
+            columns: ["linked_review_request_id"]
+            isOneToOne: false
+            referencedRelation: "review_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aftercare_cases_review_request_id_fkey"
+            columns: ["review_request_id"]
+            isOneToOne: false
+            referencedRelation: "review_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aftercare_cases_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      aftercare_messages: {
+        Row: {
+          case_id: string
+          created_at: string
+          id: string
+          message: string
+          sender_id: string
+          sender_name: string
+          sender_role: string
+        }
+        Insert: {
+          case_id: string
+          created_at?: string
+          id?: string
+          message: string
+          sender_id: string
+          sender_name: string
+          sender_role: string
+        }
+        Update: {
+          case_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          sender_id?: string
+          sender_name?: string
+          sender_role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "aftercare_messages_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "aftercare_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "aftercare_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       archive_records: {
         Row: {
           archive_number: string
@@ -614,34 +1194,46 @@ export type Database = {
       }
       profiles: {
         Row: {
+          certificate_name: string | null
+          country_code: string | null
           created_at: string
           deleted_at: string | null
           display_name: string
           id: string
           is_profile_complete: boolean
           portrait_path: string | null
+          preferred_locale: string | null
+          pricing_region: string | null
           profile_completed_at: string | null
           suspended_at: string | null
           updated_at: string
         }
         Insert: {
+          certificate_name?: string | null
+          country_code?: string | null
           created_at?: string
           deleted_at?: string | null
           display_name?: string
           id: string
           is_profile_complete?: boolean
           portrait_path?: string | null
+          preferred_locale?: string | null
+          pricing_region?: string | null
           profile_completed_at?: string | null
           suspended_at?: string | null
           updated_at?: string
         }
         Update: {
+          certificate_name?: string | null
+          country_code?: string | null
           created_at?: string
           deleted_at?: string | null
           display_name?: string
           id?: string
           is_profile_complete?: boolean
           portrait_path?: string | null
+          preferred_locale?: string | null
+          pricing_region?: string | null
           profile_completed_at?: string | null
           suspended_at?: string | null
           updated_at?: string
@@ -766,6 +1358,7 @@ export type Database = {
           estimated_price_min: number
           estimated_production: string | null
           final_price: number | null
+          follow_up_kind: string | null
           fragrance_brief: string
           fragrance_direction: string[]
           heart_notes: string[]
@@ -773,6 +1366,7 @@ export type Database = {
           included_items: string[]
           package_snapshot: Json | null
           paid_at: string | null
+          parent_request_id: string | null
           perfume_name: string
           preview_snapshot: Json
           pricing_region: string
@@ -813,6 +1407,7 @@ export type Database = {
           estimated_price_min?: number
           estimated_production?: string | null
           final_price?: number | null
+          follow_up_kind?: string | null
           fragrance_brief?: string
           fragrance_direction?: string[]
           heart_notes?: string[]
@@ -820,6 +1415,7 @@ export type Database = {
           included_items?: string[]
           package_snapshot?: Json | null
           paid_at?: string | null
+          parent_request_id?: string | null
           perfume_name: string
           preview_snapshot: Json
           pricing_region?: string
@@ -860,6 +1456,7 @@ export type Database = {
           estimated_price_min?: number
           estimated_production?: string | null
           final_price?: number | null
+          follow_up_kind?: string | null
           fragrance_brief?: string
           fragrance_direction?: string[]
           heart_notes?: string[]
@@ -867,6 +1464,7 @@ export type Database = {
           included_items?: string[]
           package_snapshot?: Json | null
           paid_at?: string | null
+          parent_request_id?: string | null
           perfume_name?: string
           preview_snapshot?: Json
           pricing_region?: string
@@ -892,6 +1490,13 @@ export type Database = {
             columns: ["assigned_reviewer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_requests_parent_request_id_fkey"
+            columns: ["parent_request_id"]
+            isOneToOne: false
+            referencedRelation: "review_requests"
             referencedColumns: ["id"]
           },
           {
@@ -945,6 +1550,47 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      academy_enroll_in_free_course: {
+        Args: { target_course_slug: string }
+        Returns: {
+          course_id: string
+          enrolled_at: string
+          enrollment_id: string
+          status: string
+        }[]
+      }
+      academy_resolve_course_access: {
+        Args: { target_course_slug: string }
+        Returns: string
+      }
+      admin_transition_order: {
+        Args: {
+          next_stage: string
+          target_order_id: string
+          target_tracking_number?: string
+        }
+        Returns: {
+          amount: number
+          checkout_details: Json
+          created_at: string
+          currency: string
+          id: string
+          order_number: string
+          payment_status: string
+          production_status: string
+          shipping_preference: string
+          shipping_status: string
+          tracking_number: string | null
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "customer_orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       assign_app_role: {
         Args: {
           assignment_reason?: string
@@ -990,6 +1636,7 @@ export type Database = {
           estimated_price_min: number
           estimated_production: string | null
           final_price: number | null
+          follow_up_kind: string | null
           fragrance_brief: string
           fragrance_direction: string[]
           heart_notes: string[]
@@ -997,6 +1644,7 @@ export type Database = {
           included_items: string[]
           package_snapshot: Json | null
           paid_at: string | null
+          parent_request_id: string | null
           perfume_name: string
           preview_snapshot: Json
           pricing_region: string
@@ -1046,6 +1694,7 @@ export type Database = {
           estimated_price_min: number
           estimated_production: string | null
           final_price: number | null
+          follow_up_kind: string | null
           fragrance_brief: string
           fragrance_direction: string[]
           heart_notes: string[]
@@ -1053,6 +1702,7 @@ export type Database = {
           included_items: string[]
           package_snapshot: Json | null
           paid_at: string | null
+          parent_request_id: string | null
           perfume_name: string
           preview_snapshot: Json
           pricing_region: string
@@ -1082,12 +1732,16 @@ export type Database = {
       complete_profile: {
         Args: { new_display_name: string }
         Returns: {
+          certificate_name: string | null
+          country_code: string | null
           created_at: string
           deleted_at: string | null
           display_name: string
           id: string
           is_profile_complete: boolean
           portrait_path: string | null
+          preferred_locale: string | null
+          pricing_region: string | null
           profile_completed_at: string | null
           suspended_at: string | null
           updated_at: string
@@ -1095,6 +1749,36 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_aftercare_case: {
+        Args: {
+          case_body: string
+          case_kind: string
+          case_rating?: number
+          case_subject: string
+          target_request_id: string
+        }
+        Returns: {
+          assigned_reviewer_id: string | null
+          body: string
+          created_at: string
+          id: string
+          kind: string
+          linked_review_request_id: string | null
+          rating: number | null
+          resolved_at: string | null
+          review_request_id: string
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "aftercare_cases"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1146,6 +1830,7 @@ export type Database = {
           estimated_price_min: number
           estimated_production: string | null
           final_price: number | null
+          follow_up_kind: string | null
           fragrance_brief: string
           fragrance_direction: string[]
           heart_notes: string[]
@@ -1153,6 +1838,7 @@ export type Database = {
           included_items: string[]
           package_snapshot: Json | null
           paid_at: string | null
+          parent_request_id: string | null
           perfume_name: string
           preview_snapshot: Json
           pricing_region: string
@@ -1206,6 +1892,7 @@ export type Database = {
           estimated_price_min: number
           estimated_production: string | null
           final_price: number | null
+          follow_up_kind: string | null
           fragrance_brief: string
           fragrance_direction: string[]
           heart_notes: string[]
@@ -1213,6 +1900,7 @@ export type Database = {
           included_items: string[]
           package_snapshot: Json | null
           paid_at: string | null
+          parent_request_id: string | null
           perfume_name: string
           preview_snapshot: Json
           pricing_region: string
@@ -1238,6 +1926,14 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      get_assigned_customer_summaries: {
+        Args: never
+        Returns: {
+          artisan_id: string
+          display_name: string
+          user_id: string
+        }[]
       }
       issue_artisan_id: {
         Args: never
@@ -1267,14 +1963,6 @@ export type Database = {
           user_id: string
         }[]
       }
-      get_assigned_customer_summaries: {
-        Args: never
-        Returns: {
-          artisan_id: string | null
-          display_name: string
-          user_id: string
-        }[]
-      }
       manage_artisan_id: {
         Args: {
           new_status: Database["public"]["Enums"]["artisan_id_status"]
@@ -1300,6 +1988,30 @@ export type Database = {
         }
       }
       next_artisan_public_id: { Args: never; Returns: string }
+      resolve_aftercare_case: {
+        Args: { target_case_id: string }
+        Returns: {
+          assigned_reviewer_id: string | null
+          body: string
+          created_at: string
+          id: string
+          kind: string
+          linked_review_request_id: string | null
+          rating: number | null
+          resolved_at: string | null
+          review_request_id: string
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "aftercare_cases"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       revoke_app_role: {
         Args: {
           role_to_revoke: Database["public"]["Enums"]["app_role"]
@@ -1330,6 +2042,7 @@ export type Database = {
           estimated_price_min: number
           estimated_production: string | null
           final_price: number | null
+          follow_up_kind: string | null
           fragrance_brief: string
           fragrance_direction: string[]
           heart_notes: string[]
@@ -1337,6 +2050,7 @@ export type Database = {
           included_items: string[]
           package_snapshot: Json | null
           paid_at: string | null
+          parent_request_id: string | null
           perfume_name: string
           preview_snapshot: Json
           pricing_region: string
@@ -1359,6 +2073,24 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "review_requests"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      send_aftercare_message: {
+        Args: { message_body: string; target_case_id: string }
+        Returns: {
+          case_id: string
+          created_at: string
+          id: string
+          message: string
+          sender_id: string
+          sender_name: string
+          sender_role: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "aftercare_messages"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1431,6 +2163,7 @@ export type Database = {
           estimated_price_min: number
           estimated_production: string | null
           final_price: number | null
+          follow_up_kind: string | null
           fragrance_brief: string
           fragrance_direction: string[]
           heart_notes: string[]
@@ -1438,6 +2171,7 @@ export type Database = {
           included_items: string[]
           package_snapshot: Json | null
           paid_at: string | null
+          parent_request_id: string | null
           perfume_name: string
           preview_snapshot: Json
           pricing_region: string
@@ -1487,6 +2221,7 @@ export type Database = {
           estimated_price_min: number
           estimated_production: string | null
           final_price: number | null
+          follow_up_kind: string | null
           fragrance_brief: string
           fragrance_direction: string[]
           heart_notes: string[]
@@ -1494,6 +2229,7 @@ export type Database = {
           included_items: string[]
           package_snapshot: Json | null
           paid_at: string | null
+          parent_request_id: string | null
           perfume_name: string
           preview_snapshot: Json
           pricing_region: string
@@ -1660,3 +2396,4 @@ export const Constants = {
     },
   },
 } as const
+

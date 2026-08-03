@@ -306,8 +306,10 @@ body.perfume-mode-page[data-theme="bright"] {
 body.perfume-mode-page[data-theme="bright"] .site-header,
 body.perfume-mode-page[data-theme="bright"] .site-header.scrolled,
 body.perfume-mode-page[data-theme="bright"] .site-header.menu-active {
-  background: linear-gradient(90deg, rgba(255, 250, 238, 0.96), rgba(246, 234, 207, 0.9));
-  box-shadow: 0 8px 24px rgba(83, 63, 31, 0.1);
+  border-bottom-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
 }
 
 body.perfume-mode-page[data-theme="bright"] :is(.brand-text, .main-nav a) {
@@ -408,6 +410,20 @@ body.perfume-mode-page[data-theme="bright"] .creation-art-button-text {
   transform: translate(-50%, -50%);
 }
 
+body.perfume-mode-page[data-theme="bright"] .creation-art-card-describe .creation-art-button-text {
+  color: #fff8df;
+  text-shadow: 0 2px 5px rgba(10, 35, 20, 0.58);
+}
+
+body.perfume-mode-page[data-theme="bright"] .creation-art-card-describe {
+  aspect-ratio: 971 / 1619;
+}
+
+body.perfume-mode-page[data-theme="bright"] .creation-art-card-describe .panel-art-bright {
+  height: 100%;
+  object-fit: fill;
+}
+
 body.perfume-mode-page[data-theme="bright"] .creation-art-right .creation-art-title {
   top: 67.2%;
 }
@@ -431,6 +447,90 @@ body.perfume-mode-page[data-theme="bright"] .access-note {
   to {
     opacity: var(--card-opacity);
     translate: 0 0;
+  }
+}
+
+@media (min-width: 701px) {
+  body.perfume-mode-page {
+    overflow: hidden;
+  }
+
+  .perfume-page {
+    height: 100svh;
+    min-height: 100svh;
+    padding: clamp(82px, 9.5vh, 94px) clamp(24px, 4vw, 58px) 14px;
+  }
+
+  .perfume-heading {
+    width: min(760px, 100%);
+    padding: 6px 22px 8px;
+  }
+
+  .perfume-heading h1 {
+    font-size: clamp(38px, 4.2vw, 62px);
+    line-height: 0.94;
+  }
+
+  .perfume-heading p:last-child {
+    margin-top: 10px;
+    font-size: clamp(16px, 1.35vw, 20px);
+    line-height: 1.22;
+  }
+
+  .creation-grid.creation-art-grid {
+    width: min(900px, calc((100svh - 310px) * 1.65), 100%);
+    gap: clamp(18px, 2.2vw, 32px);
+    margin-top: clamp(10px, 1.8vh, 16px);
+  }
+
+  .creation-art-card-primary {
+    transform: scale(1.06);
+  }
+
+  .creation-art-card-primary:hover,
+  .creation-art-card-primary:focus-visible {
+    transform: scale(1.08);
+  }
+
+  .creation-art-title {
+    font-size: clamp(13px, 1.05vw, 17px);
+  }
+
+  .creation-art-desc {
+    font-size: clamp(9px, 0.75vw, 12px);
+    line-height: 1.24;
+  }
+
+  .creation-art-card-describe .creation-art-title {
+    width: 76%;
+    font-size: clamp(15px, 1.2vw, 19px);
+    line-height: 1.04;
+  }
+
+  body.perfume-mode-page[data-theme="bright"] .creation-art-card-describe .creation-art-desc {
+    top: 69.5%;
+  }
+
+  .creation-art-card-primary .creation-art-title {
+    font-size: clamp(17px, 1.35vw, 21px);
+    line-height: 1;
+  }
+
+  body.perfume-mode-page[data-theme="bright"] .creation-art-card-primary .creation-art-desc {
+    top: 68.5%;
+  }
+
+  .creation-art-button-text,
+  .creation-art-card-describe .creation-art-button-text {
+    font-size: clamp(9px, 0.72vw, 11px);
+  }
+
+  .access-note {
+    width: min(760px, 100%);
+    margin-top: clamp(8px, 1.4vh, 13px);
+    padding: 7px 14px;
+    font-size: 12px;
+    line-height: 1.35;
   }
 }
 

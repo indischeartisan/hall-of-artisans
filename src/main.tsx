@@ -39,11 +39,12 @@ import "./styles/describe-creation-overrides.css";
 import "./styles/bright-title-clarity.css";
 import "./styles/beta-environment.css";
 import { DraftProvider } from "./contexts/DraftContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <DraftProvider><App /></DraftProvider>
+      <AuthProvider><DraftProvider><App /></DraftProvider></AuthProvider>
     </BrowserRouter>
   </StrictMode>
 );

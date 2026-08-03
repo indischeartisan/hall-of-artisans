@@ -2,7 +2,7 @@ import { type MouseEvent, type ReactNode, useEffect, useRef, useState } from "re
 import { useLocation, useNavigate } from "react-router";
 import { navigationItems } from "../data/navigation";
 import { authService } from "../features/auth/authService";
-import { isSupabaseConfigured } from "../lib/supabase";
+import { useAuth } from "../contexts/AuthContext";
 
 export type GlobalHeaderVariant = "default" | "transparent" | "light";
 
@@ -20,9 +20,9 @@ const normalizePath = (value: string) => {
 export default function GlobalHeader({ action, activeLabel, variant = "default" }: GlobalHeaderProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
-  const [accountEmail, setAccountEmail] = useState<string | null>(null);
   const [signingOut, setSigningOut] = useState(false);
   const [accountMessage, setAccountMessage] = useState("");
   const [scrolled, setScrolled] = useState(false);
@@ -42,13 +42,11 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
     document.body.classList.remove("page-leaving");
   }, [location.pathname]);
 
+  const accountEmail = user?.email ?? null;
+
   useEffect(() => {
-    if (!isSupabaseConfigured) return;
-    return authService.observeSession((session) => {
-      setAccountEmail(session?.user.email ?? null);
-      if (!session) setSigningOut(false);
-    });
-  }, []);
+    if (!user) setSigningOut(false);
+  }, [user]);
 
   useEffect(() => {
     document.body.classList.toggle("nav-open", menuOpen);

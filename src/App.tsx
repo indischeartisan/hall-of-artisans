@@ -1,9 +1,10 @@
+import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import EntranceHallPage from "./pages/EntranceHallPage";
 import LobbyPage from "./pages/LobbyPage";
 import ChamberOfCreationPage from "./pages/ChamberOfCreationPage";
 import ArtisanBenchPage from "./pages/ArtisanBenchPage";
-import AcademyPage from "./pages/AcademyPage";
+import AcademyRouteFallback from "./features/academy/components/AcademyRouteFallback";
 import BespokeAtelierPage from "./pages/BespokeAtelierPage";
 import LibraryPage from "./pages/LibraryPage";
 import ArtisanRegisterPage from "./pages/ArtisanRegisterPage";
@@ -27,6 +28,14 @@ import { PerfumerCompletedWorksPage, PerfumerCreationsPage, PerfumerOverviewPage
 import AftercarePreviewPage from "./features/aftercare/AftercarePreviewPage";
 import BetaBadge from "./components/BetaBadge";
 
+const AcademyLayout = lazy(() => import("./features/academy/layouts/AcademyLayout"));
+const AcademyHomePage = lazy(() => import("./features/academy/pages/AcademyHomePage"));
+const AcademyCoursesPage = lazy(() => import("./features/academy/pages/AcademyCoursesPage"));
+const AcademyCourseDetailPage = lazy(() => import("./features/academy/pages/AcademyCourseDetailPage"));
+const AcademyLessonPage = lazy(() => import("./features/academy/pages/AcademyLessonPage"));
+const AcademyNotFoundPage = lazy(() => import("./features/academy/pages/AcademyNotFoundPage"));
+const MyAcademyPage = lazy(() => import("./features/academy/pages/MyAcademyPage"));
+
 function LegacyPerfumerMessagesRedirect() {
   const location = useLocation();
   return <Navigate to={`/perfumer/creations${location.search}`} replace />;
@@ -39,7 +48,7 @@ function LocalAftercarePreview() {
 
 export default function App() {
   return (
-    <><BetaBadge/><Routes>
+    <><BetaBadge/><Suspense fallback={<AcademyRouteFallback />}><Routes>
       <Route path="/" element={<EntranceHallPage />} />
       <Route path="/hall" element={<LobbyPage />} />
       <Route path="/chamber-of-creation" element={<ChamberOfCreationPage />} />
@@ -48,7 +57,16 @@ export default function App() {
       <Route path="/my-drafts" element={<MyDraftsPage />} />
       <Route path="/my-orders/:requestId" element={<OrderDetailPage />} />
       <Route path="/checkout/:requestId" element={<CheckoutPage />} />
-      <Route path="/academy" element={<AcademyPage />} />
+      <Route path="/academy" element={<AcademyLayout />}>
+        <Route index element={<AcademyHomePage />} />
+        <Route path="courses" element={<AcademyCoursesPage />} />
+        <Route path="courses/:courseSlug" element={<AcademyCourseDetailPage />} />
+        <Route path="courses/:courseSlug/lessons/:lessonSlug" element={<AcademyLessonPage />} />
+        <Route path="*" element={<AcademyNotFoundPage />} />
+      </Route>
+      <Route path="/my-academy" element={<AcademyLayout />}>
+        <Route index element={<MyAcademyPage />} />
+      </Route>
       <Route path="/bespoke-atelier" element={<BespokeAtelierPage />} />
       <Route path="/library" element={<LibraryPage />} />
       <Route path="/artisan-register" element={<ArtisanRegisterPage />} />
@@ -78,6 +96,6 @@ export default function App() {
       <Route path="/admin/library" element={<AdminLibraryPage />} />
       <Route path="/admin/hall-archive" element={<AdminHallArchivePage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes></>
+    </Routes></Suspense></>
   );
 }

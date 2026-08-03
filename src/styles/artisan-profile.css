@@ -7,8 +7,8 @@
 .id-card-artisan-id { top: 54.8%; left: 50%; width: 50%; font-size: clamp(9px, 1vw, 10px); text-align: center; }
 .id-card-specialty { top: 61.4%; left: 50%; width: 60%; font-size: clamp(8px, 0.9vw, 10px); text-align: center; }
 .id-card-status { top: 68%; left: 50%; width: 60%; font-size: clamp(8px, 0.9vw, 10px); text-align: center; }
-.id-card-registered-within { top: 72.8%; left: 50%; width: 60%; font-size: clamp(8px, 0.9vw, 10px); text-align: center; }
-.id-card-registered-since { top: 78.6%; left: 50%; width: 60%; font-size: clamp(8px, 0.9vw, 10px); text-align: center; }
+.id-card-registered-within { top: 74.2%; left: 50%; width: 60%; font-size: clamp(8px, 0.9vw, 10px); text-align: center; }
+.id-card-registered-since { top: 80.7%; left: 50%; width: 60%; font-size: clamp(8px, 0.9vw, 10px); text-align: center; }
 .preview-issue-note, .password-prototype-note { margin: 2px 0 0; font-size: 12px; line-height: 1.5; }
 .preview-issue-note { width: min(100%, 330px); color: #d8c09a; text-align: center; }
 .password-prototype-note { color: rgba(64, 41, 19, 0.75); }

@@ -4,6 +4,7 @@ import GlobalHeader from "../components/GlobalHeader";
 import { authService } from "../features/auth/authService";
 import { MIN_PASSWORD_LENGTH, passwordRequirement } from "../features/auth/passwordPolicy";
 import { useLegacyStylesheets } from "../hooks/useLegacyStylesheets";
+import { useAuth } from "../contexts/AuthContext";
 
 const artisanProfileStyles = [
   "/assets/css/styles.css?v=18",
@@ -15,6 +16,7 @@ const artisanProfileStyles = [
 export default function ArtisanResetPasswordPage() {
   useLegacyStylesheets("artisan-profile", artisanProfileStyles);
   const navigate = useNavigate();
+  const { session, loading } = useAuth();
   const [sessionReady, setSessionReady] = useState<boolean | null>(null);
   const [message, setMessage] = useState("Validating your recovery letter...");
   const [submitting, setSubmitting] = useState(false);
@@ -25,10 +27,11 @@ export default function ArtisanResetPasswordPage() {
     return () => document.body.classList.remove("register-body", "artisan-login-body");
   }, []);
 
-  useEffect(() => authService.observeSession((session) => {
+  useEffect(() => {
+    if (loading) return;
     setSessionReady(Boolean(session));
     setMessage(session ? "" : "This recovery link is invalid or has expired. Request a new recovery letter.");
-  }), []);
+  }, [loading, session]);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

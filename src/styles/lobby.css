@@ -23,6 +23,14 @@ body.lobby-body[data-theme="dark"] .lobby-desktop {
   background: url("/assets/backgrounds/lobby-desktop-dark.webp") center center / cover no-repeat;
 }
 
+@media (min-width: 769px) and (max-width: 1180px) {
+  body.lobby-body[data-theme="bright"] .lobby-desktop {
+    background:
+      linear-gradient(180deg, rgba(255, 247, 226, 0.04), rgba(255, 247, 226, 0.02)),
+      url("/assets/backgrounds/lobby-tablet-bright.webp") center top / cover no-repeat;
+  }
+}
+
 body.lobby-body .global-header > .lobby-theme-toggle {
   display: inline-grid;
   place-items: center;
@@ -176,13 +184,11 @@ body.lobby-body[data-theme="bright"] .global-header > .lobby-theme-toggle {
     justify-content: flex-start;
     padding: 0;
     color: var(--paper);
-    background:
-      linear-gradient(180deg, rgba(10, 6, 3, 0.28), rgba(10, 6, 3, 0.06) 34%, rgba(10, 6, 3, 0.2) 68%, rgba(10, 6, 3, 0.72) 100%),
-      url("/assets/backgrounds/lobby-mobile-bright-v2.webp") center top / cover no-repeat;
+    background: #c9aa70 url("/assets/backgrounds/lobby-mobile-bright-v3.webp") center top / 100% 100% no-repeat;
   }
 
   body.lobby-body[data-theme="dark"] .lobby-mobile {
-    background: #080705 url("/assets/backgrounds/lobby-mobile-dark-v2.webp") center top / cover no-repeat;
+    background: #080705 url("/assets/backgrounds/lobby-mobile-night-v3.webp") center top / 100% 100% no-repeat;
   }
 
   body.lobby-body[data-theme="dark"] .lobby-mobile-shade {
@@ -190,13 +196,7 @@ body.lobby-body[data-theme="bright"] .global-header > .lobby-theme-toggle {
   }
 
   .lobby-mobile-shade {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background:
-      radial-gradient(circle at 50% 9%, rgba(255, 226, 161, 0.16), transparent 13rem),
-      linear-gradient(90deg, rgba(10, 6, 3, 0.32), transparent 38%, transparent 62%, rgba(10, 6, 3, 0.3));
-    pointer-events: none;
+    display: none;
   }
 
   .mobile-lobby-title {
@@ -219,22 +219,36 @@ body.lobby-body[data-theme="bright"] .global-header > .lobby-theme-toggle {
 
   .mobile-lobby-title h1 {
     margin: 0;
-    color: #fff8ea;
+    color: #fff;
     font-family: "Cormorant Garamond", Georgia, serif;
     font-size: clamp(24px, 7vw, 35px);
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: 0.052em;
     line-height: 1;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.96), 0 0 10px rgba(0, 0, 0, 0.82), 0 4px 16px rgba(0, 0, 0, 0.66) !important;
     text-transform: uppercase;
   }
 
   .mobile-lobby-title p {
     margin: 6px 0 0;
-    color: #f7dfaf;
+    color: #fff;
     font-family: "Cormorant Garamond", Georgia, serif;
     font-size: clamp(14px, 3.7vw, 19px);
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: 0.01em;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.96), 0 0 9px rgba(0, 0, 0, 0.82), 0 3px 13px rgba(0, 0, 0, 0.68);
+  }
+
+  body.lobby-body[data-theme="bright"] .mobile-lobby-title h1 {
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.96), 0 0 10px rgba(0, 0, 0, 0.82), 0 4px 16px rgba(0, 0, 0, 0.66) !important;
+  }
+
+  body.lobby-body[data-theme="dark"] .mobile-lobby-title h1 {
+    color: #fff;
+  }
+
+  body.lobby-body[data-theme="dark"] .mobile-lobby-title p {
+    color: #fff;
   }
 
   .mobile-ornament {
@@ -284,36 +298,36 @@ body.lobby-body[data-theme="bright"] .global-header > .lobby-theme-toggle {
   }
 
   .lobby-body .mobile-lobby-actions .mobile-marker-archive {
-    top: 28%;
+    top: 32%;
     left: 50%;
     width: min(32vw, 150px);
     max-width: 150px;
   }
 
   .lobby-body .mobile-lobby-actions .mobile-marker-academy {
-    top: 37%;
+    top: 42%;
     left: 27%;
   }
 
   .lobby-body .mobile-lobby-actions .mobile-marker-library {
-    top: 37%;
+    top: 42%;
     left: 73%;
   }
 
   .lobby-body .mobile-lobby-actions .mobile-marker-make {
-    top: 51%;
+    top: 56%;
     left: 50%;
     width: min(40vw, 184px);
     max-width: 184px;
   }
 
   .lobby-body .mobile-lobby-actions .mobile-marker-bespoke {
-    top: 65.5%;
+    top: 70.5%;
     left: 27%;
   }
 
   .lobby-body .mobile-lobby-actions .mobile-marker-register {
-    top: 65.5%;
+    top: 70.5%;
     left: 73%;
   }
 }

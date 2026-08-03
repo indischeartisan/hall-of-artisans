@@ -2,7 +2,7 @@ import { getSupabaseClient } from "../../lib/supabase";
 import type { Json, Tables, TablesInsert, TablesUpdate } from "../../types/database.types";
 
 export type CmsEntry = Tables<"cms_entries">;
-export type CmsContentType = "page" | "academy_lesson" | "library_entry" | "archive_record";
+export type CmsContentType = "page" | "library_entry" | "archive_record";
 export type CmsStatus = "draft" | "published" | "archived";
 
 export interface CmsEntryInput {

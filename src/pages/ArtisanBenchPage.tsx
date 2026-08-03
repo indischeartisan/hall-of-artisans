@@ -2,8 +2,8 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { useNavigate } from "react-router";
 import GlobalHeader from "../components/GlobalHeader";
 import DraftsModal from "../components/DraftsModal";
+import { useAuth } from "../contexts/AuthContext";
 import { useDrafts } from "../contexts/DraftContext";
-import { authService } from "../features/auth/authService";
 import { orderService } from "../features/orders/orderService";
 import { isArtisanBenchDraft, type ArtisanBenchState, type NewDraftData } from "../types/perfumeDraft";
 
@@ -57,10 +57,11 @@ function loadScript(src: string) {
 }
 
 export default function ArtisanBenchPage() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { activeDraft: activeCreationDraft, clearActiveDraft, createDraft, saveDraft, source } = useDrafts();
   const activeDraft = isArtisanBenchDraft(activeCreationDraft) ? activeCreationDraft : null;
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const isAuthenticated = Boolean(user);
   const [isDirty, setIsDirty] = useState(false);
   const [draftSaveStatus, setDraftSaveStatus] = useState("");
   const [draftsOpen, setDraftsOpen] = useState(false);
@@ -73,17 +74,6 @@ export default function ArtisanBenchPage() {
     return saved === "dark" || saved === "bright" ? saved : "bright";
   });
   const isDark = theme === "dark";
-
-  useEffect(() => authService.observeSession((session) => {
-    if (!session) {
-      setIsAuthenticated(false);
-      return;
-    }
-    void authService.getCurrentUser().then((result) => {
-      const data = result.ok ? result.data as { user?: unknown } | null : null;
-      setIsAuthenticated(Boolean(data?.user));
-    });
-  }), []);
 
   useEffect(() => {
     const bridgeWindow = window as typeof window & { __hoaArtisanBenchAuthenticated?: boolean };
@@ -191,9 +181,7 @@ export default function ArtisanBenchPage() {
         setDraftSaveStatus("The current Artisan Bench state is not ready to be saved. Please reload the page and try again.");
         return;
       }
-      const userResult = await authService.getCurrentUser();
-      const userData = userResult.ok ? userResult.data as { user?: unknown } | null : null;
-      if (!userData?.user) {
+      if (!user) {
         setDraftSaveStatus("Sign in or register before saving this draft to your account.");
         navigate("/artisan-login");
         return;
@@ -224,7 +212,7 @@ export default function ArtisanBenchPage() {
       window.removeEventListener("hoa:artisan-bench-ready", restore);
       window.removeEventListener("hoa:artisan-bench-save-request", onSaveRequest);
     };
-  }, [activeDraft, createDraft, draftData, navigate, saveDraft, source]);
+  }, [activeDraft, createDraft, draftData, navigate, saveDraft, source, user]);
 
   useEffect(() => {
     const warnBeforeUnload = (event: BeforeUnloadEvent) => {
