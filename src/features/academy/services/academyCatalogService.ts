@@ -33,14 +33,18 @@ export async function getCourseBySlug(slug: string): Promise<CourseWithTranslati
   return data;
 }
 
-export async function getCourseCurriculum(courseId: string): Promise<ModuleWithCurriculum[]> {
+export async function getCourseCurriculum(courseId: string, options: { includeDrafts?: boolean } = {}): Promise<ModuleWithCurriculum[]> {
   const client = academyClient();
-  const modulesResult = await client.from("academy_modules")
-    .select("*, academy_module_translations(*)").eq("course_id", courseId).eq("status", "published").order("position");
+  let modulesQuery = client.from("academy_modules")
+    .select("*, academy_module_translations(*)").eq("course_id", courseId).order("position");
+  if (!options.includeDrafts) modulesQuery = modulesQuery.eq("status", "published");
+  const modulesResult = await modulesQuery;
   const modules = requireAcademyData(modulesResult.data, modulesResult.error);
   if (modules.length === 0) return [];
-  const lessonsResult = await client.from("academy_lessons")
-    .select("*, academy_lesson_translations(*)").in("module_id", modules.map((module) => module.id)).eq("status", "published").order("position");
+  let lessonsQuery = client.from("academy_lessons")
+    .select("*, academy_lesson_translations(*)").in("module_id", modules.map((module) => module.id)).order("position");
+  if (!options.includeDrafts) lessonsQuery = lessonsQuery.eq("status", "published");
+  const lessonsResult = await lessonsQuery;
   const lessons = requireAcademyData(lessonsResult.data, lessonsResult.error);
   return modules.map((module) => ({
     ...module,
@@ -48,10 +52,19 @@ export async function getCourseCurriculum(courseId: string): Promise<ModuleWithC
   }));
 }
 
-export async function getLessonBySlug(slug: string): Promise<LessonReaderRecord | null> {
-  const { data, error } = await academyClient().from("academy_lessons")
+export async function getLessonBySlug(courseId: string, slug: string, options: { includeDrafts?: boolean } = {}): Promise<LessonReaderRecord | null> {
+  const client = academyClient();
+  let modulesQuery = client.from("academy_modules").select("id").eq("course_id", courseId);
+  if (!options.includeDrafts) modulesQuery = modulesQuery.eq("status", "published");
+  const modulesResult = await modulesQuery;
+  const modules = requireAcademyData(modulesResult.data, modulesResult.error);
+  if (modules.length === 0) return null;
+  let lessonQuery = client.from("academy_lessons")
     .select("*, academy_lesson_translations(*), academy_lesson_blocks(*, academy_lesson_block_translations(*))")
-    .eq("slug", slug).order("position", { referencedTable: "academy_lesson_blocks" }).maybeSingle();
+    .in("module_id", modules.map((module) => module.id)).eq("slug", slug)
+    .order("position", { referencedTable: "academy_lesson_blocks" });
+  if (!options.includeDrafts) lessonQuery = lessonQuery.eq("status", "published");
+  const { data, error } = await lessonQuery.maybeSingle();
   if (error) throw new Error(error.message);
   return data;
 }

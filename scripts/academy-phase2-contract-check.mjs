@@ -18,8 +18,8 @@ assert.doesNotMatch(migration,/paid|price|checkout/i);
 for(const block of ["rich_text","image","diagram","quote","perfumer_note","exercise","summary","divider"]){assert.match(parser,new RegExp(`case "${block}"`));}
 assert.doesNotMatch(renderer,/dangerouslySetInnerHTML|innerHTML/);
 assert.match(parser,/"html" in value \|\| "raw_html" in value/);
-assert.match(reader,/last_opened_at:new Date\(\)\.toISOString\(\)/);
-assert.match(reader,/status:"completed"/);
+assert.match(reader,/last_opened_at:\s*new Date\(\)\.toISOString\(\)/);
+assert.match(reader,/status:\s*"completed"/);
 assert.match(app,/path="courses\/:courseSlug" element=\{<EnrolledCourseOverviewPage/);
 assert.doesNotMatch(landing,/learningMethod|readBody|observeBody|recordBody|academy-philosophy|academy-faq/);
 assert.match(landing,/academy-conservatory-hero-v1\.png/);

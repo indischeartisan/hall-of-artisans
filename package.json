@@ -17,6 +17,7 @@
     "test:academy:foundation": "node scripts/academy-foundation-check.mjs",
     "test:academy:phase1": "node scripts/academy-phase1-contract-check.mjs",
     "test:academy:phase2": "node scripts/academy-phase2-contract-check.mjs",
+    "test:academy:reader": "node scripts/academy-lesson-reader-contract-check.mjs",
     "test:e2e:academy": "playwright test e2e/academy-foundation.spec.ts",
     "test:beta": "node scripts/beta-readiness-check.mjs && pnpm test && pnpm build",
     "test:release": "pnpm test:beta && pnpm test:e2e"
