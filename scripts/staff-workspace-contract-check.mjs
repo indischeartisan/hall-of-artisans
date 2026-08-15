@@ -9,7 +9,11 @@ const assignmentMigration = await readFile(
   new URL("../supabase/migrations/20260725042308_add_reviewer_assignment.sql", import.meta.url),
   "utf8"
 );
-const migration = `${workflowMigration}\n${assignmentMigration}`;
+const proposalMigration = await readFile(
+  new URL("../supabase/migrations/20260810150000_restore_customer_proposal_approval.sql", import.meta.url),
+  "utf8"
+);
+const migration = `${workflowMigration}\n${assignmentMigration}\n${proposalMigration}`;
 
 const requiredGuards = [
   "not private.is_reviewer_or_admin()",
@@ -27,7 +31,7 @@ for (const guard of requiredGuards) {
 const reviewerTransitions = [
   "result.status = 'SUBMITTED' and next_status = 'UNDER_REVIEW'",
   "result.status='UNDER_REVIEW' and next_status='CONSULTATION'",
-  "result.status='CONSULTATION' and next_status='READY_FOR_PAYMENT'"
+  "result.status in ('CONSULTATION','REVISION_REQUESTED') and next_status='READY_FOR_APPROVAL'"
 ];
 
 const adminTransitions = [

@@ -1,24 +1,27 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router";
 import GlobalHeader from "../../components/GlobalHeader";
 import { useOrderDetail } from "./useOrderDetail";
 import { orderService } from "./orderService";
 import { useDrafts } from "../../contexts/DraftContext";
 import CreationPreparation from "./components/CreationPreparation";
 import ArtisanReviewRoom from "./components/ArtisanReviewRoom";
-import FulfillmentRoom from "./components/FulfillmentRoom";
 import ClosedProjectRoom from "./components/ClosedProjectRoom";
-import { CreationIdentity } from "./components/OrderComponents";
+import ProjectRoomShell from "./components/ProjectRoomShell";
+import SimplifiedProjectState from "./components/SimplifiedProjectState";
+import ProposalDecisionPanel from "./components/ProposalDecisionPanel";
+import PaymentTransitionPanel from "./components/PaymentTransitionPanel";
 import { getOrderRoom } from "./orderRoom";
+import { usesSimplifiedProjectState } from "./projectRoomPresentation";
 import type { CommissionPackage } from "./types";
 
 export default function OrderDetailPage(){
-  const{requestId}=useParams();const[search]=useSearchParams();const navigate=useNavigate();const[error,setError]=useState("");const[actionBusy,setActionBusy]=useState(false);const{loadDraft}=useDrafts();
+  const{requestId}=useParams();const[search]=useSearchParams();const navigate=useNavigate();const location=useLocation();const[error,setError]=useState("");const[actionBusy,setActionBusy]=useState(false);const{loadDraft}=useDrafts();
   const[packages,setPackages]=useState<CommissionPackage[]>([]);const[selectedPackageId,setSelectedPackageId]=useState<string|null>(null);
   const includeDemo=import.meta.env.DEV&&search.get("dev")==="1";
   const[latestId,setLatestId]=useState<string|undefined>(requestId==="latest"?undefined:requestId);
   const{data,loading,error:loadError}=useOrderDetail(latestId);
-  useEffect(()=>{if(requestId!=="latest"){setLatestId(requestId);return}void orderService.getRequests(includeDemo).then(items=>{const id=items[0]?.id;setLatestId(id);if(id)navigate(`/my-orders/${id}${includeDemo?"?dev=1":""}`,{replace:true})}).catch(cause=>setError(cause instanceof Error?cause.message:"My Orders could not be loaded."))},[includeDemo,navigate,requestId]);
+  useEffect(()=>{if(requestId!=="latest"){setLatestId(requestId);return}void orderService.getRequests(includeDemo).then(items=>{const id=items[0]?.id;setLatestId(id);const base=location.pathname.startsWith("/my-orders")?"/my-orders":"/my-creations";if(id)navigate(`${base}/${id}${includeDemo?"?dev=1":""}`,{replace:true})}).catch(cause=>setError(cause instanceof Error?cause.message:"My Creations could not be loaded."))},[includeDemo,location.pathname,navigate,requestId]);
   useEffect(()=>{document.body.classList.add("order-detail-page");return()=>document.body.classList.remove("order-detail-page")},[]);
   useEffect(()=>{const request=data?.request;if(!request||request.status!=="DRAFT_PREVIEW")return;setSelectedPackageId(request.selectedPackageId);void orderService.getCommissionPackages().then(setPackages).catch(cause=>setError(cause instanceof Error?cause.message:"Packages could not be loaded."))},[data?.request.id,data?.request.status,data?.request.selectedPackageId]);
   if(loading||(requestId==="latest"&&!latestId))return <div className="od-loading"><span/><span/><span/></div>;
@@ -35,8 +38,15 @@ export default function OrderDetailPage(){
     if(result&&!result.ok)setError(result.error??"The action is not allowed.");
   }finally{setActionBusy(false)}
   };
-  if(room==="preparation")return <><GlobalHeader variant="light" activeLabel="My Orders"/><main className="order-preparation-shell"><CreationIdentity request={request} includeDemo={includeDemo}/>{error&&<p className="od-action-error" role="alert">{error}</p>}<CreationPreparation request={request} busy={actionBusy} packages={packages} selectedPackageId={selectedPackageId} onSelectPackage={packageId=>void selectPackage(packageId)} onEdit={()=>void editCreation()} onSubmit={()=>void run("primary")}/></main></>;
-  if(room==="review")return <><GlobalHeader variant="light" activeLabel="My Orders"/><main className="project-room-shell"><CreationIdentity request={request} includeDemo={includeDemo}/>{error&&<p className="od-action-error" role="alert">{error}</p>}<ArtisanReviewRoom request={request} messages={data.messages} activity={data.activity} busy={actionBusy} onCancel={()=>window.confirm("Cancel this project? Your submitted record will be closed.")&&void run("cancel")}/></main></>;
-  if(room==="fulfillment")return <><GlobalHeader variant="light" activeLabel="My Orders"/><main className="project-room-shell"><CreationIdentity request={request} includeDemo={includeDemo}/>{error&&<p className="od-action-error" role="alert">{error}</p>}<FulfillmentRoom request={request} order={data.order} messages={data.messages} activity={data.activity} busy={actionBusy} onCheckout={()=>void run("primary")} onCancel={()=>window.confirm("Cancel this approved project before checkout?")&&void run("cancel")}/></main></>;
-  return <><GlobalHeader variant="light" activeLabel="My Orders"/><main className="project-room-shell"><CreationIdentity request={request} includeDemo={includeDemo}/><ClosedProjectRoom request={request} activity={data.activity}/></main></>;
+  const approveProposal=async()=>{setError("");setActionBusy(true);try{const result=await orderService.updateStatus(request.id,"READY_FOR_PAYMENT","customer","Creation approved by customer");if(!result.ok)setError(result.error??"Your approval could not be saved. Please try again.")}catch(cause){setError(cause instanceof Error?cause.message:"Your approval could not be saved. Please try again.")}finally{setActionBusy(false)}};
+  const requestRevision=async(note:string)=>{setError("");setActionBusy(true);try{const message=await orderService.sendMessage(request.id,note);if(!message.ok){setError(message.error??"Your adjustment note could not be sent.");return}const result=await orderService.updateStatus(request.id,"REVISION_REQUESTED","customer","Customer requested an adjustment");if(!result.ok)setError(result.error??"Your adjustment request could not be saved.")}catch(cause){setError(cause instanceof Error?cause.message:"Your adjustment request could not be saved.")}finally{setActionBusy(false)}};
+  let roomContent;
+  if(request.status==="READY_FOR_APPROVAL"||request.status==="REVISION_REQUESTED")roomContent=<ProposalDecisionPanel request={request} messages={data.messages} activity={data.activity} busy={actionBusy} onApprove={()=>void approveProposal()} onRevision={note=>void requestRevision(note)}/>;
+  else if(request.status==="READY_FOR_PAYMENT"||request.status==="PAYMENT_PENDING")roomContent=<PaymentTransitionPanel request={request} order={data.order} busy={actionBusy} onCheckout={()=>void run("primary")}/>;
+  else if(usesSimplifiedProjectState(request.status))roomContent=<SimplifiedProjectState request={{...request,status:request.status}} order={data.order} messages={data.messages} activity={data.activity}/>;
+  else if(room==="preparation")roomContent=<CreationPreparation request={request} busy={actionBusy} packages={packages} selectedPackageId={selectedPackageId} onSelectPackage={packageId=>void selectPackage(packageId)} onEdit={()=>void editCreation()} onSubmit={()=>void run("primary")}/>;
+  else if(room==="review")roomContent=<ArtisanReviewRoom request={request} messages={data.messages} activity={data.activity} busy={actionBusy} onCancel={()=>window.confirm("Cancel this project? Your submitted record will be closed.")&&void run("cancel")}/>;
+  else if(room==="closed")roomContent=<ClosedProjectRoom request={request} activity={data.activity}/>;
+  else roomContent=<section className="customer-project-room__fallback"><h2>We&apos;re preparing your creation.</h2><p>This Project Room will update as soon as the next step is ready.</p></section>;
+  return <><GlobalHeader variant="light" activeLabel="My Creations"/><ProjectRoomShell request={request} includeDemo={includeDemo} error={error}>{roomContent}</ProjectRoomShell></>;
 }

@@ -18,8 +18,7 @@ import OrderDetailPage from "./features/orders/OrderDetailPage";
 import CheckoutPage from "./features/orders/CheckoutPage";
 import DescribeCreationPage from "./features/describe-creation/DescribeCreationPage";
 import AdminDashboardLayout from "./features/admin/AdminDashboardLayout";
-import { AdminCreationsPage, AdminOrdersPage, AdminOverviewPage } from "./features/admin/AdminDashboardPages";
-import { AdminCompletedOrdersPage, AdminRepeatOrdersPage, AdminRevisionRequestsPage } from "./features/admin/AdminLifecyclePages";
+import { AdminCreationsPage, AdminCustomersPage, AdminOrdersPage, AdminOverviewPage } from "./features/admin/AdminDashboardPages";
 import AdminLibraryPage from "./features/admin/AdminLibraryPage";
 import AdminHallArchivePage from "./features/admin/AdminHallArchivePage";
 import StaffLoginPage from "./features/admin/StaffLoginPage";
@@ -57,6 +56,7 @@ export default function App() {
       <Route path="/describe-your-creation" element={<DescribeCreationPage />} />
       <Route path="/my-drafts" element={<MyDraftsPage />} />
       <Route path="/my-orders/:requestId" element={<OrderDetailPage />} />
+      <Route path="/my-creations/:requestId" element={<OrderDetailPage />} />
       <Route path="/checkout/:requestId" element={<CheckoutPage />} />
       <Route path="/academy" element={<AcademyLayout />}>
         <Route index element={<AcademyHomePage />} />
@@ -82,9 +82,10 @@ export default function App() {
         <Route index element={<AdminOverviewPage />} />
         <Route path="creations" element={<AdminCreationsPage />} />
         <Route path="orders" element={<AdminOrdersPage />} />
-        <Route path="revision-requests" element={<AdminRevisionRequestsPage />} />
-        <Route path="repeat-orders" element={<AdminRepeatOrdersPage />} />
-        <Route path="completed-orders" element={<AdminCompletedOrdersPage />} />
+        <Route path="customers" element={<AdminCustomersPage />} />
+        <Route path="revision-requests" element={<Navigate to="/admin/customers?aftercare=ADJUSTMENT" replace />} />
+        <Route path="repeat-orders" element={<Navigate to="/admin/customers?aftercare=REORDER" replace />} />
+        <Route path="completed-orders" element={<Navigate to="/admin/orders?status=completed" replace />} />
       </Route>
       <Route path="/admin/login" element={<StaffLoginPage kind="admin" />} />
       <Route path="/perfumer/login" element={<StaffLoginPage kind="perfumer" />} />

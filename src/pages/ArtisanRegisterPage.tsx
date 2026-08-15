@@ -1,10 +1,11 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import GlobalHeader from "../components/GlobalHeader";
 import { authService } from "../features/auth/authService";
 import { MIN_PASSWORD_LENGTH, passwordRequirement } from "../features/auth/passwordPolicy";
 import { useLegacyStylesheets } from "../hooks/useLegacyStylesheets";
 import { artisanSpecialtyGroups as groups, defaultArtisanSpecialty, formatArtisanSpecialty } from "../data/artisanSpecialty";
+import { authPathWithReturnTo, sanitizeReturnTo } from "../features/auth/returnTo";
 
 const artisanProfileStyles = [
   "/assets/css/styles.css?v=18",
@@ -16,6 +17,8 @@ const artisanProfileStyles = [
 export default function ArtisanRegisterPage() {
   useLegacyStylesheets("artisan-profile", artisanProfileStyles);
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = sanitizeReturnTo(new URLSearchParams(location.search).get("returnTo"));
   const [specialty, setSpecialty] = useState({ ...defaultArtisanSpecialty });
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const specialtyDropdownsRef = useRef<HTMLDivElement>(null);
@@ -53,13 +56,14 @@ export default function ArtisanRegisterPage() {
     const email = String(data.get("emailAddress")).trim();
     const password = String(data.get("password"));
     setSubmitting(true); setMessage("Creating your secure Hall account...");
-    const result = await authService.signUp(email, password, fullName, { contact_handle: String(data.get("contactHandle")).trim(), scent_direction: specialty.direction, scent_mood: specialty.mood, artisan_style: specialty.style, specialty: specialtyLabel }, `${window.location.origin}/artisan-login`);
+    const loginReturnPath = authPathWithReturnTo("/artisan-login", returnTo);
+    const result = await authService.signUp(email, password, fullName, { contact_handle: String(data.get("contactHandle")).trim(), scent_direction: specialty.direction, scent_mood: specialty.mood, artisan_style: specialty.style, specialty: specialtyLabel }, `${window.location.origin}${loginReturnPath}`);
     if (!result.ok) { setMessage(result.error.message); setSubmitting(false); return; }
     const response = result.data as { session?: unknown } | null;
     if (!response?.session) { setMessage("Registration received. Check your email and confirm your address, then sign in to receive your Artisan ID."); setSubmitting(false); return; }
     const identity = await authService.getArtisanIdentity();
     if (!identity.ok) { setMessage(identity.error.message); setSubmitting(false); return; }
-    navigate("/my-artisan-id");
+    navigate(returnTo);
   };
 
   return <>
@@ -76,7 +80,7 @@ export default function ArtisanRegisterPage() {
           <label><span>Password</span><input name="password" type="password" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} aria-describedby="register-password-requirement" placeholder="Create a password" required /><small id="register-password-requirement">{passwordRequirement}</small></label>
           <label><span>Instagram / WhatsApp <small>optional</small></span><input name="contactHandle" type="text" autoComplete="off" placeholder="@username or phone number" /></label>
           <section className="specialty-selectors" aria-label="Artisan specialty"><div className="specialty-dropdowns" ref={specialtyDropdownsRef}>{groups.map(group => { const isOpen = openGroup === group.id; return <div className={`specialty-select${isOpen ? " open" : ""}`} key={group.id}><span className="specialty-select-label">{group.label}</span><button className="specialty-select-toggle" type="button" aria-expanded={isOpen} onClick={() => setOpenGroup(isOpen ? null : group.id)}><span className="specialty-selected">{specialty[group.id]}</span><span className="specialty-caret" aria-hidden="true" /></button><div className="specialty-select-menu" hidden={!isOpen}>{group.options.map(option => <button className={`specialty-option${specialty[group.id] === option ? " active" : ""}`} type="button" data-value={option} key={option} onClick={() => { setSpecialty(current => ({ ...current, [group.id]: option })); setOpenGroup(null); }}>{option}</button>)}</div></div>; })}</div><p className="specialty-summary-label">Specialty Preview</p><p className="specialty-result"><strong>{specialtyLabel}</strong></p></section>
-          <p className="form-message" role="status" aria-live="polite">{message}</p><button className="register-submit" type="submit" disabled={submitting}>{submitting ? "Creating Secure Account..." : "Register & Create My ID"}</button><div className="existing-artisan-divider" aria-hidden="true"><span>or</span></div><a className="form-existing-artisan" href="/artisan-login">I Already Have an ID</a><p className="password-prototype-note"><span aria-hidden="true">♙</span>Your account is protected by Supabase Auth. Your password is never stored by this website.</p>
+          <p className="form-message" role="status" aria-live="polite">{message}</p><button className="register-submit" type="submit" disabled={submitting}>{submitting ? "Creating Secure Account..." : returnTo === "/my-artisan-id" ? "Register & Create My ID" : "Register & Continue"}</button><div className="existing-artisan-divider" aria-hidden="true"><span>or</span></div><a className="form-existing-artisan" href={authPathWithReturnTo("/artisan-login", returnTo)}>I Already Have an ID</a><p className="password-prototype-note"><span aria-hidden="true">♙</span>Your account is protected by Supabase Auth. Your password is never stored by this website.</p>
         </form>
         <aside className="id-preview-wrap blank-id-preview ornate-panel bright-preview-panel" aria-label="Blank Artisan ID card preview"><p className="section-kicker">Artisan ID Card Preview</p><p className="card-size-label">Instagram Story Size 1080 × 1920</p><div className="artisan-card artisan-card-template"><img className="artisan-card-template-image" src="/assets/images/artisan-id-card-botanical-v2.webp" alt="" /><span className="id-card-text id-card-name">Your Name</span><span className="id-card-text id-card-artisan-id">HA-YYYY-XXXX</span><span className="id-card-text id-card-specialty">Your Specialty</span><span className="id-card-text id-card-status">Pending Registration</span><span className="id-card-text id-card-registered-within">Indische World</span><span className="id-card-text id-card-registered-since">YYYY</span></div><p className="preview-issue-note">Your official Artisan ID Card will be issued after registration.</p></aside>
       </div>

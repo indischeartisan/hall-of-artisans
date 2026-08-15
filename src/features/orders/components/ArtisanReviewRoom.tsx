@@ -1,5 +1,6 @@
 import type { RequestActivity, RequestMessage, ReviewRequest } from "../types";
 import { ActivityPanel, ChatPanel, formatDate, money } from "./OrderComponents";
+import "../../../styles/customer-proposal-awaiting.css";
 
 type ArtisanReviewRoomProps = {
   request: ReviewRequest;
@@ -26,7 +27,7 @@ const phaseStatuses = {
     eyebrow: "Private Consultation",
     title: "Shape the final direction with your artisan.",
     text: "Use the conversation below to answer questions and refine the creation before production.",
-    next: "When your artisan understands the complete brief, payment will open."
+    next: "When the direction is complete, your perfumer will send a proposal for your approval."
   }
 } as const;
 
@@ -67,6 +68,14 @@ export default function ArtisanReviewRoom({ request, messages, activity, busy, o
           <header><p>{consulting ? "Consultation Open" : "Project Conversation"}</p><h2>Letters with your artisan</h2><span>{consulting ? "Ask questions and refine the brief here before production." : "Conversation opens after the artisan completes the internal review."}</span></header>
           <ChatPanel requestId={request.id} status={request.status} messages={messages} />
         </section>
+        {consulting && <section className="review-room-panel customer-proposal-awaiting" aria-labelledby="customer-proposal-title">
+          <div className="customer-proposal-awaiting__status"><i aria-hidden="true">03</i><span>Waiting for perfumer</span></div>
+          <div>
+            <p>Perfumer Proposal</p>
+            <h2 id="customer-proposal-title">Your proposal will appear here.</h2>
+            <span>Your perfumer is preparing the final direction from your brief and consultation. Once sent, you can review it, approve it, or request an adjustment here.</span>
+          </div>
+        </section>}
       </main>
 
       <aside className="review-room-sidebar">

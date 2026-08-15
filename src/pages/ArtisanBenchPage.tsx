@@ -5,6 +5,7 @@ import DraftsModal from "../components/DraftsModal";
 import { useAuth } from "../contexts/AuthContext";
 import { useDrafts } from "../contexts/DraftContext";
 import { orderService } from "../features/orders/orderService";
+import { authPathWithReturnTo } from "../features/auth/returnTo";
 import { isArtisanBenchDraft, type ArtisanBenchState, type NewDraftData } from "../types/perfumeDraft";
 
 type Theme = "dark" | "bright";
@@ -12,6 +13,7 @@ type Theme = "dark" | "bright";
 const createEmptyBenchState = (): ArtisanBenchState => ({
   concentration: "edp",
   perfumeName: "",
+  perfumerNotes: "",
   nameEdited: false,
   suggestedNames: [],
   formula: [],
@@ -31,18 +33,28 @@ const createEmptyBenchState = (): ArtisanBenchState => ({
   storyCard: null
 });
 
+const PENDING_BENCH_PREVIEW_KEY = "hallOfArtisans.pendingArtisanBenchPreview";
+const readPendingBenchPreview = (): ArtisanBenchState | null => {
+  try {
+    const value = JSON.parse(window.localStorage.getItem(PENDING_BENCH_PREVIEW_KEY) || "null") as ArtisanBenchState | null;
+    return value && Array.isArray(value.formula) && value.formulaMetadata ? value : null;
+  } catch {
+    return null;
+  }
+};
+
 const stylesheets = [
   "/assets/css/expert-lab.css?v=4",
   "/assets/css/expert-panel-system.css?v=9",
   "/assets/css/expert-lab-refinements.css?v=24",
-  "/assets/css/expert-lab-theme.css?v=3"
+  "/assets/css/expert-lab-theme.css?v=21"
 ];
 
 const scripts = [
   "/assets/js/fragrance-data.js?v=4",
   "/assets/js/formula-engine.js?v=5",
-  "/assets/js/story-card-generator.js?v=1",
-  "/assets/js/expert-lab-app.js?v=14"
+  "/assets/js/story-card-generator.js?v=4",
+  "/assets/js/expert-lab-app.js?v=18"
 ];
 
 function loadScript(src: string) {
@@ -67,8 +79,11 @@ export default function ArtisanBenchPage() {
   const [draftsOpen, setDraftsOpen] = useState(false);
   const savedSignature = useRef(activeDraft ? JSON.stringify(activeDraft.benchState) : "");
   const hasBaseline = useRef(Boolean(activeDraft));
-  const pendingRestore = useRef(activeDraft?.benchState ?? null);
-  const latestBenchState = useRef<ArtisanBenchState>(activeDraft?.benchState ?? createEmptyBenchState());
+  const pendingPreview = useRef(activeDraft ? null : readPendingBenchPreview()).current;
+  const pendingRestore = useRef(activeDraft?.benchState ?? pendingPreview);
+  const restoringPendingPreview = useRef(Boolean(pendingPreview));
+  const latestBenchState = useRef<ArtisanBenchState>(activeDraft?.benchState ?? pendingPreview ?? createEmptyBenchState());
+  const loadedDraftId = useRef(activeDraft?.id ?? null);
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = window.localStorage.getItem("hoa-theme");
     return saved === "dark" || saved === "bright" ? saved : "bright";
@@ -76,10 +91,23 @@ export default function ArtisanBenchPage() {
   const isDark = theme === "dark";
 
   useEffect(() => {
-    const bridgeWindow = window as typeof window & { __hoaArtisanBenchAuthenticated?: boolean };
+    const bridgeWindow = window as typeof window & { __hoaArtisanBenchAuthenticated?: boolean; __hoaArtisanBenchCreatorName?: string };
     bridgeWindow.__hoaArtisanBenchAuthenticated = isAuthenticated;
+    bridgeWindow.__hoaArtisanBenchCreatorName = String(user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Creator Name");
     window.dispatchEvent(new CustomEvent("hoa:artisan-bench-auth-change", { detail: { isAuthenticated } }));
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
+
+  useEffect(() => {
+    if (!activeDraft || loadedDraftId.current === activeDraft.id) return;
+    loadedDraftId.current = activeDraft.id;
+    pendingRestore.current = activeDraft.benchState;
+    latestBenchState.current = activeDraft.benchState;
+    savedSignature.current = JSON.stringify(activeDraft.benchState);
+    hasBaseline.current = true;
+    setIsDirty(false);
+    setDraftSaveStatus(`Editing “${activeDraft.draftName}”.`);
+    window.dispatchEvent(new CustomEvent("hoa:artisan-bench-load-state", { detail: activeDraft.benchState }));
+  }, [activeDraft]);
 
   useLayoutEffect(() => {
     const previousTitle = document.title;
@@ -171,6 +199,10 @@ export default function ArtisanBenchPage() {
       if (pendingRestore.current) {
         window.dispatchEvent(new CustomEvent("hoa:artisan-bench-load-state", { detail: pendingRestore.current }));
         pendingRestore.current = null;
+        if (restoringPendingPreview.current) {
+          window.localStorage.removeItem(PENDING_BENCH_PREVIEW_KEY);
+          restoringPendingPreview.current = false;
+        }
       } else {
         window.dispatchEvent(new CustomEvent("hoa:artisan-bench-request-state"));
       }
@@ -183,7 +215,7 @@ export default function ArtisanBenchPage() {
       }
       if (!user) {
         setDraftSaveStatus("Sign in or register before saving this draft to your account.");
-        navigate("/artisan-login");
+        navigate(authPathWithReturnTo("/artisan-login", "/artisan-bench"));
         return;
       }
       const name = activeDraft?.draftName || snapshot.perfumeName.trim() || "Untitled Artisan Bench Draft";
@@ -249,7 +281,7 @@ export default function ArtisanBenchPage() {
       fragranceData?: { materials?: Array<{ id: string; name: string }> };
     };
     const materialNames = Object.fromEntries((bridgeWindow.fragranceData?.materials ?? []).map(material => [material.id, material.name]));
-    setDraftSaveStatus("Creating your preview in My Orders...");
+    setDraftSaveStatus("Preparing your creation review...");
     try {
       const name = activeDraft?.draftName || snapshot.perfumeName.trim() || "Untitled Artisan Bench Draft";
       const linkedDraft = activeDraft
@@ -259,13 +291,13 @@ export default function ArtisanBenchPage() {
       savedSignature.current = JSON.stringify(snapshot);
       setIsDirty(false);
       const request = await orderService.createArtisanBenchPreview(snapshot, linkedDraft.id, materialNames);
-      navigate(`/my-orders/${request.id}`);
+      navigate(`/my-creations/${request.id}`);
     } catch (requestError) {
       const detail = requestError instanceof Error ? requestError.message : "The preview could not be created.";
       if (detail.toLowerCase().includes("sign in")) {
-        window.localStorage.setItem("hallOfArtisans.pendingArtisanBenchPreview", JSON.stringify(snapshot));
-        setDraftSaveStatus("Sign in or register to add this preview to My Orders.");
-        navigate("/artisan-login");
+        window.localStorage.setItem(PENDING_BENCH_PREVIEW_KEY, JSON.stringify(snapshot));
+        setDraftSaveStatus("Sign in or register to continue reviewing your creation.");
+        navigate(authPathWithReturnTo("/artisan-login", "/artisan-bench?resume=review"));
         return;
       }
       setDraftSaveStatus(detail);
@@ -294,7 +326,14 @@ export default function ArtisanBenchPage() {
       <GlobalHeader action={themeToggle} activeLabel="Chamber of Creation" variant={isDark ? "default" : "light"} />
       <main>
         <section className="hero-lab" id="top">
-          <img className="hero-image" src="/assets/images/expert-lab-background.webp?v=1" alt="" />
+          <img
+            className="hero-image"
+            src={isDark
+              ? "/assets/images/artisan-bench-night.webp?v=2"
+              : "/assets/images/artisan-bench-bright.webp?v=2"}
+            alt=""
+            aria-hidden="true"
+          />
           <div className="hero-veil" />
           <div className="hero-copy">
             <p className="kicker">Chamber of Creation</p>
@@ -405,9 +444,12 @@ export default function ArtisanBenchPage() {
           </section>
 
           <section className="brief-story-row">
-            <section className="brief panel ornate-panel">
-              <div className="panel-title"><p className="step">09 Fragrance Brief</p><h2>Fragrance Brief</h2></div>
-              <div id="briefOutput" className="brief-paper inner-panel">Generate a brief to see the result.</div>
+            <section className="brief perfumer-notes panel ornate-panel">
+              <div className="panel-title"><p className="step">09 Notes for Perfumer</p><h2>Notes</h2></div>
+              <label htmlFor="perfumerNotesInput">Write anything the perfumer should know</label>
+              <textarea id="perfumerNotesInput" className="brief-paper inner-panel" maxLength={3000} placeholder="Describe the mood, memory, occasion, preferences, concerns, or any detail you want the perfumer to consider…" />
+              <small>Your notes are saved with this draft and included when you send the creation for review.</small>
+              <div id="briefOutput" hidden />
             </section>
             <section id="story-card" className="story-card-section panel ornate-panel">
               <div className="panel-title"><p className="step">10 Story Card</p><h2>Fragrance Brief Story Card</h2></div>
@@ -427,7 +469,7 @@ export default function ArtisanBenchPage() {
               <button className="panel-button" type="button" onClick={startNewDraft}>New Draft</button>
               <button id="saveDraft" className="panel-button" type="button">Save Draft</button>
               <button className="panel-button" type="button" onClick={() => setDraftsOpen(true)}>My Drafts</button>
-              <button className="gold gold-button" type="button" onClick={previewCreation}>Preview</button>
+              <button className="gold gold-button review-creation-cta" type="button" onClick={previewCreation}>Review Your Creation</button>
             </div>
             <p className="story-card-message" role="status" aria-live="polite">{draftSaveStatus}</p>
           </section>

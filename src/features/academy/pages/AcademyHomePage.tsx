@@ -118,15 +118,15 @@ export default function AcademyHomePage() {
         <Link className="academy-landing-courses__link" to="/academy/courses">{t("viewAllCourses")} <span aria-hidden="true">→</span></Link>
       </header>
       {error ? <p className="academy-error" role="alert">{error}</p> : null}
-      <article className="inner-panel academy-landing-course-card academy-landing-course-card--active academy-landing-course-card--mobile-feature">
+      <article className="inner-panel academy-landing-course-card academy-landing-course-card--coming academy-landing-course-card--mobile-feature">
         <img src="/assets/academy/images/academy-course-introduction-v1.png" alt="" loading="lazy" />
         <div className="academy-landing-course-card__body">
-          <span className="academy-course-badge">{t("freeCourseBadge")}</span>
+          <span className="academy-course-badge">{t("paidCourseBadge")}</span>
           <h3>{translation?.title ?? t("introductionCourse")}</h3>
           <span className="academy-card-rule" aria-hidden="true" />
           <p>{translation?.short_description ?? t("freeCourseDescription")}</p>
           <dl><div><dt>{t("lessons")}</dt><dd>{loading ? "—" : course?.lessonCount ?? 0}</dd></div><div><dt>{t("duration")}</dt><dd>{duration}</dd></div><div><dt>{t("level")}</dt><dd>{course?.level ?? "—"}</dd></div></dl>
-          {!user || access === "actively_enrolled" || access === "admin" ? <Link className="inner-panel academy-landing-button academy-landing-button--primary" to={access === "admin" ? coursePath : primaryPath}>{access === "admin" ? t("viewCourse") : ctaLabel}</Link> : <button className="inner-panel academy-landing-button academy-landing-button--primary" disabled={enrolling || !course} onClick={() => void enroll()}>{enrolling ? t("enrolling") : ctaLabel}</button>}
+          <button className="inner-panel academy-landing-button academy-landing-button--disabled" type="button" disabled>{t("paidCourseComingSoon")}</button>
         </div>
       </article>
       <div className="academy-mobile-future-heading">
@@ -134,15 +134,15 @@ export default function AcademyHomePage() {
         <span>01 / 05</span>
       </div>
       <div className="academy-landing-course-grid" ref={courseRailRef} onWheel={scrollCoursesWithWheel} onPointerDown={startCourseDrag} onPointerMove={moveCourseDrag} onPointerUp={stopCourseDrag} onPointerCancel={stopCourseDrag} tabIndex={0} aria-label="Academy course carousel">
-        <article className="inner-panel academy-landing-course-card academy-landing-course-card--active">
+        <article className="inner-panel academy-landing-course-card academy-landing-course-card--coming">
           <img src="/assets/academy/images/academy-course-introduction-v1.png" alt="" loading="lazy" />
           <div className="academy-landing-course-card__body">
-            <span className="academy-course-badge">{t("freeCourseBadge")}</span>
+            <span className="academy-course-badge">{t("paidCourseBadge")}</span>
             <h3>{translation?.title ?? t("introductionCourse")}</h3>
             <span className="academy-card-rule" aria-hidden="true" />
             <p>{translation?.short_description ?? t("freeCourseDescription")}</p>
             <dl><div><dt>{t("lessons")}</dt><dd>{loading ? "—" : course?.lessonCount ?? 0}</dd></div><div><dt>{t("duration")}</dt><dd>{duration}</dd></div><div><dt>{t("level")}</dt><dd>{course?.level ?? "—"}</dd></div></dl>
-            {!user || access === "actively_enrolled" || access === "admin" ? <Link className="inner-panel academy-landing-button academy-landing-button--primary" to={access === "admin" ? coursePath : primaryPath}>{access === "admin" ? t("viewCourse") : ctaLabel}</Link> : <button className="inner-panel academy-landing-button academy-landing-button--primary" disabled={enrolling || !course} onClick={() => void enroll()}>{enrolling ? t("enrolling") : ctaLabel}</button>}
+            <button className="inner-panel academy-landing-button academy-landing-button--disabled" type="button" disabled>{t("paidCourseComingSoon")}</button>
           </div>
         </article>
         <article className="inner-panel academy-landing-course-card academy-landing-course-card--coming">

@@ -1,0 +1,27 @@
+@import "./customer-proposal-awaiting.css";
+
+.customer-consultation-stack {
+  display: grid;
+  gap: 14px;
+  scroll-margin-top: 92px;
+}
+
+.customer-consultation-stack .review-room-panel {
+  width: 100%;
+}
+
+.customer-consultation-stack .review-conversation > header {
+  padding: 21px 23px 15px;
+  border-bottom: 1px solid rgba(139, 99, 31, 0.18);
+}
+
+.customer-consultation-stack .review-conversation > .od-chat {
+  padding: 20px 22px;
+}
+
+@media (max-width: 680px) {
+  .customer-consultation-stack .review-conversation > header,
+  .customer-consultation-stack .review-conversation > .od-chat {
+    padding: 16px;
+  }
+}

@@ -4,6 +4,7 @@ import GlobalHeader from "../components/GlobalHeader";
 import { authService } from "../features/auth/authService";
 import { useLegacyStylesheets } from "../hooks/useLegacyStylesheets";
 import { useAuth } from "../contexts/AuthContext";
+import { authPathWithReturnTo, sanitizeReturnTo } from "../features/auth/returnTo";
 
 const artisanProfileStyles = [
   "/assets/css/styles.css?v=18",
@@ -17,8 +18,7 @@ export default function ArtisanLoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading } = useAuth();
-  const requestedPath = new URLSearchParams(location.search).get("returnTo");
-  const returnTo = requestedPath?.startsWith("/") && !requestedPath.startsWith("//") ? requestedPath : "/my-artisan-id";
+  const returnTo = sanitizeReturnTo(new URLSearchParams(location.search).get("returnTo"));
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   useEffect(() => { document.title = "Artisan Login | The Hall of Artisans"; document.body.classList.add("register-body", "artisan-login-body"); return () => document.body.classList.remove("register-body", "artisan-login-body"); }, []);
@@ -34,5 +34,5 @@ export default function ArtisanLoginPage() {
     if (!identity.ok) { setMessage(identity.error.message); setSubmitting(false); return; }
     navigate(returnTo);
   };
-  return <><GlobalHeader activeLabel="Artisan ID" variant="light" /><main className="login-shell"><form className="register-form login-ledger" noValidate onSubmit={submit}><p className="section-kicker">Returning Artisan</p><h1>I Already Have an ID</h1><p>Sign in to your secure Artisan account.</p><label><span>Email Address</span><input name="email" type="email" autoComplete="email" required /></label><label><span>Password</span><input name="password" type="password" autoComplete="current-password" required /></label><a className="login-forgot-link" href="/artisan-forgot-password">Forgot your password?</a><p className="form-message" role="status" aria-live="polite">{message}</p><button className="register-submit" type="submit" disabled={submitting}>{submitting ? "Opening Ledger..." : "Open My Artisan ID"}</button><a className="login-back-link" href="/artisan-register">Create a new Artisan ID</a><p className="password-prototype-note">Authentication is securely handled by Supabase. Passwords are never stored by this website.</p></form></main></>;
+  return <><GlobalHeader activeLabel="Artisan ID" variant="light" /><main className="login-shell"><form className="register-form login-ledger" noValidate onSubmit={submit}><p className="section-kicker">Returning Artisan</p><h1>I Already Have an ID</h1><p>Sign in to your secure Artisan account.</p><label><span>Email Address</span><input name="email" type="email" autoComplete="email" required /></label><label><span>Password</span><input name="password" type="password" autoComplete="current-password" required /></label><a className="login-forgot-link" href="/artisan-forgot-password">Forgot your password?</a><p className="form-message" role="status" aria-live="polite">{message}</p><button className="register-submit" type="submit" disabled={submitting}>{submitting ? "Opening Ledger..." : returnTo === "/my-artisan-id" ? "Open My Artisan ID" : "Sign In & Continue"}</button><a className="login-back-link" href={authPathWithReturnTo("/artisan-register", returnTo)}>Create a new Artisan ID</a><p className="password-prototype-note">Authentication is securely handled by Supabase. Passwords are never stored by this website.</p></form></main></>;
 }

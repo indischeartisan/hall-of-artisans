@@ -113,7 +113,7 @@ export default function DraftsModal({ open, onClose, initialMode }: DraftsModalP
 
   const remove = async (draft: CreationDraft) => {
     if (submittedDraftIds.has(draft.id)) return;
-    if (!window.confirm(`Delete “${draft.draftName}”? Its unsubmitted My Orders preview will also be removed.`)) return;
+    if (!window.confirm(`Delete “${draft.draftName}”? Its unsubmitted creation preview will also be removed.`)) return;
     setBusyId(draft.id);
     setActionError("");
     try { await deleteDraft(draft.id); }
@@ -152,7 +152,7 @@ export default function DraftsModal({ open, onClose, initialMode }: DraftsModalP
               <button type="button" disabled={busyId === draft.id} onClick={() => void duplicate(draft)}>Duplicate</button>
               <button className="danger" type="button" disabled={busyId === draft.id || submitted} title={submitted ? "Submitted drafts are retained as part of the order record." : "Delete draft"} onClick={() => void remove(draft)}>Delete</button>
             </div>
-            {submitted && <p className="drafts-modal__notice">This draft has been submitted and is retained with its My Orders project.</p>}
+            {submitted && <p className="drafts-modal__notice">This draft has been submitted and is retained with its creation project.</p>}
           </article>;
         })}
       </div>}

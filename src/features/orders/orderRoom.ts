@@ -7,6 +7,8 @@ export const ORDER_ROOM_BY_STATUS: Record<ReviewRequestStatus, OrderRoom> = {
   SUBMITTED: "review",
   UNDER_REVIEW: "review",
   CONSULTATION: "review",
+  READY_FOR_APPROVAL: "review",
+  REVISION_REQUESTED: "review",
   READY_FOR_PAYMENT: "fulfillment",
   PAYMENT_PENDING: "fulfillment",
   PAID: "fulfillment",

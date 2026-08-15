@@ -9,6 +9,7 @@ const { autoBalance, calculateLayerTotals, calculateTotal, checkFormula, dominan
 let state = {
   concentration: 'edp',
   perfumeName: '',
+  perfumerNotes: '',
   nameEdited: false,
   suggestedNames: [],
   lastBrief: null,
@@ -20,6 +21,7 @@ function buildBenchSnapshot() {
   return {
     concentration: state.concentration,
     perfumeName: state.perfumeName,
+    perfumerNotes: state.perfumerNotes,
     nameEdited: state.nameEdited,
     suggestedNames: [...state.suggestedNames],
     formula: state.formula.map((item) => ({ id: item.id, layer: item.layer, percent: Number(item.percent) })),
@@ -52,6 +54,7 @@ window.addEventListener('hoa:artisan-bench-load-state', (event) => {
   state = {
     concentration: event.detail.concentration,
     perfumeName: event.detail.perfumeName,
+    perfumerNotes: typeof event.detail.perfumerNotes === 'string' ? event.detail.perfumerNotes : '',
     nameEdited: Boolean(event.detail.nameEdited),
     suggestedNames: Array.isArray(event.detail.suggestedNames) ? event.detail.suggestedNames.filter((name) => typeof name === 'string') : [],
     lastBrief: event.detail.fragranceBrief || null,
@@ -223,6 +226,11 @@ function buildStoryCardData() {
   const materialsList = topMaterials(5);
   return {
     isEmpty: !state.formula.length && !state.perfumeName,
+    fragranceName: state.perfumeName,
+    creatorName: getPerfumerIdentity().creatorName || window.__hoaArtisanBenchCreatorName || 'Creator Name',
+    topNotes: brief.notes.top,
+    heartNotes: brief.notes.heart,
+    baseNotes: brief.notes.base,
     concentration: selectedConcentration().label,
     perfumeName: state.perfumeName,
     conceptLine: buildConceptLine(directions),
@@ -558,6 +566,7 @@ function updateAll() {
   renderMaterialLibrary();
   renderFormula();
   ensurePerfumeName();
+  if ($('perfumerNotesInput')) $('perfumerNotesInput').value = state.perfumerNotes || '';
 }
 
 document.addEventListener('click', (event) => {
@@ -632,6 +641,15 @@ document.addEventListener('toggle', (event) => {
   });
 }, { capture: true, signal: bridgeController.signal });
 
+document.addEventListener('wheel', (event) => {
+  const layerCard = event.target.closest?.('.layer-card');
+  if (!layerCard) return;
+  const list = layerCard.querySelector('.selected-list');
+  if (!list || list.scrollHeight <= list.clientHeight) return;
+  event.preventDefault();
+  list.scrollTop += event.deltaY;
+}, { passive: false, signal: bridgeController.signal });
+
 document.addEventListener('input', (event) => {
   const percentId = event.target.dataset.percent;
   if (percentId) {
@@ -645,16 +663,32 @@ document.addEventListener('input', (event) => {
   if (event.target.id === 'dialogMaterialSearch') renderDialog();
 
   if (event.target.id === 'perfumeNameInput') {
-    state.perfumeName = event.target.value.trim();
+    // Preserve the value while the customer is typing. Trimming here made a
+    // newly entered trailing space disappear immediately, so multi-word names
+    // could not be entered.
+    state.perfumeName = event.target.value;
     state.nameEdited = true;
-    if (!state.perfumeName) {
+    if (!state.perfumeName.trim()) {
       state.suggestedNames = [];
       renderSuggestedNames();
     }
-    $('nextPerfumeName').textContent = state.perfumeName || 'Untitled creation';
+    $('nextPerfumeName').textContent = state.perfumeName.trim() || 'Untitled creation';
     renderBrief();
   }
+
+  if (event.target.id === 'perfumerNotesInput') {
+    state.perfumerNotes = event.target.value;
+    emitBenchState();
+  }
 }, { signal: bridgeController.signal });
+
+document.addEventListener('blur', (event) => {
+  if (event.target.id !== 'perfumeNameInput') return;
+  state.perfumeName = event.target.value.trim().replace(/\s+/g, ' ');
+  event.target.value = state.perfumeName;
+  $('nextPerfumeName').textContent = state.perfumeName || 'Untitled creation';
+  renderBrief();
+}, { capture: true, signal: bridgeController.signal });
 
 $('suggestNames').addEventListener('click', () => {
   refreshNameSuggestions();

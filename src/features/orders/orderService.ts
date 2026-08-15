@@ -2,6 +2,7 @@ import { createArtisanBenchSubmissionSnapshot, createDescribedCreationSnapshot, 
 import { validateCheckoutCandidates } from "../../domain/checkout";
 import { canTransition, isChatAvailable, isCheckoutAvailable, type WorkflowActor, type WorkflowStatus } from "../../domain/workflow";
 import { DEMO_REQUEST_ID, demoActivity, demoMessages, demoRequest } from "../../dev/fixtures/orderFixtures";
+import { getLocalOrderStage, isLocallyConfirmedOrder, registerLocallyConfirmedOrder } from "../../dev/confirmedOrderOverrides";
 import { getSupabaseClient, isSupabaseConfigured } from "../../lib/supabase";
 import type { Json, Tables } from "../../types/database.types";
 import { DRAFT_SCHEMA_VERSION, type ArtisanBenchState, type PerfumeDraft } from "../../types/perfumeDraft";
@@ -37,11 +38,11 @@ const readLocal = <T,>(key: string, fallback: T): T => {
 const validCurrency = (value: string) => /^[A-Z]{3}$/.test(value);
 
 async function verifiedUserId(): Promise<string> {
-  if (!isSupabaseConfigured) throw new OrderServiceError("Supabase is not configured for My Orders.");
+  if (!isSupabaseConfigured) throw new OrderServiceError("Supabase is not configured for My Creations.");
   const client = getSupabaseClient();
   const session = await client.auth.getSession();
   if (session.error) throw new OrderServiceError("Unable to read your sign-in session.", session.error);
-  if (!session.data.session) throw new OrderServiceError("Please sign in to open My Orders.");
+  if (!session.data.session) throw new OrderServiceError("Please sign in to open My Creations.");
   const user = await client.auth.getUser();
   if (user.error || !user.data.user) throw new OrderServiceError("Your sign-in session could not be verified. Please sign in again.", user.error);
   return user.data.user.id;
@@ -90,7 +91,9 @@ function itemFromRow(row: OrderItemRow): OrderItem {
   return { reviewRequestId: row.review_request_id, submissionId: row.submission_id, submissionSnapshot: clone(row.submission_snapshot) as unknown as OrderItem["submissionSnapshot"], creationName: row.creation_name, amount: row.amount, currency: row.currency, productionStatus: row.production_status as OrderItem["productionStatus"], shippingStatus: row.shipping_status as OrderItem["shippingStatus"], trackingNumber: row.tracking_number ?? undefined };
 }
 function orderFromRows(row: OrderRow, items: OrderItemRow[]): Order {
-  return { id: row.id, items: items.map(itemFromRow), orderNumber: row.order_number, amount: row.amount, currency: row.currency, paymentStatus: row.payment_status as Order["paymentStatus"], productionStatus: row.production_status as Order["productionStatus"], shippingStatus: row.shipping_status as Order["shippingStatus"], trackingNumber: row.tracking_number ?? undefined, shippingPreference: row.shipping_preference as Order["shippingPreference"], createdAt: row.created_at };
+  const locallyConfirmed = isLocallyConfirmedOrder(row.order_number);
+  if (locallyConfirmed) registerLocallyConfirmedOrder(row.id, row.order_number);
+  return { id: row.id, items: items.map(itemFromRow), orderNumber: row.order_number, amount: row.amount, currency: row.currency, paymentStatus: locallyConfirmed ? "paid" : row.payment_status as Order["paymentStatus"], productionStatus: (getLocalOrderStage(row.id) ?? row.production_status) as Order["productionStatus"], shippingStatus: row.shipping_status as Order["shippingStatus"], trackingNumber: row.tracking_number ?? undefined, shippingPreference: row.shipping_preference as Order["shippingPreference"], createdAt: row.created_at };
 }
 
 function previewPayload(request: ReviewRequest): Json {
@@ -113,14 +116,14 @@ async function importLegacyRequests(userId: string, existingIds: Set<string>): P
   for (const request of legacy) {
     if (existingIds.has(request.id)) continue;
     const created = await getSupabaseClient().rpc("create_review_preview", { request_payload: previewPayload(request) });
-    if (created.error) throw new OrderServiceError("Unable to migrate a local My Orders record.", created.error);
+    if (created.error) throw new OrderServiceError("Unable to migrate a local creation record.", created.error);
     if (request.status === "SUBMITTED") {
       const fallbackPackage = await getSupabaseClient().from("commission_packages").select("id").eq("is_active", true).order("display_order").limit(1).single();
       if (fallbackPackage.error) throw new OrderServiceError("Unable to assign a package to the legacy submission.", fallbackPackage.error);
       const selected = await getSupabaseClient().rpc("select_review_package", { target_request_id: created.data.id, target_package_id: fallbackPackage.data.id });
       if (selected.error) throw new OrderServiceError("Unable to assign a package to the legacy submission.", selected.error);
       const submitted = await getSupabaseClient().rpc("submit_review_request", { target_request_id: created.data.id });
-      if (submitted.error) throw new OrderServiceError("Unable to migrate a submitted My Orders record.", submitted.error);
+      if (submitted.error) throw new OrderServiceError("Unable to migrate a submitted creation record.", submitted.error);
     }
     imported = true;
   }
@@ -131,7 +134,7 @@ async function importLegacyRequests(userId: string, existingIds: Set<string>): P
 async function loadRequests(includeDemo = false, allowMigration = true): Promise<ReviewRequest[]> {
   const userId = await verifiedUserId();
   const query = await getSupabaseClient().from("review_requests").select("*").eq("user_id", userId).order("updated_at", { ascending: false });
-  if (query.error) throw new OrderServiceError("Unable to load My Orders.", query.error);
+  if (query.error) throw new OrderServiceError("Unable to load My Creations.", query.error);
   const rows = query.data ?? [];
   if (allowMigration && await importLegacyRequests(userId, new Set(rows.map(row => row.id)))) return loadRequests(includeDemo, false);
   const requests = rows.map(reviewFromRow);
@@ -172,10 +175,16 @@ export const orderService = {
       if (header.error || items.error) throw new OrderServiceError("Unable to load this order.", header.error ?? items.error);
       order = orderFromRows(header.data, items.data ?? []);
     }
-    return { request: reviewFromRow(requestResult.data), messages: (messages.data ?? []).map(messageFromRow), activity: (activity.data ?? []).map(activityFromRow), order };
+    const request = reviewFromRow(requestResult.data);
+    if (order?.paymentStatus === "paid" && request.status === "PAYMENT_PENDING") {
+      request.status = "PAID";
+      request.paidAt = request.paidAt ?? new Date().toISOString();
+    }
+    if (order?.productionStatus === "in_production" && ["PAYMENT_PENDING", "PAID"].includes(request.status)) request.status = "IN_PRODUCTION";
+    return { request, messages: (messages.data ?? []).map(messageFromRow), activity: (activity.data ?? []).map(activityFromRow), order };
   },
 
-  async createBespokePreview(input: BespokeSubmissionInput, existingPreviewId?: string, sourceDraftId?: string): Promise<ReviewRequest> {
+  async createDescribedCreationPreview(input: BespokeSubmissionInput, sourceDraftId: string, existingPreviewId?: string): Promise<ReviewRequest> {
     await verifiedUserId();
     const stamp = new Date().toISOString();
     const snapshot = createDescribedCreationSnapshot(input, stamp, sourceDraftId ?? null);
@@ -186,7 +195,7 @@ export const orderService = {
       submissionId: null, submissionSnapshot: null, perfumeName: snapshot.perfumeName, concentration: snapshot.concentration,
       bottleSize: "To be confirmed", fragranceDirection: snapshot.preferredNotes, topNotes: [], heartNotes: [], baseNotes: [],
       fragranceBrief: snapshot.writtenStory, storyCardData: { title: snapshot.title, subtitle: "A personal story awaiting artisan interpretation.", imageUrl: "/assets/images/my-artisan-id-conservatory.webp" },
-      customerNotes: [snapshot.notesToAvoid.length ? `Please avoid: ${snapshot.notesToAvoid.join(", ")}.` : "", snapshot.additionalNotes].filter(Boolean).join(" "),
+      customerNotes: snapshot.notesToAvoid.length ? `Please avoid: ${snapshot.notesToAvoid.join(", ")}.` : "",
       countryCode: "ID", pricingRegion: "Indonesia", currency: "IDR", estimatedPriceMin: 699000, estimatedPriceMax: 1499000,
       finalPrice: null, artisanReview: null, recommendedAdjustments: [], includedItems: [], estimatedProduction: null, revisionsIncluded: null,
       selectedPackageId: null, packageSnapshot: null, submittedAt: null, reviewedAt: null, approvedAt: null,
@@ -194,7 +203,15 @@ export const orderService = {
       paidAt: null, shippedAt: null, completedAt: null, lastUpdatedAt: stamp
     };
     const response = await getSupabaseClient().rpc("create_review_preview", { request_payload: previewPayload(provisional) });
-    if (response.error || !response.data) throw new OrderServiceError("Unable to create your review preview.", response.error);
+    if (response.error || !response.data) {
+      const detail = response.error?.message?.trim();
+      const alreadyLinked = response.error?.code === "23505" || detail?.toLowerCase().includes("already has a project");
+      if (alreadyLinked) {
+        const existing = (await loadRequests(false, false)).find(request => request.previewSnapshot?.sourceDraftId === sourceDraftId);
+        if (existing) return existing;
+      }
+      throw new OrderServiceError(detail || "Unable to create your Describe Your Creation preview.", response.error);
+    }
     emitChange();
     return reviewFromRow(response.data);
   },
@@ -236,7 +253,7 @@ export const orderService = {
         subtitle: state.storyCard?.conceptLine || "A fragrance composed at the Artisan Bench.",
         imageUrl: "/assets/images/my-artisan-id-conservatory.webp"
       },
-      customerNotes: state.fragranceBrief?.internalBrief || "",
+      customerNotes: state.perfumerNotes?.trim() || state.fragranceBrief?.internalBrief || "",
       countryCode: "ID", pricingRegion: "Indonesia", currency: "IDR", estimatedPriceMin: 699000, estimatedPriceMax: 1499000,
       finalPrice: null, artisanReview: null, recommendedAdjustments: [], includedItems: [], estimatedProduction: null, revisionsIncluded: null,
       selectedPackageId: null, packageSnapshot: null, submittedAt: null, reviewedAt: null, approvedAt: null,
@@ -244,7 +261,7 @@ export const orderService = {
       paidAt: null, shippedAt: null, completedAt: null, lastUpdatedAt: stamp
     };
     const response = await getSupabaseClient().rpc("create_review_preview", { request_payload: previewPayload(provisional) });
-    if (response.error || !response.data) throw new OrderServiceError("Unable to create your Artisan Bench preview in My Orders.", response.error);
+    if (response.error || !response.data) throw new OrderServiceError("Unable to prepare your Artisan Bench creation review.", response.error);
     emitChange();
     return reviewFromRow(response.data);
   },

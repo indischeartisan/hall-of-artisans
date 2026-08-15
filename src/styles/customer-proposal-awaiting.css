@@ -1,0 +1,59 @@
+.customer-proposal-awaiting {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  padding: 22px 23px;
+  background: linear-gradient(120deg, rgba(251, 247, 235, 0.97), rgba(244, 239, 221, 0.94));
+}
+
+.customer-proposal-awaiting__status {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  padding-right: 20px;
+  border-right: 1px solid rgba(139, 99, 31, 0.2);
+}
+
+.customer-proposal-awaiting__status i {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(139, 99, 31, 0.42);
+  border-radius: 50%;
+  color: #8a6427;
+  font: 700 10px Inter, sans-serif;
+  font-style: normal;
+}
+
+.customer-proposal-awaiting__status span,
+.customer-proposal-awaiting p {
+  color: #80602b;
+  font: 700 8px Inter, sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.customer-proposal-awaiting__status span { text-align: center; }
+.customer-proposal-awaiting p { margin: 0 0 5px; font-size: 9px; letter-spacing: 0.13em; }
+.customer-proposal-awaiting h2 { margin: 0; }
+.customer-proposal-awaiting > div:last-child > span {
+  display: block;
+  max-width: 670px;
+  margin-top: 7px;
+  color: #665f50;
+  font: 12px/1.55 Inter, sans-serif;
+}
+
+@media (max-width: 680px) {
+  .customer-proposal-awaiting { grid-template-columns: 1fr; }
+  .customer-proposal-awaiting__status {
+    grid-template-columns: auto 1fr;
+    justify-items: start;
+    align-items: center;
+    padding: 0 0 14px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(139, 99, 31, 0.2);
+  }
+}

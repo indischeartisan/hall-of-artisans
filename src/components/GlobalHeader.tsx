@@ -1,8 +1,12 @@
-import { type MouseEvent, type ReactNode, useEffect, useRef, useState } from "react";
+import { type MouseEvent, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { navigationItems } from "../data/navigation";
 import { authService } from "../features/auth/authService";
 import { useAuth } from "../contexts/AuthContext";
+import { orderService } from "../features/orders/orderService";
+
+type CustomerNotification = { id: string; requestId: string; kind: "chat" | "update"; title: string; detail: string; createdAt: string };
+const CUSTOMER_NOTIFICATIONS_SEEN_KEY = "hoa:customer-notifications-seen";
 
 export type GlobalHeaderVariant = "default" | "transparent" | "light";
 
@@ -25,6 +29,10 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
   const [accountOpen, setAccountOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const [accountMessage, setAccountMessage] = useState("");
+  const [notifications, setNotifications] = useState<CustomerNotification[]>([]);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notificationFilter, setNotificationFilter] = useState<"chat" | "update">("chat");
+  const [notificationsSeenAt, setNotificationsSeenAt] = useState(() => Number(window.localStorage.getItem(CUSTOMER_NOTIFICATIONS_SEEN_KEY) ?? 0));
   const [scrolled, setScrolled] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
 
@@ -43,6 +51,34 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
   }, [location.pathname]);
 
   const accountEmail = user?.email ?? null;
+
+  const loadNotifications = useCallback(async () => {
+    if (!user) { setNotifications([]); return; }
+    try {
+      const requests = await orderService.getRequests(false);
+      const details = await Promise.all(requests.map(request => orderService.getDetail(request.id)));
+      const next = details.flatMap(detail => detail ? [
+        ...detail.messages.filter(message => message.senderRole === "artisan").map(message => ({ id: `chat:${message.id}`, requestId: detail.request.id, kind: "chat" as const, title: detail.request.perfumeName, detail: message.message, createdAt: message.createdAt })),
+        ...detail.activity.map(item => ({ id: `update:${item.id}`, requestId: detail.request.id, kind: "update" as const, title: detail.request.perfumeName, detail: item.label, createdAt: item.createdAt }))
+      ] : []).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 40);
+      setNotifications(next);
+    } catch { setNotifications([]); }
+  }, [user]);
+
+  useEffect(() => {
+    void loadNotifications();
+    if (!user) return;
+    const pollId = window.setInterval(() => { if (document.visibilityState === "visible") void loadNotifications(); }, 5000);
+    const refresh = () => void loadNotifications();
+    window.addEventListener("hoa:orders-change", refresh);
+    return () => { window.clearInterval(pollId); window.removeEventListener("hoa:orders-change", refresh); };
+  }, [loadNotifications, user]);
+
+  const unreadNotifications = useMemo(() => notifications.filter(item => new Date(item.createdAt).getTime() > notificationsSeenAt), [notifications, notificationsSeenAt]);
+  const unreadChats = unreadNotifications.filter(item => item.kind === "chat").length;
+  const unreadUpdates = unreadNotifications.filter(item => item.kind === "update").length;
+  const markNotificationsSeen = () => { const seenAt = Date.now(); window.localStorage.setItem(CUSTOMER_NOTIFICATIONS_SEEN_KEY, String(seenAt)); setNotificationsSeenAt(seenAt); };
+  const openNotification = (requestId: string) => { markNotificationsSeen(); setAccountOpen(false); navigate(`/my-creations/${requestId}`); };
 
   useEffect(() => {
     if (!user) setSigningOut(false);
@@ -159,14 +195,17 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
             <circle cx="16" cy="10.5" r="5.4" />
             <path d="M6.5 27c.8-6 4.3-9.1 9.5-9.1S24.7 21 25.5 27" />
           </svg>
+          {unreadNotifications.length > 0 && <b className="account-notification-badge" aria-label={`${unreadNotifications.length} unread notifications`}>{unreadNotifications.length > 99 ? "99+" : unreadNotifications.length}</b>}
         </button>
         <div className="account-dropdown" role="menu">
           <span className="account-dropdown-label">{accountEmail ? "Signed in" : "Artisan Account"}</span>
           {accountEmail ? (
             <>
               <span className="account-dropdown-identity" title={accountEmail}>{accountEmail}</span>
+              <button className="account-dropdown-action account-notification-toggle" type="button" role="menuitem" aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen(open => !open)}><i aria-hidden="true">✉</i><span><strong>Messages &amp; Updates</strong><small>{unreadNotifications.length ? `${unreadNotifications.length} unread notifications` : "You're all caught up"}</small></span>{unreadNotifications.length > 0 && <b>{unreadNotifications.length}</b>}</button>
+              {notificationsOpen && <section className="account-notification-panel" aria-label="Messages and project updates"><header><button type="button" className={notificationFilter === "chat" ? "is-active" : ""} onClick={() => setNotificationFilter("chat")}>Chat <b>{unreadChats}</b></button><button type="button" className={notificationFilter === "update" ? "is-active" : ""} onClick={() => setNotificationFilter("update")}>Updates <b>{unreadUpdates}</b></button></header><div>{notifications.filter(item => item.kind === notificationFilter).slice(0, 5).map(item => <button type="button" className={new Date(item.createdAt).getTime() > notificationsSeenAt ? "is-unread" : ""} onClick={() => openNotification(item.requestId)} key={item.id}><i aria-hidden="true">{item.kind === "chat" ? "✉" : "↻"}</i><span><strong>{item.title}</strong><small>{item.detail}</small></span></button>)}{!notifications.some(item => item.kind === notificationFilter) && <p>No {notificationFilter === "chat" ? "messages" : "project updates"} yet.</p>}</div><footer><button type="button" onClick={markNotificationsSeen}>Mark all as read</button><a href="/my-creations/latest" onClick={(event) => navigateWithTransition(event, "/my-creations/latest")}>View creations</a></footer></section>}
               <a href="/my-artisan-id" role="menuitem" onClick={(event) => navigateWithTransition(event, "/my-artisan-id")}><i aria-hidden="true">ID</i><span><strong>My Artisan ID</strong><small>View your identity card</small></span></a>
-              <a href="/my-orders/latest" role="menuitem" onClick={(event) => navigateWithTransition(event, "/my-orders/latest")}><i aria-hidden="true">O</i><span><strong>My Orders</strong><small>Follow your creations</small></span></a>
+              <a href="/my-creations/latest" role="menuitem" onClick={(event) => navigateWithTransition(event, "/my-creations/latest")}><i aria-hidden="true">C</i><span><strong>My Creations</strong><small>Follow your bespoke journeys</small></span></a>
               <button className="account-dropdown-action" type="button" role="menuitem" disabled={signingOut} onClick={() => void signOut()}><i aria-hidden="true">→</i><span><strong>{signingOut ? "Signing Out..." : "Sign Out"}</strong><small>End this device session</small></span></button>
             </>
           ) : (

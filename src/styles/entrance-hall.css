@@ -865,6 +865,25 @@ body.entrance-body[data-theme="dark"] .final-cta {
 .account-dropdown small { margin-top: 3px; color: #786b54; font-size: 10px; font-weight: 400; }
 .account-dropdown-identity { display: block; overflow: hidden; margin: -3px 11px 5px; color: #5f513c; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 .account-dropdown-message { display: block; margin: 7px 11px 3px; color: #8b3027; font-size: 10px; line-height: 1.4; }
+.account-notification-badge { position: absolute; top: -5px; right: -7px; min-width: 19px; height: 19px; padding: 0 5px; display: grid; place-items: center; border: 2px solid #fffaf0; border-radius: 999px; background: #b43b32; color: #fff; font: 700 9px Arial,sans-serif; }
+.account-menu .account-dropdown { width: min(340px, calc(100vw - 24px)); }
+.account-menu-trigger { position: relative; }
+.account-notification-toggle { position: relative; grid-template-columns: 34px 1fr auto !important; background: #f6edda !important; }
+.account-notification-toggle > b { min-width: 21px; height: 21px; padding: 0 5px; display: grid; place-items: center; border-radius: 999px; background: #b43b32; color: #fff; font: 700 9px Arial,sans-serif; }
+.account-notification-panel { margin: 2px 3px 7px; overflow: hidden; border: 1px solid rgba(153,111,43,.25); border-radius: 8px; background: #fffdf7; }
+.account-notification-panel > header { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid rgba(153,111,43,.2); }
+.account-notification-panel > header button { padding: 9px; border: 0; background: transparent; color: #786b54; font: 600 10px Arial,sans-serif; cursor: pointer; }
+.account-notification-panel > header button.is-active { color: #17453a; background: #edf1e6; box-shadow: inset 0 -2px #9b7535; }
+.account-notification-panel > header b { display: inline-grid; min-width: 17px; height: 17px; margin-left: 4px; place-items: center; border-radius: 50%; background: #e4d6b9; font-size: 8px; }
+.account-notification-panel > div { max-height: 225px; overflow: auto; }
+.account-notification-panel > div > button { width: 100%; display: grid; grid-template-columns: 27px 1fr; gap: 8px; padding: 10px; border: 0; border-bottom: 1px solid rgba(153,111,43,.12); background: transparent; color: #26351f; text-align: left; cursor: pointer; }
+.account-notification-panel > div > button.is-unread { background: #f8edda; box-shadow: inset 3px 0 #b43b32; }
+.account-notification-panel > div > button i { width: 25px; height: 25px; font-size: 9px; }
+.account-notification-panel > div > button span { min-width: 0; }
+.account-notification-panel > div > button small { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.account-notification-panel > div > p { margin: 0; padding: 18px 10px; color: #786b54; font: 10px Arial,sans-serif; text-align: center; }
+.account-notification-panel > footer { display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; border-top: 1px solid rgba(153,111,43,.18); }
+.account-notification-panel > footer button,.account-notification-panel > footer a { padding: 0; border: 0; background: transparent; color: #765626 !important; font: 600 9px Arial,sans-serif; text-decoration: underline; cursor: pointer; }
 
 body[data-theme="bright"] .account-menu-trigger, .global-header--light .account-menu-trigger { color: #26351f; background: rgba(255, 250, 238, .72); }
 

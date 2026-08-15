@@ -1,0 +1,140 @@
+.perfumer-project > .perfumer-facts,
+.perfumer-project > .perfumer-brief {
+  display: none;
+}
+
+.perfumer-creation-review {
+  margin-top: 17px;
+  padding: 18px;
+  border: 1px solid rgba(161, 116, 48, 0.25);
+  border-radius: 9px;
+  background: rgba(255, 252, 245, 0.86);
+}
+
+.perfumer-creation-review > .prep-notice,
+.perfumer-creation-review > .prep-journey,
+.perfumer-creation-review > .prep-commitment,
+.perfumer-creation-review .prep-ready,
+.perfumer-creation-review .prep-sidebar {
+  display: none !important;
+}
+
+.perfumer-creation-review .prep-layout {
+  display: block !important;
+}
+
+.perfumer-creation-review .prep-creation {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.perfumer-creation-review .prep-review-heading {
+  padding: 4px 0 18px;
+}
+
+.perfumer-creation-review .prep-review-heading > p {
+  color: #936625 !important;
+}
+
+.perfumer-creation-review .prep-review-section,
+.perfumer-creation-review .prep-identity-card {
+  background: rgba(255, 253, 247, 0.92);
+}
+
+@media (max-width: 680px) {
+  .perfumer-creation-review {
+    padding: 12px;
+  }
+
+  .perfumer-creation-review .prep-profile-grid,
+  .perfumer-creation-review .prep-formula-layers {
+    grid-template-columns: 1fr;
+  }
+}
+
+.perfumer-proposal-document {
+  margin-top: 18px;
+  padding: 24px !important;
+  border: 1px solid rgba(161, 116, 48, .28) !important;
+  border-radius: 9px;
+  background: rgba(255, 252, 245, .94) !important;
+  box-shadow: 0 7px 22px rgba(73, 53, 18, .05);
+}
+.perfumer-proposal-document > header {
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(161, 116, 48, .22);
+}
+.perfumer-proposal-document > header span {
+  color: #936625;
+  font: 10px Arial, sans-serif;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.perfumer-proposal-document > header h2 {
+  margin: 7px 0;
+  color: #173f38;
+  font: 400 clamp(25px, 3vw, 36px) Georgia, serif;
+}
+.perfumer-proposal-document > header p { margin: 0; color: #686154; line-height: 1.55; }
+.perfumer-proposal-document form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+.perfumer-proposal-document label {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  padding: 14px;
+  border: 1px solid rgba(161, 116, 48, .2);
+  background: rgba(255, 253, 247, .92);
+  color: #23443a;
+}
+.perfumer-proposal-document label:first-child { grid-column: 1 / -1; }
+.perfumer-proposal-document label small { min-height: 1.2em; color: #7a7265; }
+.perfumer-proposal-document textarea,
+.perfumer-proposal-document input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid rgba(161, 116, 48, .3);
+  background: #fffdf7;
+  color: #263c34;
+  font: 14px/1.5 Georgia, serif;
+}
+.perfumer-proposal-document textarea { min-height: 120px; resize: vertical; }
+.perfumer-proposal-document form > button {
+  grid-column: 1 / -1;
+  min-height: 50px;
+  border: 1px solid #b68b45;
+  background: #17483f;
+  color: #f3dda8;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.perfumer-proposal-sent {
+  margin-top: 18px;
+  padding: 22px !important;
+  border: 1px solid rgba(73, 111, 70, .3) !important;
+  background: #edf2e5;
+}
+.perfumer-proposal-sent > span { color: #936625; font: 9px Arial, sans-serif; letter-spacing: .15em; text-transform: uppercase; }
+.perfumer-proposal-sent h3 { margin: 6px 0 !important; color: #173f38 !important; font: 400 25px Georgia, serif !important; letter-spacing: 0 !important; text-transform: none !important; }
+.perfumer-proposal-sent p { margin: 0; color: #5e695f; }
+.perfumer-proposal-sent dl { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; margin: 16px 0 0; }
+.perfumer-proposal-sent dl div { padding: 12px; border: 1px solid rgba(73,111,70,.2); background: rgba(255,253,247,.72); }
+.perfumer-proposal-sent dt { color: #936625; font: 8px Arial,sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+.perfumer-proposal-sent dd { margin: 6px 0 0; line-height: 1.5; }
+.perfumer-proposal-sent.is-approved { background: #e7efe1; }
+.perfumer-proposal-sent.is-locked { background: rgba(255,252,245,.82); }
+@media (max-width: 680px) {
+  .perfumer-proposal-document { padding: 16px !important; }
+  .perfumer-proposal-document form { grid-template-columns: 1fr; }
+  .perfumer-proposal-sent dl { grid-template-columns: 1fr; }
+  .perfumer-proposal-document label:first-child,
+  .perfumer-proposal-document form > button { grid-column: 1; }
+}

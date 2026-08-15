@@ -47,6 +47,11 @@ export interface FragranceBrief {
 
 export interface StoryCardData {
   isEmpty: boolean;
+  fragranceName?: string;
+  creatorName?: string;
+  topNotes?: string[] | string;
+  heartNotes?: string[] | string;
+  baseNotes?: string[] | string;
   concentration: string;
   perfumeName: string;
   conceptLine: string;
@@ -65,6 +70,7 @@ export interface StoryCardData {
 export interface ArtisanBenchState {
   concentration: string;
   perfumeName: string;
+  perfumerNotes?: string;
   nameEdited: boolean;
   suggestedNames: string[];
   formula: FormulaItem[];
@@ -94,7 +100,9 @@ export interface DescribedCreationLetter {
   story: string;
   preferredNotes: string[];
   notesToAvoid: string[];
-  additionalNotes: string;
+  ambienceImage?: { dataUrl: string; fileName: string } | null;
+  /** Legacy field retained so older saved drafts can still be opened. */
+  additionalNotes?: string;
 }
 
 export interface DescribedCreationDraft {

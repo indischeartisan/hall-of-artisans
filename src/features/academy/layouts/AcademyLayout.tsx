@@ -77,7 +77,7 @@ export default function AcademyLayout() {
             {user?.email ? <>
               <span className="account-dropdown-identity" title={user.email}>{user.email}</span>
               <Link to="/my-artisan-id" role="menuitem" onClick={() => setAccountOpen(false)}><i aria-hidden="true">ID</i><span><strong>My Artisan ID</strong><small>View your identity card</small></span></Link>
-              <Link to="/my-orders/latest" role="menuitem" onClick={() => setAccountOpen(false)}><i aria-hidden="true">O</i><span><strong>My Orders</strong><small>Follow your creations</small></span></Link>
+              <Link to="/my-creations/latest" role="menuitem" onClick={() => setAccountOpen(false)}><i aria-hidden="true">C</i><span><strong>My Creations</strong><small>Follow your bespoke journeys</small></span></Link>
               <button className="account-dropdown-action" type="button" role="menuitem" disabled={signingOut} onClick={() => void signOut()}><i aria-hidden="true">→</i><span><strong>{signingOut ? "Signing Out..." : "Sign Out"}</strong><small>End this device session</small></span></button>
             </> : <>
               <Link to="/artisan-login" role="menuitem" onClick={() => setAccountOpen(false)}><i aria-hidden="true">→</i><span><strong>Sign In</strong><small>Open your Artisan account</small></span></Link>

@@ -37,7 +37,7 @@ export default function CheckoutPage() {
     setError("");
     const result = await orderService.createCheckout(selectedIds, form);
     if (!result.ok || !result.data) { setError(result.error ?? "Checkout could not be created."); return; }
-    navigate(`/my-orders/${result.data.items![0].reviewRequestId}`);
+    navigate(`/my-creations/${result.data.items![0].reviewRequestId}`);
   };
 
   return <><GlobalHeader variant="light"/><main className="checkout-shell">

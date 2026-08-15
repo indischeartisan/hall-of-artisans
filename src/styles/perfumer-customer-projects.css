@@ -19,6 +19,11 @@
 }
 .perfumer-customer-list > section > header div { display: grid; gap: 3px; }
 .perfumer-customer-list > section > header strong { font-size: 17px; color: #173f38; }
+.perfumer-customer-list button > strong > span { display: flex; align-items: center; gap: 5px; }
+.chat-unread-count { min-width: 20px; height: 20px; padding: 0 5px; display: inline-grid; place-items: center; border-radius: 999px; background: #b23a32; color: #fff; font: 700 10px Arial, sans-serif; box-shadow: 0 0 0 3px rgba(178,58,50,.12); }
+.perfumer-customer-list button.active .chat-unread-count { display: none; }
+.perfumer-messages-layout > aside button > strong { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.perfumer-nav-badge { margin-left: auto; min-width: 21px; height: 21px; padding: 0 6px; display: inline-grid; place-items: center; border-radius: 999px; background: #c34a3f; color: #fff; font: 700 10px Arial, sans-serif; box-shadow: 0 0 0 2px rgba(255,255,255,.12); }
 .perfumer-customer-list > section > header small { font: 9px Arial, sans-serif; color: #756e61; }
 .perfumer-customer-list > section > header b {
   width: 28px; height: 28px; display: grid; place-items: center;

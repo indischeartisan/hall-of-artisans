@@ -424,6 +424,379 @@ body.expert-lab-page[data-theme="bright"] .timeline-card .journey-detail { color
   }
 }
 
+/* Full-bleed hero: escape the centered workspace container. */
+body.expert-lab-page .hero-lab {
+  width: 100vw;
+  max-width: none;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  border-radius: 0;
+}
+
+/* Inverse hero treatment requested for the bright theme. */
+body.expert-lab-page[data-theme="bright"] .hero-copy {
+  border: 1px solid rgba(219, 178, 101, 0.42);
+  border-left: 0;
+  color: #fff4d8 !important;
+  background: linear-gradient(90deg, rgba(17, 38, 29, 0.94), rgba(17, 38, 29, 0.82) 70%, rgba(17, 38, 29, 0.2) 96%, transparent) !important;
+  box-shadow: inset 0 1px rgba(255, 246, 219, 0.1), 0 14px 36px rgba(12, 24, 18, 0.2);
+}
+
+body.expert-lab-page[data-theme="bright"] .hero-copy .kicker {
+  color: #dfb966 !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .hero-copy h1 {
+  color: #fff4d8 !important;
+  text-shadow: 0 3px 18px rgba(0, 0, 0, 0.28) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .hero-copy p:last-child {
+  color: rgba(255, 247, 226, 0.9) !important;
+}
+
+@media (max-width: 760px) {
+  body.expert-lab-page[data-theme="bright"] .hero-copy {
+    width: calc(100% - 24px);
+    margin-inline: 12px;
+    border: 1px solid rgba(219, 178, 101, 0.42);
+    background: rgba(17, 38, 29, 0.9) !important;
+  }
+}
+
+/* Final bright hero treatment: clean solid block, no outline or shadow. */
+body.expert-lab-page[data-theme="bright"] .hero-copy {
+  border: 0 !important;
+  border-radius: 0 !important;
+  color: #fff8e8 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .hero-copy .kicker {
+  color: #e6bd69 !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .hero-copy h1 {
+  color: #fff8e8 !important;
+  text-shadow: none !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .hero-copy p:last-child {
+  color: #fff4dc !important;
+  font-weight: 500;
+  text-shadow: none !important;
+}
+
+@media (max-width: 760px) {
+  body.expert-lab-page[data-theme="bright"] .hero-copy {
+    border: 0 !important;
+    background: transparent !important;
+  }
+}
+
+/* Keep long drydown narratives inside the panel instead of extending the page. */
+body.expert-lab-page .build-review-row {
+  align-items: stretch;
+}
+
+body.expert-lab-page .build-review-row .formula-builder,
+body.expert-lab-page .build-review-row .analysis,
+body.expert-lab-page .build-review-row .drydown {
+  align-self: stretch;
+  height: clamp(500px, 56vh, 560px);
+  min-height: 0;
+  max-height: 560px;
+}
+
+body.expert-lab-page .build-review-row .drydown {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+body.expert-lab-page .build-review-row .formula-builder {
+  overflow: hidden !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto auto !important;
+}
+
+body.expert-lab-page .build-review-row .formula-builder .layer-grid.inner-grid {
+  min-height: 0 !important;
+  height: 100%;
+  align-items: stretch !important;
+}
+
+body.expert-lab-page .build-review-row .formula-builder .layer-card.inner-panel {
+  min-height: 0 !important;
+  height: 100%;
+  align-self: stretch !important;
+  overflow: hidden;
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+}
+
+body.expert-lab-page .build-review-row .formula-builder .selected-list {
+  display: flex !important;
+  flex-direction: column;
+  align-items: stretch;
+  min-height: 0 !important;
+  height: 100%;
+  max-height: 240px;
+  overflow-y: scroll !important;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(197, 145, 67, 0.72) rgba(137, 105, 52, 0.1);
+  padding-right: 6px;
+}
+
+body.expert-lab-page .build-review-row .formula-builder .selected-list .selected-material {
+  flex: 0 0 auto !important;
+  min-height: 62px !important;
+}
+
+body.expert-lab-page .formula-builder .formula-summary-strip {
+  min-height: 42px;
+  padding: 9px 12px !important;
+  border: 1px solid rgba(151, 106, 38, 0.34);
+  border-radius: 7px;
+  background: rgba(239, 224, 184, 0.72);
+}
+
+body.expert-lab-page .formula-builder .formula-summary-strip span {
+  color: #294532 !important;
+  font-weight: 600;
+  text-shadow: none !important;
+}
+
+body.expert-lab-page .formula-builder .formula-summary-strip strong {
+  color: #a56718 !important;
+  font-weight: 700;
+  text-shadow: none !important;
+}
+
+/* Night mode summary follows the dark atelier palette. */
+body.expert-lab-page[data-theme="dark"] .formula-builder .formula-summary-strip {
+  border-color: rgba(205, 151, 62, 0.42) !important;
+  background: linear-gradient(135deg, rgba(42, 27, 15, 0.96), rgba(25, 16, 10, 0.98)) !important;
+  box-shadow: inset 0 1px rgba(245, 211, 139, 0.06) !important;
+}
+
+body.expert-lab-page[data-theme="dark"] .formula-builder .formula-summary-strip span {
+  color: rgba(247, 232, 195, 0.88) !important;
+}
+
+body.expert-lab-page[data-theme="dark"] .formula-builder .formula-summary-strip strong {
+  color: #e8bd62 !important;
+}
+
+body.expert-lab-page[data-theme="dark"] .formula-builder .formula-summary-strip span:not(:first-child) strong {
+  color: #f2cf7a !important;
+}
+
+body.expert-lab-page .build-review-row .analysis {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+body.expert-lab-page .build-review-row .analysis #profileBars {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding-right: 7px;
+}
+
+body.expert-lab-page .build-review-row .drydown #drydownTimeline {
+  display: flex !important;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px !important;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding-right: 8px;
+}
+
+body.expert-lab-page .build-review-row .drydown .timeline-card.inner-panel {
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  flex: 0 0 auto;
+  overflow: visible !important;
+  display: grid !important;
+  grid-template-columns: minmax(62px, 0.35fr) minmax(0, 1fr) !important;
+  grid-template-rows: auto auto auto !important;
+  align-items: start !important;
+}
+
+body.expert-lab-page .build-review-row .drydown .timeline-card > strong {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+body.expert-lab-page .build-review-row .drydown .timeline-card > .journey-cue {
+  grid-column: 2;
+  grid-row: 1;
+  margin-top: 0;
+}
+
+body.expert-lab-page .build-review-row .drydown .timeline-card > h3 {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+body.expert-lab-page .build-review-row .drydown .timeline-card p {
+  grid-column: 2 !important;
+  grid-row: 2;
+  min-height: auto;
+  max-height: none !important;
+  overflow: visible !important;
+  padding-right: 2px;
+}
+
+body.expert-lab-page .build-review-row .drydown .timeline-card > .journey-detail {
+  grid-column: 1 / -1;
+  grid-row: 3;
+}
+
+body.expert-lab-page .build-review-row .formula-builder .selected-list::-webkit-scrollbar,
+body.expert-lab-page .build-review-row .analysis #profileBars::-webkit-scrollbar,
+body.expert-lab-page .build-review-row .drydown #drydownTimeline::-webkit-scrollbar {
+  width: 7px;
+}
+
+body.expert-lab-page .build-review-row .formula-builder .selected-list::-webkit-scrollbar-thumb,
+body.expert-lab-page .build-review-row .analysis #profileBars::-webkit-scrollbar-thumb,
+body.expert-lab-page .build-review-row .drydown #drydownTimeline::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(197, 145, 67, 0.58);
+}
+
+body.expert-lab-page .build-review-row .formula-builder .selected-list::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(137, 105, 52, 0.1);
+}
+
+@media (max-width: 1180px) {
+  body.expert-lab-page .build-review-row .formula-builder,
+  body.expert-lab-page .build-review-row .analysis,
+  body.expert-lab-page .build-review-row .drydown {
+    height: min(560px, 65vh);
+  }
+}
+
+/* Formula Balance is a fixed summary; all profile rows remain visible. */
+body.expert-lab-page .build-review-row .analysis #profileBars {
+  overflow: visible !important;
+  scrollbar-gutter: auto;
+  padding-right: 0;
+}
+
+/* Visually center the primary formula-check action in its row. */
+body.expert-lab-page .formula-check #checkFormula {
+  align-self: center;
+  margin-top: 18px;
+}
+
+/* Free-form customer notes replace the generated brief preview panel. */
+body.expert-lab-page .perfumer-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+body.expert-lab-page .perfumer-notes > label {
+  color: var(--ink, #173c2b);
+  font-size: 0.82rem;
+  font-weight: 400;
+}
+
+body.expert-lab-page .perfumer-notes #perfumerNotesInput {
+  width: 100%;
+  min-height: clamp(390px, 38vw, 520px);
+  resize: vertical;
+  color: var(--ink, #173c2b);
+  font: 1rem/1.65 var(--font-body, Georgia, serif);
+  outline: none;
+}
+
+body.expert-lab-page .perfumer-notes #perfumerNotesInput:focus {
+  border-color: rgba(165, 111, 35, 0.78) !important;
+  box-shadow: 0 0 0 3px rgba(190, 137, 61, 0.14), inset 0 0 0 1px rgba(255, 255, 255, 0.42) !important;
+}
+
+body.expert-lab-page .perfumer-notes > small {
+  color: rgba(45, 61, 45, 0.72);
+  line-height: 1.45;
+}
+
+body.expert-lab-page[data-theme="bright"] .perfumer-notes #perfumerNotesInput {
+  border: 1px solid rgba(153, 112, 52, 0.36) !important;
+  background-color: #f5ead0 !important;
+  background-image:
+    linear-gradient(145deg, rgba(255, 253, 246, 0.72), rgba(247, 238, 216, 0.58)),
+    url("../images/fragrance-brief-paper-texture.webp") !important;
+  background-position: center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-blend-mode: screen, normal;
+  color: #294532 !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72), 0 8px 24px rgba(89, 67, 29, 0.07) !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .perfumer-notes #perfumerNotesInput::placeholder {
+  color: rgba(62, 75, 57, 0.56);
+}
+
+@media (max-width: 760px) {
+  body.expert-lab-page .build-review-row .formula-builder {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    grid-template-rows: auto auto auto auto !important;
+  }
+
+  body.expert-lab-page .build-review-row .formula-builder .layer-grid.inner-grid {
+    height: auto !important;
+    min-height: 0 !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  body.expert-lab-page .build-review-row .formula-builder .layer-card.inner-panel {
+    height: auto !important;
+    min-height: 190px !important;
+    grid-template-rows: auto auto minmax(72px, auto) auto !important;
+  }
+
+  body.expert-lab-page .build-review-row .formula-builder .selected-list {
+    height: auto;
+    min-height: 72px !important;
+    max-height: 240px;
+  }
+
+  body.expert-lab-page .formula-builder .formula-summary-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  body.expert-lab-page .build-review-row .analysis {
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  body.expert-lab-page .build-review-row .drydown {
+    height: min(520px, 68vh) !important;
+    max-height: 520px !important;
+  }
+}
+
 @media (min-width: 901px) {
   body.expert-lab-page .next-actions {
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
@@ -504,31 +877,31 @@ body.expert-lab-page .build-review-row {
   z-index: 1;
 }
 
-/* Bright hero: local parchment backing keeps copy readable without clouding the full image. */
+/* Bright hero: copy sits directly on the image without a backing panel. */
 body.expert-lab-page[data-theme="bright"] .hero-copy {
   padding: clamp(22px, 3.4vw, 52px) !important;
-  border-left: 1px solid rgba(168, 124, 60, 0.52);
-  border-radius: 0 10px 10px 0;
-  color: #17351f !important;
-  background: linear-gradient(90deg, rgba(255, 248, 232, 0.94), rgba(255, 248, 232, 0.82) 68%, rgba(255, 248, 232, 0.18) 94%, transparent);
-  box-shadow: inset 1px 0 rgba(255, 255, 255, 0.74), 0 10px 28px rgba(45, 31, 14, 0.08);
+  border: 0 !important;
+  border-radius: 0;
+  color: #fff8e8 !important;
+  background: transparent !important;
+  box-shadow: none !important;
   text-shadow: none !important;
 }
 
 body.expert-lab-page[data-theme="bright"] .hero-copy .kicker {
-  color: #805b25 !important;
+  color: #e6bd69 !important;
   opacity: 1;
 }
 
 body.expert-lab-page[data-theme="bright"] .hero-copy h1 {
-  color: #17351f !important;
-  text-shadow: 0 1px rgba(255, 255, 255, 0.5) !important;
+  color: #fff8e8 !important;
+  text-shadow: 0 2px 10px rgba(8, 20, 14, 0.78) !important;
 }
 
 body.expert-lab-page[data-theme="bright"] .hero-copy p:last-child {
-  color: #26351f !important;
+  color: #fff4dc !important;
   font-weight: 500;
-  text-shadow: none !important;
+  text-shadow: 0 1px 6px rgba(8, 20, 14, 0.9) !important;
 }
 
 /* Drydown empty state uses the same parchment-card language as the other inner panels. */
@@ -554,8 +927,116 @@ body.expert-lab-page[data-theme="bright"] .drydown #drydownTimeline .message.war
   body.expert-lab-page[data-theme="bright"] .hero-copy {
     width: calc(100% - 24px);
     margin-inline: 12px;
-    border: 1px solid rgba(168, 124, 60, 0.34);
-    border-radius: 8px;
-    background: rgba(255, 248, 232, 0.88);
+    border: 0 !important;
+    border-radius: 0;
+    background: transparent !important;
   }
+}
+
+/* Authoritative hero-copy styling must remain last to beat legacy variants. */
+body.expert-lab-page[data-theme="bright"] .hero-copy {
+  border: 0 !important;
+  border-radius: 0 !important;
+  color: #fff8e8 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .hero-copy .kicker {
+  color: #e6bd69 !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .hero-copy h1 {
+  color: #fff8e8 !important;
+  text-shadow: none !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .hero-copy p:last-child {
+  color: #fff4dc !important;
+  font-weight: 500;
+  text-shadow: none !important;
+}
+
+@media (max-width: 760px) {
+  body.expert-lab-page[data-theme="bright"] .hero-copy {
+    border: 0 !important;
+    background: transparent !important;
+  }
+}
+
+/* Theme-specific Artisan Bench scenery. */
+body.expert-lab-page {
+  --artisan-bench-scene: url("/assets/images/artisan-bench-night.webp");
+}
+
+body.expert-lab-page[data-theme="bright"] {
+  --artisan-bench-scene: url("/assets/images/artisan-bench-bright.webp");
+}
+
+/* Mobile hero parity: full-bleed scenery and identical copy placement in both themes. */
+@media (max-width: 760px) {
+  body.expert-lab-page .hero-lab {
+    box-sizing: border-box;
+    width: 100vw !important;
+    max-width: none !important;
+    min-height: 364px !important;
+    margin-inline: calc(50% - 50vw) !important;
+    padding: 94px 18px 28px !important;
+    align-items: end !important;
+    overflow: hidden;
+  }
+
+  body.expert-lab-page .hero-lab .hero-image {
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    transform: none !important;
+  }
+
+  body.expert-lab-page .hero-lab .hero-copy,
+  body.expert-lab-page[data-theme="bright"] .hero-lab .hero-copy {
+    box-sizing: border-box;
+    width: calc(100% - 24px) !important;
+    max-width: calc(100% - 24px) !important;
+    margin-inline: 12px !important;
+    padding: 22px !important;
+  }
+}
+
+body.expert-lab-page .hero-image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  background: none !important;
+  filter: none !important;
+}
+
+body.expert-lab-page[data-theme="bright"] .hero-veil {
+  background: linear-gradient(90deg, rgba(38, 30, 16, 0.52), rgba(38, 30, 16, 0.08) 58%, rgba(38, 30, 16, 0.14)) !important;
+}
+
+body.expert-lab-page:not([data-theme="bright"]) .hero-veil {
+  background: linear-gradient(90deg, rgba(4, 10, 16, 0.68), rgba(4, 10, 16, 0.1) 58%, rgba(4, 10, 16, 0.24)) !important;
+}
+
+/* Make the final review action the single primary green CTA. */
+body.expert-lab-page .next-actions .review-creation-cta,
+body.expert-lab-page[data-theme="bright"] .next-actions .review-creation-cta {
+  color: #fff8e8 !important;
+  border-color: #b88a36 !important;
+  background: linear-gradient(135deg, #0d5139, #073e2c) !important;
+  box-shadow: 0 8px 18px rgba(7, 62, 44, 0.18) !important;
+}
+
+body.expert-lab-page .next-actions .review-creation-cta:hover,
+body.expert-lab-page .next-actions .review-creation-cta:focus-visible,
+body.expert-lab-page[data-theme="bright"] .next-actions .review-creation-cta:hover,
+body.expert-lab-page[data-theme="bright"] .next-actions .review-creation-cta:focus-visible {
+  color: #ffffff !important;
+  border-color: #d2a74c !important;
+  background: linear-gradient(135deg, #126247, #094632) !important;
 }

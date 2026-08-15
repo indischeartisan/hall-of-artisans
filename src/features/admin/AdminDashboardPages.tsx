@@ -28,10 +28,12 @@ export function AdminOverviewPage() {
   const now = new Date();
   const requests = snapshot.creations;
   const counts = [
-    ["Waiting for Review", requests.filter(item => item.request.status === "SUBMITTED").length, "/admin/creations?status=SUBMITTED"],
-    ["With Perfumer", requests.filter(item => item.request.status === "UNDER_REVIEW").length, "/admin/creations?status=UNDER_REVIEW"],
-    ["In Consultation", requests.filter(item => item.request.status === "CONSULTATION").length, "/admin/creations?status=CONSULTATION"],
-    ["In Production", requests.filter(item => item.request.status === "IN_PRODUCTION").length, "/admin/orders?status=IN_PRODUCTION"]
+    ["Brief", requests.filter(item => ["DRAFT_PREVIEW", "SUBMITTED"].includes(item.request.status)).length, "/admin/creations?stage=brief"],
+    ["Review", requests.filter(item => item.request.status === "UNDER_REVIEW").length, "/admin/creations?status=UNDER_REVIEW"],
+    ["Consultation", requests.filter(item => item.request.status === "CONSULTATION").length, "/admin/creations?status=CONSULTATION"],
+    ["Proposal", requests.filter(item => ["READY_FOR_APPROVAL", "REVISION_REQUESTED", "READY_FOR_PAYMENT", "PAYMENT_PENDING"].includes(item.request.status)).length, "/admin/creations?stage=proposal"],
+    ["Crafting", requests.filter(item => ["PAID", "IN_PRODUCTION"].includes(item.request.status)).length, "/admin/creations?stage=crafting"],
+    ["Delivery", requests.filter(item => ["SHIPPED", "COMPLETED"].includes(item.request.status)).length, "/admin/creations?stage=delivery"]
   ] as const;
   const paid = snapshot.orders.filter(order => order.paymentStatus.toLowerCase() === "paid");
   const waiting = snapshot.orders.filter(order => order.paymentStatus.toLowerCase() === "pending");
@@ -43,8 +45,8 @@ export function AdminOverviewPage() {
     ...snapshot.orders.filter(order => order.productionStatus === "completed" && order.shippingStatus === "not_shipped").map(order => ({ label: "Ready to ship", title: order.orderNumber, copy: `${order.items.length} creation${order.items.length === 1 ? "" : "s"}`, href: `/admin/orders?open=${order.id}` }))
   ].slice(0, 5);
   return <div className="hoa-admin-page">
-    <PageHeader eyebrow="Admin Workspace" title="Good day, Administrator" copy="A concise operational view of creations, payments, and production." actions={<button className="hoa-text-button" onClick={() => void refresh()}>Refresh data</button>}/>
-    <section className="hoa-metric-grid">{counts.map(([label, value, href], index) => <a href={href} key={label}><i>{["◉", "♙", "✦", "◆"][index]}</i><span><small>{label}</small><strong>{value}</strong><em>creations</em></span></a>)}</section>
+    <PageHeader eyebrow="Admin Workspace" title="Creation journey" copy="See how many creations are currently in each stage, from brief through delivery." actions={<button className="hoa-text-button" onClick={() => void refresh()}>Refresh data</button>}/>
+    <section className="hoa-metric-grid hoa-stage-metric-grid">{counts.map(([label, value, href], index) => <a href={href} key={label}><i>{index + 1}</i><span><small>{label}</small><strong>{value}</strong><em>creations</em></span></a>)}</section>
     <section className="hoa-money-strip"><header><span>Money In</span><small>Recorded orders only</small></header><div><small>Paid Today</small><strong>{money(paid.filter(item => sameDay(item.paidAt, now)).reduce((sum, item) => sum + item.amount, 0))}</strong></div><div><small>Paid This Month</small><strong>{money(paid.filter(item => sameMonth(item.paidAt, now)).reduce((sum, item) => sum + item.amount, 0))}</strong></div><div><small>Waiting for Payment</small><strong>{money(waiting.reduce((sum, item) => sum + item.amount, 0))}</strong></div></section>
     <div className="hoa-overview-grid">
       <section className="hoa-admin-card"><header><h2>Needs Attention</h2><a href="/admin/creations">View all</a></header>{attention.length ? attention.map((item, index) => <article key={`${item.label}-${index}`}><b>{index + 1}</b><div><strong>{item.title}</strong><small>{item.label} · {item.copy}</small></div><a href={item.href}>Open</a></article>) : <p className="empty-copy">Nothing requires immediate attention.</p>}</section>
@@ -54,7 +56,7 @@ export function AdminOverviewPage() {
   </div>;
 }
 
-const nextAction = (request: ReviewRequest) => request.status === "SUBMITTED" ? ["UNDER_REVIEW", "Begin Review"] : request.status === "UNDER_REVIEW" ? ["CONSULTATION", "Open Consultation"] : request.status === "CONSULTATION" ? ["READY_FOR_PAYMENT", "Ready for Payment"] : null;
+const nextAction = (request: ReviewRequest) => request.status === "SUBMITTED" ? ["UNDER_REVIEW", "Begin Review"] : request.status === "UNDER_REVIEW" ? ["CONSULTATION", "Open Consultation"] : null;
 
 function CreationDrawer({ creation, onClose, onChanged }: { creation: AdminCreation; onClose: () => void; onChanged: () => Promise<void> }) {
   const [detail, setDetail] = useState<StaffRequestDetail | null>(null);
@@ -80,20 +82,29 @@ function CreationDrawer({ creation, onClose, onChanged }: { creation: AdminCreat
 export function AdminCreationsPage() {
   const { snapshot, loading, error, refresh } = useOutletContext<AdminOutletContext>();
   const query = new URLSearchParams(location.search);
+  const stage = query.get("stage");
+  const stageStatuses: Record<string, string[]> = {
+    brief: ["DRAFT_PREVIEW", "SUBMITTED"],
+    proposal: ["READY_FOR_APPROVAL", "REVISION_REQUESTED", "READY_FOR_PAYMENT", "PAYMENT_PENDING"],
+    crafting: ["PAID", "IN_PRODUCTION"],
+    delivery: ["SHIPPED", "COMPLETED"]
+  };
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState(query.get("status") ?? "ALL");
   const [packageId, setPackageId] = useState("ALL");
-  const [reviewer, setReviewer] = useState("ALL");
+  const [reviewer, setReviewer] = useState(query.get("reviewer") ?? "ALL");
   const [selectedId, setSelectedId] = useState(query.get("open") ?? "");
   const [assigningId, setAssigningId] = useState("");
   const [assignmentError, setAssignmentError] = useState("");
-  const creationStatuses = ["SUBMITTED", "UNDER_REVIEW", "CONSULTATION", "READY_FOR_PAYMENT"];
+  const creationStatuses = ["SUBMITTED", "UNDER_REVIEW", "CONSULTATION", "READY_FOR_APPROVAL", "REVISION_REQUESTED", "READY_FOR_PAYMENT", "PAYMENT_PENDING", "PAID", "IN_PRODUCTION", "SHIPPED", "COMPLETED"];
   const creations = (snapshot?.creations ?? []).filter(item => creationStatuses.includes(item.request.status));
   const packages = [...new Map(creations.filter(item => item.request.packageSnapshot).map(item => [item.request.packageSnapshot!.id, item.request.packageSnapshot!.name])).entries()];
   const filtered = useMemo(() => creations.filter(item => {
     const haystack = `${item.request.perfumeName} ${item.request.requestNumber} ${item.customer.name} ${item.customer.artisanId}`.toLowerCase();
-    return (!search || haystack.includes(search.toLowerCase())) && (status === "ALL" || item.request.status === status) && (packageId === "ALL" || item.request.selectedPackageId === packageId) && (reviewer === "ALL" || item.request.assignedReviewerId === reviewer);
-  }), [creations, search, status, packageId, reviewer]);
+    const reviewerMatches = reviewer === "ALL" || reviewer === "UNASSIGNED" ? reviewer === "ALL" || !item.request.assignedReviewerId : item.request.assignedReviewerId === reviewer;
+    const stageMatches = !stage || !stageStatuses[stage] || stageStatuses[stage].includes(item.request.status);
+    return stageMatches && (!search || haystack.includes(search.toLowerCase())) && (status === "ALL" || item.request.status === status) && (packageId === "ALL" || item.request.selectedPackageId === packageId) && reviewerMatches;
+  }), [creations, search, status, packageId, reviewer, stage]);
   const selected = creations.find(item => item.request.id === selectedId);
   const assignPerfumer = async (requestId: string, reviewerId: string) => {
     setAssigningId(requestId); setAssignmentError("");
@@ -101,8 +112,8 @@ export function AdminCreationsPage() {
     catch (cause) { setAssignmentError(cause instanceof Error ? cause.message : "Perfumer assignment could not be updated."); }
     finally { setAssigningId(""); }
   };
-  return <div className="hoa-admin-page"><PageHeader eyebrow="Operations" title="Creations" copy="Review and manage customer creations before payment."/>
-    {!snapshot ? <Loading loading={loading} error={error}/> : <><section className="hoa-filter-bar"><input aria-label="Search creations" placeholder="Search creation, customer, or number…" value={search} onChange={e => setSearch(e.target.value)}/><label>Status<select value={status} onChange={e => setStatus(e.target.value)}><option value="ALL">All statuses</option>{["SUBMITTED", "UNDER_REVIEW", "CONSULTATION", "READY_FOR_PAYMENT"].map(item => <option key={item}>{item}</option>)}</select></label><label>Package<select value={packageId} onChange={e => setPackageId(e.target.value)}><option value="ALL">All packages</option>{packages.map(([id, name]) => <option value={id} key={id}>{name}</option>)}</select></label><label>Perfumer<select value={reviewer} onChange={e => setReviewer(e.target.value)}><option value="ALL">All perfumers</option>{snapshot.reviewers.map(item => <option value={item.userId} key={item.userId}>{item.displayName}</option>)}</select></label></section>
+  return <div className="hoa-admin-page"><PageHeader eyebrow="Creative Operations" title="Creations" copy="One work queue from submission and consultation through crafting and completion."/>
+    {!snapshot ? <Loading loading={loading} error={error}/> : <><section className="hoa-filter-bar"><input aria-label="Search creations" placeholder="Search creation, customer, or number…" value={search} onChange={e => setSearch(e.target.value)}/><label>Stage<select value={status} onChange={e => setStatus(e.target.value)}><option value="ALL">All stages</option>{creationStatuses.map(item => <option value={item} key={item}>{statusLabel(item)}</option>)}</select></label><label>Package<select value={packageId} onChange={e => setPackageId(e.target.value)}><option value="ALL">All packages</option>{packages.map(([id, name]) => <option value={id} key={id}>{name}</option>)}</select></label><label>Perfumer<select value={reviewer} onChange={e => setReviewer(e.target.value)}><option value="ALL">All perfumers</option><option value="UNASSIGNED">Unassigned</option>{snapshot.reviewers.map(item => <option value={item.userId} key={item.userId}>{item.displayName}</option>)}</select></label></section>
     {assignmentError && <p className="hoa-inline-error" role="alert">{assignmentError}</p>}
     <section className="hoa-data-card"><table><thead><tr><th>Creation</th><th>Customer</th><th>Package</th><th>Perfumer</th><th>Status</th><th>Updated</th><th/></tr></thead><tbody>{filtered.map(item => <tr key={item.request.id}><td><strong>{item.request.perfumeName}</strong><small>{item.request.requestNumber}</small></td><td><strong>{item.customer.name}</strong><small>{item.customer.artisanId}</small></td><td>{item.request.packageSnapshot?.name ?? "—"}</td><td><select className="hoa-perfumer-select" aria-label={`Assign perfumer to ${item.request.perfumeName}`} disabled={assigningId === item.request.id} value={item.request.assignedReviewerId ?? ""} onChange={event => void assignPerfumer(item.request.id, event.target.value)}><option value="">Unassigned</option>{snapshot.reviewers.map(perfumer => <option value={perfumer.userId} key={perfumer.userId}>{perfumer.displayName}</option>)}</select></td><td>{badge(item.request.status)}</td><td>{date(item.request.lastUpdatedAt)}</td><td><button onClick={() => setSelectedId(item.request.id)}>Details</button></td></tr>)}</tbody></table>{!filtered.length && <p className="empty-copy">No creations match these filters.</p>}</section></>}
     {selected && <CreationDrawer creation={selected} onClose={() => setSelectedId("")} onChanged={refresh}/>} 
@@ -115,7 +126,7 @@ function OrderDrawer({ order, onClose, onChanged }: { order: AdminOrder; onClose
   const [tracking, setTracking] = useState(order.trackingNumber ?? "");
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState("");
-  const runAction = async (stage: "START_PRODUCTION" | "MARK_SHIPPED" | "MARK_DELIVERED") => {
+  const runAction = async (stage: "CONFIRM_PAYMENT" | "START_PRODUCTION" | "MARK_SHIPPED" | "MARK_DELIVERED") => {
     setBusy(true); setActionError("");
     try { await adminDashboardService.transitionOrder(order.id, stage, tracking); await onChanged(); }
     catch (cause) { setActionError(cause instanceof Error ? cause.message : "Order status could not be updated."); }
@@ -125,8 +136,8 @@ function OrderDrawer({ order, onClose, onChanged }: { order: AdminOrder; onClose
     <dl className="hoa-detail-facts"><div><dt>Payment</dt><dd>{statusLabel(order.paymentStatus)}</dd></div><div><dt>Paid on</dt><dd>{date(order.paidAt)}</dd></div><div><dt>Total</dt><dd>{money(order.amount, order.currency)}</dd></div><div><dt>Overall status</dt><dd>{statusLabel(order.productionStatus)}</dd></div><div><dt>Shipping</dt><dd>{statusLabel(order.shippingStatus)}</dd></div><div><dt>Updated</dt><dd>{date(order.updatedAt)}</dd></div></dl>
     <section><h3>Delivery</h3><p><strong>{String(detail.recipient ?? order.customer.name)}</strong><br/>{address || "Address not recorded."}<br/>{String(detail.phone ?? "")}</p><p>Preference: {statusLabel(order.shippingPreference)}<br/>Courier / tracking: {order.trackingNumber || "Not assigned"}</p></section>
     <section><h3>Creations in this order</h3>{order.items.map((item, index) => <article className="hoa-order-item" key={item.id}><b>{index + 1}</b><div><strong>{item.creationName}</strong><small>{money(item.amount, item.currency)}</small></div><span>{statusLabel(item.productionStatus)}<small>{statusLabel(item.shippingStatus)}</small></span></article>)}</section>
-    <section className="hoa-order-actions"><h3>Fulfillment Action</h3>{actionError && <p className="hoa-inline-error" role="alert">{actionError}</p>}
-      {order.paymentStatus !== "paid" && <p>Payment must be confirmed before production can begin.</p>}
+    <section className="hoa-order-actions"><h3>Next Action</h3>{actionError && <p className="hoa-inline-error" role="alert">{actionError}</p>}
+      {order.paymentStatus !== "paid" && <><p>Confirm the received payment to unlock production for this order.</p><button className="hoa-primary" disabled={busy} onClick={() => void runAction("CONFIRM_PAYMENT")}>{busy ? "Confirming…" : "Confirm Payment"} <b>✓</b></button></>}
       {order.paymentStatus === "paid" && order.productionStatus === "not_started" && <button className="hoa-primary" disabled={busy} onClick={() => void runAction("START_PRODUCTION")}>Start Production <b>→</b></button>}
       {order.productionStatus === "in_production" && <><label>Courier tracking number<input value={tracking} onChange={event => setTracking(event.target.value)} placeholder="Enter tracking number"/></label><button className="hoa-primary" disabled={busy || !tracking.trim()} onClick={() => void runAction("MARK_SHIPPED")}>Mark as Shipped <b>→</b></button></>}
       {order.shippingStatus === "shipped" && <button className="hoa-primary" disabled={busy} onClick={() => void runAction("MARK_DELIVERED")}>Confirm Delivered <b>✓</b></button>}
@@ -139,7 +150,7 @@ export function AdminOrdersPage() {
   const { snapshot, loading, error, refresh } = useOutletContext<AdminOutletContext>();
   const query = new URLSearchParams(location.search);
   const [search, setSearch] = useState("");
-  const [payment, setPayment] = useState("ALL");
+  const [payment, setPayment] = useState(query.get("payment") ?? "ALL");
   const [status, setStatus] = useState(query.get("status") ?? "ALL");
   const [selectedId, setSelectedId] = useState(query.get("open") ?? "");
   const orders = snapshot?.orders ?? [];
@@ -152,5 +163,24 @@ export function AdminOrdersPage() {
     {!snapshot ? <Loading loading={loading} error={error}/> : <><section className="hoa-filter-bar orders"><input aria-label="Search orders" placeholder="Search order, customer, or creation…" value={search} onChange={e => setSearch(e.target.value)}/><label>Payment<select value={payment} onChange={e => setPayment(e.target.value)}><option value="ALL">All payments</option>{[...new Set(orders.map(item => item.paymentStatus))].map(item => <option key={item}>{item}</option>)}</select></label><label>Order status<select value={status} onChange={e => setStatus(e.target.value)}><option value="ALL">All statuses</option>{["not_started", "in_production", "completed", "not_shipped", "shipped", "delivered"].map(item => <option key={item}>{item}</option>)}</select></label></section>
     <section className="hoa-data-card"><table><thead><tr><th>Order</th><th>Customer</th><th>Perfume</th><th>Total</th><th>Payment</th><th>Order status</th><th>Updated</th><th/></tr></thead><tbody>{filtered.map(order => <tr key={order.id}><td><strong>{order.orderNumber}</strong><small>{date(order.createdAt)}</small></td><td><strong>{order.customer.name}</strong><small>{order.customer.artisanId}</small></td><td><strong>{order.items.map(item => item.creationName).join(", ")}</strong><small>{order.items.length} creation{order.items.length === 1 ? "" : "s"}</small></td><td>{money(order.amount, order.currency)}</td><td>{badge(order.paymentStatus)}</td><td>{badge(order.shippingStatus !== "not_shipped" ? order.shippingStatus : order.productionStatus)}</td><td>{date(order.updatedAt)}</td><td><button onClick={() => setSelectedId(order.id)}>Details</button></td></tr>)}</tbody></table>{!filtered.length && <p className="empty-copy">No orders match these filters.</p>}</section></>}
     {selected && <OrderDrawer order={selected} onClose={() => setSelectedId("")} onChanged={refresh}/>} 
+  </div>;
+}
+
+export function AdminCustomersPage() {
+  const { snapshot, loading, error } = useOutletContext<AdminOutletContext>();
+  const [search, setSearch] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState("");
+  if (!snapshot) return <div className="hoa-admin-page"><PageHeader eyebrow="Relationships" title="Customers" copy="Creations, orders, messages, and aftercare in one customer record."/><Loading loading={loading} error={error}/></div>;
+  const customers = [...new Map(snapshot.creations.map(item => [item.customer.userId, item.customer])).values()];
+  const filtered = customers.filter(customer => `${customer.name} ${customer.artisanId}`.toLowerCase().includes(search.toLowerCase()));
+  const selected = customers.find(customer => customer.userId === selectedUserId);
+  const creations = selected ? snapshot.creations.filter(item => item.customer.userId === selected.userId) : [];
+  const orders = selected ? snapshot.orders.filter(item => item.userId === selected.userId) : [];
+  const aftercare = selected ? snapshot.aftercare.filter(item => item.customer.userId === selected.userId) : [];
+  return <div className="hoa-admin-page"><PageHeader eyebrow="Relationships" title="Customers" copy="Open one customer record instead of searching across separate revision, reorder, and completed menus."/>
+    <section className="hoa-filter-bar"><input aria-label="Search customers" placeholder="Search customer or Artisan ID…" value={search} onChange={event => setSearch(event.target.value)}/></section>
+    <div className="hoa-customer-workspace"><section className="hoa-data-card"><table><thead><tr><th>Customer</th><th>Creations</th><th>Orders</th><th>Aftercare</th><th/></tr></thead><tbody>{filtered.map(customer => <tr key={customer.userId}><td><strong>{customer.name}</strong><small>{customer.artisanId}</small></td><td>{snapshot.creations.filter(item => item.customer.userId === customer.userId).length}</td><td>{snapshot.orders.filter(item => item.userId === customer.userId).length}</td><td>{snapshot.aftercare.filter(item => item.customer.userId === customer.userId && item.status !== "RESOLVED").length} open</td><td><button onClick={() => setSelectedUserId(customer.userId)}>Open</button></td></tr>)}</tbody></table>{!filtered.length && <p className="empty-copy">No customers match this search.</p>}</section>
+      <section className="hoa-admin-card hoa-customer-summary">{selected ? <><header><div><small>Customer Record</small><h2>{selected.name}</h2><p>{selected.artisanId}</p></div></header><h3>Creations</h3>{creations.map(item => <a href={`/admin/creations?open=${item.request.id}`} key={item.request.id}><span><strong>{item.request.perfumeName}</strong><small>{item.request.requestNumber}</small></span>{badge(item.request.status)}</a>)}<h3>Orders</h3>{orders.map(item => <a href={`/admin/orders?open=${item.id}`} key={item.id}><span><strong>{item.orderNumber}</strong><small>{money(item.amount, item.currency)}</small></span>{badge(item.paymentStatus)}</a>)}<h3>Aftercare &amp; Follow-up</h3>{aftercare.map(item => <article key={item.id}><span><strong>{statusLabel(item.kind)}</strong><small>{item.subject}</small></span>{badge(item.status)}</article>)}{!aftercare.length && <p className="empty-copy">No aftercare or repeat requests.</p>}</> : <p className="empty-copy">Select a customer to open their complete record.</p>}</section>
+    </div>
   </div>;
 }

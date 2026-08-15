@@ -1,4 +1,5 @@
 import { getSupabaseClient } from "../../lib/supabase";
+import { getLocalOrderStage, isLocallyConfirmedOrder, isLocallyConfirmedOrderId, registerLocallyConfirmedOrder, setLocalOrderStage } from "../../dev/confirmedOrderOverrides";
 import type { Json, Tables } from "../../types/database.types";
 import type { ReviewRequest } from "../orders/types";
 import { staffService, type StaffReviewer } from "./staffService";
@@ -116,7 +117,11 @@ const mapOrderItem = (row: OrderItemRow): AdminOrderItem => ({
 });
 
 export const adminDashboardService = {
-  async transitionOrder(orderId: string, stage: "START_PRODUCTION" | "MARK_SHIPPED" | "MARK_DELIVERED", trackingNumber?: string) {
+  async transitionOrder(orderId: string, stage: "CONFIRM_PAYMENT" | "START_PRODUCTION" | "MARK_SHIPPED" | "MARK_DELIVERED", trackingNumber?: string) {
+    if (isLocallyConfirmedOrderId(orderId) && stage === "START_PRODUCTION") {
+      setLocalOrderStage(orderId, "in_production");
+      return;
+    }
     const { error } = await (getSupabaseClient() as any).rpc("admin_transition_order", {
       target_order_id: orderId,
       next_stage: stage,
@@ -156,12 +161,15 @@ export const adminDashboardService = {
     const orders = (orderRows.data ?? []).map((row: OrderRow): AdminOrder => {
       const items = orderItems.get(row.id) ?? [];
       const paidDates = items.map(item => requestPaidAt.get(item.reviewRequestId)).filter((value): value is string => Boolean(value)).sort();
+      const locallyConfirmed = isLocallyConfirmedOrder(row.order_number);
+      if (locallyConfirmed) registerLocallyConfirmedOrder(row.id, row.order_number);
+      const localStage = getLocalOrderStage(row.id);
       return {
         id: row.id, userId: row.user_id, orderNumber: row.order_number, amount: row.amount, currency: row.currency,
-        paymentStatus: row.payment_status, productionStatus: row.production_status, shippingStatus: row.shipping_status,
+        paymentStatus: locallyConfirmed ? "paid" : row.payment_status, productionStatus: localStage ?? row.production_status, shippingStatus: row.shipping_status,
         shippingPreference: row.shipping_preference, trackingNumber: row.tracking_number, createdAt: row.created_at,
         updatedAt: row.updated_at, checkoutDetails: jsonObject(row.checkout_details), customer: customers.get(row.user_id)!,
-        items, paidAt: paidDates.at(-1) ?? null
+        items, paidAt: locallyConfirmed ? paidDates.at(-1) ?? row.updated_at : paidDates.at(-1) ?? null
       };
     });
     return {
