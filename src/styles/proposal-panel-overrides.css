@@ -1,0 +1,44 @@
+.proposal-consultation,
+.proposal-state {
+  border: 1px solid rgba(158, 120, 55, 0.3);
+  border-radius: 18px;
+  background: rgba(255, 253, 247, 0.88);
+  box-shadow: 0 12px 36px rgba(71, 52, 20, 0.07);
+}
+
+.proposal-consultation {
+  border-bottom: 1px solid rgba(158, 120, 55, 0.3);
+}
+
+.proposal-state__complete {
+  margin: 1.6rem 0;
+  padding: 1.35rem;
+  border: 1px solid rgba(158, 120, 55, 0.25);
+  border-radius: 14px;
+  background: rgba(250, 246, 235, 0.82);
+}
+
+.proposal-state__complete > small {
+  display: block;
+  margin-bottom: 0.9rem;
+  color: #8a682d;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.proposal-state__complete dl { display: grid; margin: 0; }
+.proposal-state__complete dl > div {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.38fr) minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid rgba(158, 120, 55, 0.18);
+}
+.proposal-state__complete dl > div:last-child { border-bottom: 0; }
+.proposal-state__complete dt { font-weight: 700; }
+.proposal-state__complete dd { margin: 0; color: #4f554b; line-height: 1.6; }
+
+@media (max-width: 640px) {
+  .proposal-state__complete dl > div { grid-template-columns: 1fr; gap: 0.3rem; }
+}

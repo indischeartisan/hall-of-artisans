@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { RequestActivity, RequestMessage, ReviewRequest } from "../types";
 import { ChatPanel } from "./OrderComponents";
+import "../../../styles/proposal-panel-overrides.css";
 
 type Props = {
   request: ReviewRequest;
@@ -12,7 +13,6 @@ type Props = {
 };
 
 export default function ProposalDecisionPanel({ request, messages, activity, busy, onApprove, onRevision }: Props) {
-  const [showProposal, setShowProposal] = useState(false);
   const [showAdjustment, setShowAdjustment] = useState(false);
   const [note, setNote] = useState("");
   const review = request.artisanReview;
@@ -54,10 +54,18 @@ export default function ProposalDecisionPanel({ request, messages, activity, bus
     <h2>We&apos;ve prepared a fragrance direction for you.</h2>
     <span>Review the artisan&apos;s interpretation based on your brief and conversation.</span>
 
-    <div className="proposal-state__summary">
-      <small>Proposal Summary</small>
+    <div className="proposal-state__complete">
+      <small>Complete Proposal</small>
       {directions.length > 0 ? <div className="proposal-state__tags">{directions.slice(0, 6).map(item => <span key={item}>{item}</span>)}</div> : null}
-      <blockquote>{review?.summary || review?.olfactiveDirection || "Your artisan proposal is ready for your decision."}</blockquote>
+      <dl>
+        <div><dt>Proposal</dt><dd>{review?.summary || "Your artisan proposal is ready for your decision."}</dd></div>
+        <div><dt>Olfactive direction</dt><dd>{review?.olfactiveDirection || "Recorded in the proposal"}</dd></div>
+        <div><dt>Drydown</dt><dd>{review?.drydown || "Recorded in the proposal"}</dd></div>
+        <div><dt>Production estimate</dt><dd>{request.estimatedProduction || request.packageSnapshot?.estimatedProduction || "To be confirmed"}</dd></div>
+        <div><dt>Adjustments included</dt><dd>{revisionsIncluded}</dd></div>
+        <div><dt>Recommended refinements</dt><dd>{request.recommendedAdjustments.length ? request.recommendedAdjustments.join(", ") : "No additional refinements"}</dd></div>
+        <div><dt>Included in your commission</dt><dd>{request.includedItems.length ? request.includedItems.join(", ") : request.packageSnapshot?.includedItems.join(", ") || "Recorded in your selected package"}</dd></div>
+      </dl>
     </div>
 
     <div className="proposal-state__actions">
@@ -65,17 +73,6 @@ export default function ProposalDecisionPanel({ request, messages, activity, bus
       {canRequestAdjustment ? <button type="button" className="secondary" disabled={busy} onClick={() => setShowAdjustment(true)}>Request Adjustment</button> : null}
     </div>
     {!canRequestAdjustment ? <small className="proposal-state__limit">All included adjustments have been used. Message your artisan if you need help.</small> : null}
-    <button type="button" className="proposal-state__details" onClick={() => setShowProposal(value => !value)}>{showProposal ? "Hide Full Proposal" : "View Full Proposal"}</button>
-
-    {showProposal ? <div className="proposal-state__full">
-      <dl>
-        <div><dt>Olfactive direction</dt><dd>{review?.olfactiveDirection || "Recorded in the proposal"}</dd></div>
-        <div><dt>Drydown</dt><dd>{review?.drydown || "Recorded in the proposal"}</dd></div>
-        <div><dt>Adjustments included</dt><dd>{revisionsIncluded}</dd></div>
-      </dl>
-      {request.recommendedAdjustments.length ? <><h3>Artisan refinements</h3><ul>{request.recommendedAdjustments.map(item => <li key={item}>{item}</li>)}</ul></> : null}
-    </div> : null}
-
     {showAdjustment ? <div className="proposal-adjustment" role="dialog" aria-modal="true" aria-labelledby="adjustmentTitle">
       <form onSubmit={event => { event.preventDefault(); if (note.trim()) onRevision(note.trim()); }}>
         <button type="button" className="proposal-adjustment__close" aria-label="Close adjustment request" onClick={() => setShowAdjustment(false)}>×</button>
