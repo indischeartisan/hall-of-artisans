@@ -1,5 +1,6 @@
 import type { RequestActivity, RequestMessage, ReviewRequest } from "../types";
-import { ActivityPanel, ChatPanel, formatDate, money } from "./OrderComponents";
+import { ActivityPanel, formatDate, money } from "./OrderComponents";
+import { EnhancedChatPanel as ChatPanel } from "./EnhancedChatPanel";
 
 type ApprovalRoomProps = {
   request: ReviewRequest;

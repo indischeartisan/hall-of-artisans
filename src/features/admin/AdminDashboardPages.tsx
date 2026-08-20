@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useOutletContext } from "react-router";
 import { WORKFLOW } from "../../domain/workflow";
+import { OPERATIONAL_STAGES, OPERATIONAL_STAGE_BY_KEY, type OperationalStage } from "../../domain/operationalStage";
 import type { ReviewRequest } from "../orders/types";
 import { adminDashboardService, type AdminCreation, type AdminOrder } from "./adminDashboardService";
 import type { AdminOutletContext } from "./AdminDashboardLayout";
 import { staffService, type StaffRequestDetail } from "./staffService";
+import { actionableError } from "../../lib/actionError";
 
 const money = (amount: number, currency = "IDR") => new Intl.NumberFormat("id-ID", { style: "currency", currency, maximumFractionDigits: 0 }).format(amount);
 const date = (value: string | null) => value ? new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)) : "—";
@@ -17,9 +19,9 @@ function PageHeader({ eyebrow, title, copy, actions }: { eyebrow: string; title:
   return <header className="hoa-admin-page-head"><div><span>{eyebrow}</span><h1>{title}</h1><p>{copy}</p></div>{actions}</header>;
 }
 
-function Loading({ loading, error }: { loading: boolean; error: string }) {
-  if (loading) return <div className="hoa-admin-state">Preparing live workspace data…</div>;
-  return <div className="hoa-admin-state error">{error || "No data is available yet."}</div>;
+function Loading({ loading, error, retry = async () => window.location.reload() }: { loading: boolean; error: string; retry?: () => Promise<void> }) {
+  if (loading) return <div className="hoa-admin-state" role="status">Preparing live workspace data…</div>;
+  return <div className="hoa-admin-state error" role="alert"><p>{error || "No data is available yet."}</p><button type="button" onClick={() => void retry()}>Try Again</button></div>;
 }
 
 export function AdminOverviewPage() {
@@ -27,14 +29,11 @@ export function AdminOverviewPage() {
   if (!snapshot) return <div className="hoa-admin-page"><PageHeader eyebrow="Admin Workspace" title="Overview" copy="What is happening inside The Hall today."/><Loading loading={loading} error={error}/></div>;
   const now = new Date();
   const requests = snapshot.creations;
-  const counts = [
-    ["Brief", requests.filter(item => ["DRAFT_PREVIEW", "SUBMITTED"].includes(item.request.status)).length, "/admin/creations?stage=brief"],
-    ["Review", requests.filter(item => item.request.status === "UNDER_REVIEW").length, "/admin/creations?status=UNDER_REVIEW"],
-    ["Consultation", requests.filter(item => item.request.status === "CONSULTATION").length, "/admin/creations?status=CONSULTATION"],
-    ["Proposal", requests.filter(item => ["READY_FOR_APPROVAL", "REVISION_REQUESTED", "READY_FOR_PAYMENT", "PAYMENT_PENDING"].includes(item.request.status)).length, "/admin/creations?stage=proposal"],
-    ["Crafting", requests.filter(item => ["PAID", "IN_PRODUCTION"].includes(item.request.status)).length, "/admin/creations?stage=crafting"],
-    ["Delivery", requests.filter(item => ["SHIPPED", "COMPLETED"].includes(item.request.status)).length, "/admin/creations?stage=delivery"]
-  ] as const;
+  const counts = OPERATIONAL_STAGES.map(stage => [
+    stage.label,
+    requests.filter(item => stage.statuses.includes(item.request.status)).length,
+    `/admin/creations?stage=${stage.key}`
+  ] as const);
   const paid = snapshot.orders.filter(order => order.paymentStatus.toLowerCase() === "paid");
   const waiting = snapshot.orders.filter(order => order.paymentStatus.toLowerCase() === "pending");
   const attention = [
@@ -62,11 +61,11 @@ function CreationDrawer({ creation, onClose, onChanged }: { creation: AdminCreat
   const [detail, setDetail] = useState<StaffRequestDetail | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  useEffect(() => { void staffService.getDetail(creation.request.id).then(setDetail).catch(cause => setError(cause instanceof Error ? cause.message : "Detail could not be loaded.")); }, [creation.request.id]);
+  useEffect(() => { void staffService.getDetail(creation.request.id).then(setDetail).catch(cause => setError(actionableError(cause, "Creation detail could not be loaded."))); }, [creation.request.id]);
   const request = detail?.request ?? creation.request;
   const snapshot = request.submissionSnapshot ?? request.previewSnapshot;
   const action = nextAction(request);
-  const run = async () => { if (!action) return; setBusy(true); try { await staffService.transition(request.id, action[0], action[1]); await onChanged(); setDetail(await staffService.getDetail(request.id)); } catch (cause) { setError(cause instanceof Error ? cause.message : "Action failed."); } finally { setBusy(false); } };
+  const run = async () => { if (!action) return; setBusy(true); setError(""); try { await staffService.transition(request.id, action[0], action[1]); await onChanged(); setDetail(await staffService.getDetail(request.id)); } catch (cause) { setError(actionableError(cause, `${action[1]} could not be completed.`)); } finally { setBusy(false); } };
   return <div className="hoa-drawer-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}><aside className="hoa-detail-drawer" aria-label="Creation detail"><button className="hoa-drawer-close" onClick={onClose}>×</button><header><span>Creation Detail</span><h2>{request.perfumeName}</h2><p>{request.requestNumber} · {creation.customer.name}</p>{badge(request.status)}</header>
     {error && <p className="hoa-inline-error">{error}</p>}
     <dl className="hoa-detail-facts"><div><dt>Artisan ID</dt><dd>{creation.customer.artisanId}</dd></div><div><dt>Mode</dt><dd>{request.creationMode === "described" ? "Describe Your Creation" : "Artisan Bench"}</dd></div><div><dt>Package</dt><dd>{request.packageSnapshot?.name ?? "Not selected"}</dd></div><div><dt>Fixed price</dt><dd>{request.packageSnapshot ? money(request.packageSnapshot.price, request.packageSnapshot.currency) : "—"}</dd></div><div><dt>Perfumer</dt><dd>{creation.reviewerName}</dd></div><div><dt>Updated</dt><dd>{date(request.lastUpdatedAt)}</dd></div></dl>
@@ -83,12 +82,9 @@ export function AdminCreationsPage() {
   const { snapshot, loading, error, refresh } = useOutletContext<AdminOutletContext>();
   const query = new URLSearchParams(location.search);
   const stage = query.get("stage");
-  const stageStatuses: Record<string, string[]> = {
-    brief: ["DRAFT_PREVIEW", "SUBMITTED"],
-    proposal: ["READY_FOR_APPROVAL", "REVISION_REQUESTED", "READY_FOR_PAYMENT", "PAYMENT_PENDING"],
-    crafting: ["PAID", "IN_PRODUCTION"],
-    delivery: ["SHIPPED", "COMPLETED"]
-  };
+  const stageStatuses = stage && stage in OPERATIONAL_STAGE_BY_KEY
+    ? OPERATIONAL_STAGE_BY_KEY[stage as OperationalStage].statuses
+    : null;
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState(query.get("status") ?? "ALL");
   const [packageId, setPackageId] = useState("ALL");
@@ -102,14 +98,14 @@ export function AdminCreationsPage() {
   const filtered = useMemo(() => creations.filter(item => {
     const haystack = `${item.request.perfumeName} ${item.request.requestNumber} ${item.customer.name} ${item.customer.artisanId}`.toLowerCase();
     const reviewerMatches = reviewer === "ALL" || reviewer === "UNASSIGNED" ? reviewer === "ALL" || !item.request.assignedReviewerId : item.request.assignedReviewerId === reviewer;
-    const stageMatches = !stage || !stageStatuses[stage] || stageStatuses[stage].includes(item.request.status);
+    const stageMatches = !stageStatuses || stageStatuses.includes(item.request.status);
     return stageMatches && (!search || haystack.includes(search.toLowerCase())) && (status === "ALL" || item.request.status === status) && (packageId === "ALL" || item.request.selectedPackageId === packageId) && reviewerMatches;
-  }), [creations, search, status, packageId, reviewer, stage]);
+  }), [creations, search, status, packageId, reviewer, stageStatuses]);
   const selected = creations.find(item => item.request.id === selectedId);
   const assignPerfumer = async (requestId: string, reviewerId: string) => {
     setAssigningId(requestId); setAssignmentError("");
     try { await staffService.assign(requestId, reviewerId || null); await refresh(); }
-    catch (cause) { setAssignmentError(cause instanceof Error ? cause.message : "Perfumer assignment could not be updated."); }
+    catch (cause) { setAssignmentError(actionableError(cause, "Perfumer assignment could not be updated.")); }
     finally { setAssigningId(""); }
   };
   return <div className="hoa-admin-page"><PageHeader eyebrow="Creative Operations" title="Creations" copy="One work queue from submission and consultation through crafting and completion."/>
@@ -129,7 +125,7 @@ function OrderDrawer({ order, onClose, onChanged }: { order: AdminOrder; onClose
   const runAction = async (stage: "CONFIRM_PAYMENT" | "START_PRODUCTION" | "MARK_SHIPPED" | "MARK_DELIVERED") => {
     setBusy(true); setActionError("");
     try { await adminDashboardService.transitionOrder(order.id, stage, tracking); await onChanged(); }
-    catch (cause) { setActionError(cause instanceof Error ? cause.message : "Order status could not be updated."); }
+    catch (cause) { setActionError(actionableError(cause, `${stage.replaceAll("_", " ").toLowerCase()} could not be completed.`)); }
     finally { setBusy(false); }
   };
   return <div className="hoa-drawer-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}><aside className="hoa-detail-drawer order"><button className="hoa-drawer-close" onClick={onClose}>×</button><header><span>Order Detail</span><h2>{order.orderNumber}</h2><p>{order.customer.name} · {order.customer.artisanId}</p>{badge(order.productionStatus)}</header>

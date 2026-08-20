@@ -1,6 +1,7 @@
 import { getSupabaseClient } from "../../lib/supabase";
 import type { AppRole, Json, Tables } from "../../types/database.types";
 import type { CommissionPackage, RequestActivity, RequestMessage, ReviewRequest } from "../orders/types";
+import { signedChatAttachment } from "../orders/chatAttachments";
 
 type ReviewRow = Tables<"review_requests">;
 type MessageRow = Tables<"request_messages">;
@@ -94,7 +95,8 @@ export const staffService = {
     ]);
     if (request.error || messages.error || activity.error) throw request.error ?? messages.error ?? activity.error;
     if (!request.data) return null;
-    return { request: reviewFromRow(request.data), messages: (messages.data ?? []).map(messageFromRow), activity: (activity.data ?? []).map(activityFromRow) };
+    const resolvedMessages=await Promise.all((messages.data??[]).map(async row=>({...messageFromRow(row),attachmentUrl:await signedChatAttachment(row.attachment_url)})));
+    return { request: reviewFromRow(request.data), messages: resolvedMessages, activity: (activity.data ?? []).map(activityFromRow) };
   },
 
   async transition(requestId: string, nextStatus: string, label: string, proposal?: ArtisanProposalInput) {

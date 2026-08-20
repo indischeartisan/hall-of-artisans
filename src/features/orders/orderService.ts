@@ -7,6 +7,7 @@ import { getSupabaseClient, isSupabaseConfigured } from "../../lib/supabase";
 import type { Json, Tables } from "../../types/database.types";
 import { DRAFT_SCHEMA_VERSION, type ArtisanBenchState, type PerfumeDraft } from "../../types/perfumeDraft";
 import type { CheckoutDetails, CommissionPackage, Order, OrderDetailSnapshot, OrderItem, RequestActivity, RequestMessage, ReviewRequest } from "./types";
+import { signedChatAttachment, uploadCustomerChatImage } from "./chatAttachments";
 
 export type BespokeSubmissionInput = DescribedCreationInput;
 export interface ServiceResult<T = undefined> { ok: boolean; data?: T; error?: string }
@@ -181,7 +182,8 @@ export const orderService = {
       request.paidAt = request.paidAt ?? new Date().toISOString();
     }
     if (order?.productionStatus === "in_production" && ["PAYMENT_PENDING", "PAID"].includes(request.status)) request.status = "IN_PRODUCTION";
-    return { request, messages: (messages.data ?? []).map(messageFromRow), activity: (activity.data ?? []).map(activityFromRow), order };
+    const resolvedMessages=await Promise.all((messages.data??[]).map(async row=>({...messageFromRow(row),attachmentUrl:await signedChatAttachment(row.attachment_url)})));
+    return { request, messages: resolvedMessages, activity: (activity.data ?? []).map(activityFromRow), order };
   },
 
   async createDescribedCreationPreview(input: BespokeSubmissionInput, sourceDraftId: string, existingPreviewId?: string): Promise<ReviewRequest> {
@@ -293,13 +295,16 @@ export const orderService = {
 
   async setFinalPrice(): Promise<ServiceResult> { return { ok: false, error: "Final pricing requires the upcoming administrative backend." }; },
 
-  async sendMessage(requestId: string, message: string, senderRole: "customer" | "artisan" = "customer"): Promise<ServiceResult> {
+  async sendMessage(requestId: string, message: string, senderRole: "customer" | "artisan" = "customer", attachment?: File): Promise<ServiceResult> {
     await verifiedUserId();
     if (senderRole !== "customer") return { ok: false, error: "Artisan messages require the upcoming staff workspace." };
     const detail = await this.getDetail(requestId);
     if (!detail) return { ok: false, error: "Request not found." };
     if (!isChatAvailable(detail.request.status)) return { ok: false, error: "Chat is not available for this status." };
-    const response = await getSupabaseClient().rpc("send_customer_request_message", { target_request_id: requestId, message_body: message.trim() });
+    if(!message.trim()&&!attachment)return {ok:false,error:"Add a message or an image."};
+    let attachmentPath:string|null=null;
+    try{attachmentPath=attachment?await uploadCustomerChatImage(requestId,attachment):null}catch(cause){return {ok:false,error:cause instanceof Error?cause.message:"The image could not be uploaded."}}
+    const response = await (getSupabaseClient() as any).rpc("send_customer_request_message_with_attachment", { target_request_id: requestId, message_body: message.trim(), attachment_path:attachmentPath });
     if (response.error) return { ok: false, error: response.error.message };
     emitChange();
     return { ok: true };

@@ -4,7 +4,8 @@ import CustomerAftercarePanel from "../../aftercare/CustomerAftercarePanel";
 import { isChatAvailable } from "../../../domain/workflow";
 import { getProjectRoomPresentation, type ProjectRoomAction, type SimplifiedProjectStatus } from "../projectRoomPresentation";
 import type { Order, RequestActivity, RequestMessage, ReviewRequest } from "../types";
-import { ActivityPanel, ChatPanel, formatDate, money } from "./OrderComponents";
+import { ActivityPanel, formatDate, money } from "./OrderComponents";
+import { EnhancedChatPanel as ChatPanel } from "./EnhancedChatPanel";
 import "../../../styles/customer-consultation-stack.css";
 
 type SimplifiedProjectStateProps = {

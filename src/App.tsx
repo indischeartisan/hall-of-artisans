@@ -1,31 +1,38 @@
 import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import EntranceHallPage from "./pages/EntranceHallPage";
-import LobbyPage from "./pages/LobbyPage";
-import ChamberOfCreationPage from "./pages/ChamberOfCreationPage";
-import ArtisanBenchPage from "./pages/ArtisanBenchPage";
 import AcademyRouteFallback from "./features/academy/components/AcademyRouteFallback";
-import BespokeAtelierPage from "./pages/BespokeAtelierPage";
-import LibraryPage from "./pages/LibraryPage";
-import ArtisanRegisterPage from "./pages/ArtisanRegisterPage";
-import MyArtisanIdPage from "./pages/MyArtisanIdPage";
-import HallArchive from "./pages/HallArchive";
-import ArtisanLoginPage from "./pages/ArtisanLoginPage";
-import ArtisanForgotPasswordPage from "./pages/ArtisanForgotPasswordPage";
-import ArtisanResetPasswordPage from "./pages/ArtisanResetPasswordPage";
-import MyDraftsPage from "./pages/MyDraftsPage";
-import OrderDetailPage from "./features/orders/OrderDetailPage";
-import CheckoutPage from "./features/orders/CheckoutPage";
-import DescribeCreationPage from "./features/describe-creation/DescribeCreationPage";
-import AdminDashboardLayout from "./features/admin/AdminDashboardLayout";
-import { AdminCreationsPage, AdminCustomersPage, AdminOrdersPage, AdminOverviewPage } from "./features/admin/AdminDashboardPages";
-import AdminLibraryPage from "./features/admin/AdminLibraryPage";
-import AdminHallArchivePage from "./features/admin/AdminHallArchivePage";
-import StaffLoginPage from "./features/admin/StaffLoginPage";
-import PerfumerWorkspaceLayout from "./features/perfumer/PerfumerWorkspaceLayout";
-import { PerfumerCompletedWorksPage, PerfumerCreationsPage, PerfumerOverviewPage, PerfumerProfilePage } from "./features/perfumer/PerfumerWorkspacePages";
-import AftercarePreviewPage from "./features/aftercare/AftercarePreviewPage";
 import BetaBadge from "./components/BetaBadge";
+
+const LobbyPage = lazy(() => import("./pages/LobbyPage"));
+const ChamberOfCreationPage = lazy(() => import("./pages/ChamberOfCreationPage"));
+const ArtisanBenchPage = lazy(() => import("./pages/ArtisanBenchPage"));
+const BespokeAtelierPage = lazy(() => import("./pages/BespokeAtelierPage"));
+const LibraryPage = lazy(() => import("./pages/LibraryPage"));
+const ArtisanRegisterPage = lazy(() => import("./pages/ArtisanRegisterPage"));
+const MyArtisanIdPage = lazy(() => import("./pages/MyArtisanIdPage"));
+const HallArchive = lazy(() => import("./pages/HallArchive"));
+const ArtisanLoginPage = lazy(() => import("./pages/ArtisanLoginPage"));
+const ArtisanForgotPasswordPage = lazy(() => import("./pages/ArtisanForgotPasswordPage"));
+const ArtisanResetPasswordPage = lazy(() => import("./pages/ArtisanResetPasswordPage"));
+const MyDraftsPage = lazy(() => import("./pages/MyDraftsPage"));
+const OrderDetailPage = lazy(() => import("./features/orders/OrderDetailPage"));
+const CheckoutPage = lazy(() => import("./features/orders/CheckoutPage"));
+const DescribeCreationPage = lazy(() => import("./features/describe-creation/DescribeCreationPage"));
+const AdminDashboardLayout = lazy(() => import("./features/admin/AdminDashboardLayout"));
+const AdminOverviewPage = lazy(() => import("./features/admin/AdminDashboardPages").then(module => ({ default: module.AdminOverviewPage })));
+const AdminCreationsPage = lazy(() => import("./features/admin/AdminDashboardPages").then(module => ({ default: module.AdminCreationsPage })));
+const AdminOrdersPage = lazy(() => import("./features/admin/AdminDashboardPages").then(module => ({ default: module.AdminOrdersPage })));
+const AdminCustomersPage = lazy(() => import("./features/admin/AdminDashboardPages").then(module => ({ default: module.AdminCustomersPage })));
+const AdminLibraryPage = lazy(() => import("./features/admin/AdminLibraryPage"));
+const AdminHallArchivePage = lazy(() => import("./features/admin/AdminHallArchivePage"));
+const StaffLoginPage = lazy(() => import("./features/admin/StaffLoginPage"));
+const PerfumerWorkspaceLayout = lazy(() => import("./features/perfumer/PerfumerWorkspaceLayout"));
+const PerfumerOverviewPage = lazy(() => import("./features/perfumer/PerfumerWorkspacePages").then(module => ({ default: module.PerfumerOverviewPage })));
+const PerfumerCreationsPage = lazy(() => import("./features/perfumer/PerfumerWorkspacePages").then(module => ({ default: module.PerfumerCreationsPage })));
+const PerfumerCompletedWorksPage = lazy(() => import("./features/perfumer/PerfumerWorkspacePages").then(module => ({ default: module.PerfumerCompletedWorksPage })));
+const PerfumerProfilePage = lazy(() => import("./features/perfumer/PerfumerWorkspacePages").then(module => ({ default: module.PerfumerProfilePage })));
+const AftercarePreviewPage = lazy(() => import("./features/aftercare/AftercarePreviewPage"));
 
 const AcademyLayout = lazy(() => import("./features/academy/layouts/AcademyLayout"));
 const AcademyHomePage = lazy(() => import("./features/academy/pages/AcademyHomePage"));
@@ -48,7 +55,7 @@ function LocalAftercarePreview() {
 
 export default function App() {
   return (
-    <><BetaBadge/><Suspense fallback={<AcademyRouteFallback />}><Routes>
+    <><a className="skip-link" href="#main-content">Skip to main content</a><BetaBadge/><div id="main-content" tabIndex={-1}><Suspense fallback={<AcademyRouteFallback />}><Routes>
       <Route path="/" element={<EntranceHallPage />} />
       <Route path="/hall" element={<LobbyPage />} />
       <Route path="/chamber-of-creation" element={<ChamberOfCreationPage />} />
@@ -99,6 +106,6 @@ export default function App() {
       <Route path="/admin/library" element={<AdminLibraryPage />} />
       <Route path="/admin/hall-archive" element={<AdminHallArchivePage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes></Suspense></>
+    </Routes></Suspense></div></>
   );
 }

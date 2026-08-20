@@ -44,6 +44,6 @@ export default function PerfumerWorkspaceLayout() {
       <nav><NavLink end to="/perfumer"><i>⌂</i>Overview</NavLink><NavLink to="/perfumer/creations"><i>✦</i>Customer Projects{unreadChats > 0 && <b className="perfumer-nav-badge" aria-label={`${unreadChats} chats with unread messages`}>{unreadChats}</b>}</NavLink><NavLink to="/perfumer/completed"><i>✓</i>Completed Works</NavLink><NavLink to="/perfumer/profile"><i>♙</i>My Profile</NavLink></nav>
       <div className="perfumer-identity"><b>{access.email.slice(0, 1).toUpperCase()}</b><span><strong>{access.email}</strong><small>Perfumer · Reviewer</small></span></div>
     </aside>
-    <main className="perfumer-main"><Outlet context={{ access, data, loading, error, refresh } satisfies PerfumerOutletContext}/></main>
+    <main className="perfumer-main">{error && data && <div className="hoa-workspace-warning" role="alert"><span><strong>Live project data could not be refreshed.</strong> Your last loaded workspace remains available.</span><button type="button" disabled={loading} onClick={() => void refresh()}>{loading ? "Retrying…" : "Try Again"}</button></div>}<Outlet context={{ access, data, loading, error, refresh } satisfies PerfumerOutletContext}/></main>
   </div>;
 }

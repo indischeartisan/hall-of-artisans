@@ -1,0 +1,8 @@
+.skip-link{position:fixed;z-index:100000;top:.75rem;left:.75rem;padding:.75rem 1rem;background:#0d4b38;color:#fff;border:2px solid #d8ae54;border-radius:.25rem;transform:translateY(-180%);transition:transform .15s ease}.skip-link:focus{transform:translateY(0)}
+#main-content:focus{outline:none}
+:where(a,button,input,select,textarea,summary,[tabindex]):focus-visible{outline:3px solid #b77816;outline-offset:3px}
+:where(button,a,input,select,textarea){font:inherit}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+@media (max-width:760px){.skip-link{top:.35rem;left:.35rem}:where(button,a,input,select,textarea,summary){min-height:44px}}
+.hoa-workspace-warning{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem 1rem;background:#fff3d6;color:#542f08;border-bottom:1px solid #c99131}.hoa-workspace-warning span{display:grid}.hoa-workspace-warning button,.hoa-admin-state.error button{padding:.55rem .9rem;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}.hoa-admin-state.error p{margin:0 0 .75rem}
+.perfumer-state.error button,.od-action-error button{margin-left:1rem;padding:.45rem .8rem;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}.perfumer-state p{margin:0 0 .75rem}.od-action-error{display:flex;align-items:center;justify-content:space-between;gap:1rem}

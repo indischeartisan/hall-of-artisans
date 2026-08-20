@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
 import { adminDashboardService, type AdminDashboardSnapshot } from "./adminDashboardService";
 import { staffService, type StaffAccess } from "./staffService";
+import { subscribeToStaffMessageUpdates } from "../orders/requestLiveUpdates";
 
 export interface AdminOutletContext { access: StaffAccess; snapshot: AdminDashboardSnapshot | null; loading: boolean; error: string; refresh: () => Promise<void> }
 
@@ -19,7 +20,8 @@ export default function AdminDashboardLayout() {
   const [error, setError] = useState("");
   const refresh = async () => { setLoading(true); try { setSnapshot(await adminDashboardService.getSnapshot()); setError(""); } catch (cause) { setError(cause instanceof Error ? cause.message : "Admin data could not be loaded."); } finally { setLoading(false); } };
   useEffect(() => { void staffService.getAccess().then(result => { setAccess(result); if (result.role) return refresh(); setLoading(false); }).catch(cause => { setError(cause instanceof Error ? cause.message : "Admin access could not be checked."); setLoading(false); }); }, []);
-  if (error) return <main className="hoa-admin-gate"><h1>Admin Workspace unavailable</h1><p>{error}</p></main>;
+  useEffect(() => access?.role === "admin" || access?.role === "super_admin" ? subscribeToStaffMessageUpdates(() => void refresh()) : undefined, [access?.role]);
+  if (error && !access) return <main className="hoa-admin-gate"><h1>Admin Workspace unavailable</h1><p>{error}</p><button onClick={() => window.location.reload()}>Try Again</button></main>;
   if (!access) return <div className="hoa-admin-loading">Opening the Admin Workspace…</div>;
   if (access.role !== "admin" && access.role !== "super_admin") return <AccessGate access={access}/>;
   return <div className="hoa-admin-shell">
@@ -37,6 +39,6 @@ export default function AdminDashboardLayout() {
       </nav>
       <div className="hoa-admin-user"><b>{access.email.slice(0, 1).toUpperCase()}</b><span><strong>{access.email}</strong><small>{access.role.replaceAll("_", " ")}</small></span></div>
     </aside>
-    <div className="hoa-admin-main"><Outlet context={{ access, snapshot, loading, error, refresh } satisfies AdminOutletContext}/></div>
+    <main className="hoa-admin-main">{error && snapshot && <div className="hoa-workspace-warning" role="alert"><span><strong>Live data could not be refreshed.</strong> The last successfully loaded data remains available.</span><button type="button" disabled={loading} onClick={() => void refresh()}>{loading ? "Retrying…" : "Try Again"}</button></div>}<Outlet context={{ access, snapshot, loading, error, refresh } satisfies AdminOutletContext}/></main>
   </div>;
 }

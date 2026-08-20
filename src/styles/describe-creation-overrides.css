@@ -64,6 +64,7 @@
 .dc-ambience-box.has-image>div{display:flex;flex-direction:column;justify-content:center;gap:12px}
 .dc-ambience-box.has-image label,.dc-ambience-box.has-image button{padding:11px 14px;border:1px solid rgba(155,106,35,.5);border-radius:5px;background:#fffaf0;color:#60451d;text-align:center;cursor:pointer}
 .dc-ambience-box.has-image button{font:13px Georgia,serif}
-.prep-ambience-reference img{display:block;width:100%;max-height:440px;object-fit:cover;border-radius:8px}
+.prep-ambience-reference{overflow:hidden}
+.prep-ambience-reference img{display:block;width:auto;max-width:100%;height:auto;max-height:min(70vh,760px);margin-inline:auto;object-fit:contain;border-radius:8px;background:rgba(246,240,225,.72)}
 .prep-ambience-reference small{display:block;margin-top:8px;color:#786d5a}
 @media(max-width:560px){.dc-ambience-box.has-image{grid-template-columns:1fr}.dc-ambience-box img{height:190px}}

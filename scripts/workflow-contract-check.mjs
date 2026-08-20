@@ -10,14 +10,16 @@ const server = await createServer({
 
 try {
   const workflow = await server.ssrLoadModule("/src/domain/workflow.ts");
+  const operationalStage = await server.ssrLoadModule("/src/domain/operationalStage.ts");
   const rooms = await server.ssrLoadModule("/src/features/orders/orderRoom.ts");
   const grouping = await server.ssrLoadModule("/src/features/orders/orderGrouping.ts");
   const customerJourney = await server.ssrLoadModule("/src/features/orders/customerJourney.ts");
   const projectRoomPresentation = await server.ssrLoadModule("/src/features/orders/projectRoomPresentation.ts");
-  const [appSource, headerSource, preparationSource] = await Promise.all([
+  const [appSource, headerSource, preparationSource, adminDashboardSource] = await Promise.all([
     readFile(new URL("../src/App.tsx", import.meta.url), "utf8"),
     readFile(new URL("../src/components/GlobalHeader.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../src/features/orders/components/CreationPreparation.tsx", import.meta.url), "utf8")
+    readFile(new URL("../src/features/orders/components/CreationPreparation.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/features/admin/AdminDashboardPages.tsx", import.meta.url), "utf8")
   ]);
 
   assert.ok(appSource.includes('path="/my-orders/:requestId"'), "Legacy My Orders bookmarks must remain valid");
@@ -26,6 +28,10 @@ try {
   assert.ok(headerSource.includes("/my-creations/latest"));
   assert.ok(preparationSource.includes("Send to Artisan"));
   assert.equal(preparationSource.includes("Send for Review"), false);
+  assert.equal(adminDashboardSource.includes('["Proposal", requests.filter'), false, "Admin metrics must not restore Proposal as a separate journey stage");
+  assert.deepEqual(operationalStage.OPERATIONAL_STAGES.map((stage) => stage.key), ["brief", "review", "consultation", "payment", "crafting", "delivery"]);
+  assert.deepEqual(operationalStage.OPERATIONAL_STAGE_BY_KEY.consultation.statuses, ["CONSULTATION", "READY_FOR_APPROVAL", "REVISION_REQUESTED"]);
+  assert.deepEqual(operationalStage.OPERATIONAL_STAGE_BY_KEY.payment.statuses, ["READY_FOR_PAYMENT", "PAYMENT_PENDING"]);
 
   assert.equal(workflow.WORKFLOW_STATUSES.length, 13, "All workflow statuses must be configured");
   assert.deepEqual(workflow.getAllowedTransitions("DRAFT_PREVIEW", "customer"), ["SUBMITTED", "CANCELLED"]);
@@ -37,8 +43,8 @@ try {
   assert.equal(workflow.canTransition("READY_FOR_PAYMENT", "PAYMENT_PENDING", "customer"), true);
   assert.equal(workflow.canTransition("PAYMENT_PENDING", "PAID", "admin"), true);
   assert.equal(workflow.canTransition("PAYMENT_PENDING", "PAID", "customer"), false);
-  assert.equal(customerJourney.getCustomerJourneyStage("READY_FOR_PAYMENT"), "proposal");
-  assert.equal(customerJourney.getCustomerJourneyStage("PAYMENT_PENDING"), "proposal");
+  assert.equal(customerJourney.getCustomerJourneyStage("READY_FOR_PAYMENT"), "consultation");
+  assert.equal(customerJourney.getCustomerJourneyStage("PAYMENT_PENDING"), "consultation");
   assert.equal(customerJourney.getCustomerJourneyStage("PAID"), "crafting");
   assert.equal(workflow.isCheckoutAvailable("IN_PRODUCTION"), false);
   assert.equal(workflow.isChatAvailable("UNDER_REVIEW"), false);
@@ -68,18 +74,23 @@ try {
   }
 
   assert.deepEqual(customerJourney.CUSTOMER_JOURNEY_STAGES.map((item) => item.key), [
-    "brief", "review", "together", "proposal", "crafting", "delivery"
+    "brief", "review", "consultation", "crafting", "delivery"
   ]);
   assert.equal(customerJourney.CUSTOMER_JOURNEY_STAGES[2].label, "Consultation");
+  assert.equal(
+    customerJourney.CUSTOMER_JOURNEY_STAGES.some((item) => item.key === "proposal" || item.key === "together"),
+    false,
+    "Proposal must remain inside Consultation instead of returning as a separate journey stage"
+  );
   const expectedCustomerStages = {
     DRAFT_PREVIEW: "brief",
     SUBMITTED: "brief",
     UNDER_REVIEW: "review",
-    CONSULTATION: "together",
-    READY_FOR_APPROVAL: "proposal",
-    REVISION_REQUESTED: "proposal",
-    READY_FOR_PAYMENT: "proposal",
-    PAYMENT_PENDING: "proposal",
+    CONSULTATION: "consultation",
+    READY_FOR_APPROVAL: "consultation",
+    REVISION_REQUESTED: "consultation",
+    READY_FOR_PAYMENT: "consultation",
+    PAYMENT_PENDING: "consultation",
     PAID: "crafting",
     IN_PRODUCTION: "crafting",
     SHIPPED: "delivery",
@@ -95,7 +106,7 @@ try {
   }
   assert.equal(customerJourney.getCustomerJourneyStageIndex("DRAFT_PREVIEW"), 0);
   assert.equal(customerJourney.getCustomerJourneyStageIndex("CONSULTATION"), 2);
-  assert.equal(customerJourney.getCustomerJourneyStageIndex("COMPLETED"), 5);
+  assert.equal(customerJourney.getCustomerJourneyStageIndex("COMPLETED"), 4);
   assert.equal(customerJourney.getCustomerJourneyStageIndex("CANCELLED"), -1);
 
   assert.deepEqual(projectRoomPresentation.SIMPLIFIED_PROJECT_STATUSES, [
@@ -122,7 +133,7 @@ try {
   assert.deepEqual(grouped.previews.map((item) => item.id), ["preview"]);
   assert.deepEqual(grouped.closed.map((item) => item.id), ["closed"]);
 
-  console.log("Workflow contract check passed: 13 statuses, proposal decisions, Project Rooms, customer journey, and My Orders grouping.");
+  console.log("Workflow contract check passed: 13 statuses, proposal inside Consultation, Project Rooms, five-stage customer journey, and My Orders grouping.");
 } finally {
   await server.close();
 }

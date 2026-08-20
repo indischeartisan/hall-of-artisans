@@ -1,5 +1,6 @@
 import type { Order, RequestActivity, RequestMessage, ReviewRequest } from "../types";
-import { ActivityPanel, ChatPanel, formatDate, money } from "./OrderComponents";
+import { ActivityPanel, formatDate, money } from "./OrderComponents";
+import { EnhancedChatPanel as ChatPanel } from "./EnhancedChatPanel";
 import CustomerAftercarePanel from "../../aftercare/CustomerAftercarePanel";
 
 type FulfillmentRoomProps = {

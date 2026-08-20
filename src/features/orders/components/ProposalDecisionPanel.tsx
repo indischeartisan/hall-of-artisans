@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { RequestActivity, RequestMessage, ReviewRequest } from "../types";
-import { ChatPanel } from "./OrderComponents";
+import { EnhancedChatPanel as ChatPanel } from "./EnhancedChatPanel";
 import "../../../styles/proposal-panel-overrides.css";
 
 type Props = {

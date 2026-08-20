@@ -9,6 +9,7 @@ type ProjectRoomShellProps = {
   request: ReviewRequest;
   includeDemo?: boolean;
   error?: string;
+  onRetry?: () => void;
   children: ReactNode;
 };
 
@@ -77,7 +78,7 @@ function CreationSummary({ request }: { request: ReviewRequest }) {
   </div> : null}</>;
 }
 
-export default function ProjectRoomShell({ request, includeDemo=false, error, children }: ProjectRoomShellProps) {
+export default function ProjectRoomShell({ request, includeDemo=false, error, onRetry, children }: ProjectRoomShellProps) {
   useEffect(() => {
     if (import.meta.env.DEV && !WORKFLOW[request.status]) console.warn(`[Project Room] Unknown workflow status: ${request.status}`);
   }, [request.status]);
@@ -86,7 +87,7 @@ export default function ProjectRoomShell({ request, includeDemo=false, error, ch
   return <main className={`customer-project-room${isPreview ? " is-creation-preview" : ""}`}>
     <ProjectRoomHeader request={request} includeDemo={includeDemo}/>
     <CustomerJourneyProgress request={request}/>
-    {error ? <p className="od-action-error" role="alert">{error}</p> : null}
+    {error ? <div className="od-action-error" role="alert"><span>{error}</span>{onRetry && <button type="button" onClick={onRetry}>Try Again</button>}</div> : null}
     {!isPreview ? <CreationSummary request={request}/> : null}
     <section className="customer-project-room__current" aria-label="Current project status">{children}</section>
   </main>;

@@ -1,29 +1,28 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useOutletContext, useSearchParams } from "react-router";
 import { WORKFLOW } from "../../domain/workflow";
+import { getOperationalStage, isOperationalStageStatus } from "../../domain/operationalStage";
 import type { RequestMessage, ReviewRequest } from "../orders/types";
 import type { StaffRequestDetail } from "../admin/staffService";
 import type { PerfumerOutletContext } from "./PerfumerWorkspaceLayout";
 import { isRequestLocallyRead, perfumerService } from "./perfumerService";
 import { aftercareService, type AftercareCase } from "../aftercare/aftercareService";
+import "../../styles/chat-attachments.css";
 import { subscribeToRequestUpdates } from "../orders/requestLiveUpdates";
 import CreationPreparation from "../orders/components/CreationPreparation";
 import StaffProposalForm from "../admin/StaffProposalForm";
 import type { ArtisanProposalInput } from "../admin/staffService";
+import { actionableError } from "../../lib/actionError";
 
 const formatDate = (value: string | null) => value ? new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)) : "—";
 const status = (value: ReviewRequest["status"]) => <span className={`perfumer-status status-${value.toLowerCase()}`}>{WORKFLOW[value].label}</span>;
 const staffSenderName = (role: string, storedName: string, customerName?: string) => role === "customer" ? customerName || "Customer" : role === "artisan" ? "You" : storedName;
 const unreadMessages = (messages: RequestMessage[], requestId: string) => isRequestLocallyRead(requestId) ? 0 : messages.filter(item => item.requestId === requestId && item.senderRole === "customer" && !item.readAt).length;
-const actionErrorMessage = (cause: unknown) => {
-  if (cause instanceof Error) return cause.message;
-  if (cause && typeof cause === "object" && "message" in cause && typeof cause.message === "string") return cause.message;
-  return "The action could not be completed.";
-};
+const actionErrorMessage = (cause: unknown) => actionableError(cause, "The project action could not be completed.");
 const nextAction = (request: ReviewRequest) => request.status === "SUBMITTED" ? ["UNDER_REVIEW", "Begin Review"] : request.status === "UNDER_REVIEW" ? ["CONSULTATION", "Open Consultation"] : null;
 
 function Header({ eyebrow, title, copy }: { eyebrow: string; title: string; copy: string }) { return <header className="perfumer-page-head"><span>{eyebrow}</span><h1>{title}</h1><p>{copy}</p></header>; }
-function State({ context }: { context: PerfumerOutletContext }) { return <div className="perfumer-state">{context.loading ? "Preparing your assigned creations…" : context.error || "No assigned creations yet."}</div>; }
+function State({ context }: { context: PerfumerOutletContext }) { return <div className={`perfumer-state${context.error ? " error" : ""}`} role={context.loading ? "status" : context.error ? "alert" : undefined}><p>{context.loading ? "Preparing your assigned creations…" : context.error || "No assigned creations yet."}</p>{context.error && <button type="button" onClick={() => void context.refresh()}>Try Again</button>}</div>; }
 
 function PerfumerAftercare({ cases, reload }: { cases: AftercareCase[]; reload: () => Promise<void> }) {
   const [messages, setMessages] = useState<Record<string, string>>({}); const [busy, setBusy] = useState(false); const [error, setError] = useState("");
@@ -42,8 +41,10 @@ function ProjectWorkspace({ project, customerName, mode = "drawer", onClose, onC
   useEffect(() => { void load().catch(cause => setError(cause instanceof Error ? cause.message : "Project could not be opened.")); }, [project.id]);
   useEffect(() => subscribeToRequestUpdates(project.id, () => void load().catch(cause => setError(cause instanceof Error ? cause.message : "Live updates could not be loaded."))), [project.id]);
   const request = detail?.request ?? project;
-  const consultationOpen = ["CONSULTATION", "READY_FOR_APPROVAL", "REVISION_REQUESTED"].includes(request.status);
+  const consultationOpen = isOperationalStageStatus("consultation", request.status);
   const proposalEditable = ["CONSULTATION", "REVISION_REQUESTED"].includes(request.status);
+  const operationalStage = getOperationalStage(request.status)?.key;
+  const proposalApproved = operationalStage === "payment" || operationalStage === "crafting" || operationalStage === "delivery";
   const snapshot = request.submissionSnapshot ?? request.previewSnapshot;
   const action = nextAction(request);
   const run = async (operation: () => Promise<unknown>) => { setBusy(true); setError(""); try { await operation(); await onChanged(); await load(); } catch (cause) { setError(actionErrorMessage(cause)); } finally { setBusy(false); } };
@@ -58,9 +59,10 @@ function ProjectWorkspace({ project, customerName, mode = "drawer", onClose, onC
     <div className="perfumer-facts"><div><small>Concentration</small><strong>{request.concentration}</strong></div><div><small>Submitted</small><strong>{formatDate(request.submittedAt)}</strong></div><div><small>Updated</small><strong>{formatDate(request.lastUpdatedAt)}</strong></div></div>
     <section className="perfumer-brief"><h3>Customer Creation Brief</h3><p>{request.fragranceBrief || snapshot?.writtenStory || "No written brief supplied."}</p><dl><div><dt>Direction</dt><dd>{request.fragranceDirection.join(" · ") || "—"}</dd></div><div><dt>Top</dt><dd>{request.topNotes.join(" · ") || "To interpret"}</dd></div><div><dt>Heart</dt><dd>{request.heartNotes.join(" · ") || "To interpret"}</dd></div><div><dt>Base</dt><dd>{request.baseNotes.join(" · ") || "To interpret"}</dd></div><div><dt>Customer notes</dt><dd>{request.customerNotes || snapshot?.additionalNotes || "None"}</dd></div><div><dt>Avoid</dt><dd>{snapshot?.notesToAvoid.join(" · ") || "None"}</dd></div></dl></section>
     <section className="perfumer-chat" onClick={openChat}><header><div><span>Private Consultation</span><h3>Letters with the customer</h3></div><small>{consultationOpen ? "Chat is open" : "Opens during consultation"}</small></header><div className="perfumer-chat-log">{detail?.messages.length ? detail.messages.map(item => <article className={item.senderRole} key={item.id}><header><strong>{staffSenderName(item.senderRole, item.senderName, customerName)}</strong><small>{formatDate(item.createdAt)}</small></header><p>{item.message}</p></article>) : <p className="empty">No letters yet.</p>}</div><form onSubmit={submitMessage}><textarea value={message} onChange={e => setMessage(e.target.value)} disabled={!consultationOpen} placeholder={consultationOpen ? "Write a clear consultation message…" : "Chat opens when this creation enters consultation."}/><button disabled={busy || !consultationOpen || !message.trim()}>Send</button></form></section>
+    {detail?.messages.some(item=>item.attachmentUrl)&&<section className="perfumer-chat-attachments"><span>Customer images</span><div>{detail.messages.filter(item=>item.attachmentUrl).map(item=><a href={item.attachmentUrl} target="_blank" rel="noreferrer" key={`attachment-${item.id}`}><img src={item.attachmentUrl} alt={`Chat attachment from ${staffSenderName(item.senderRole,item.senderName,customerName)}`}/><small>{formatDate(item.createdAt)}</small></a>)}</div></section>}
     {proposalEditable && <StaffProposalForm key={`${request.id}-${request.status}`} request={request} busy={busy} variant="perfumer" onSubmit={submitProposal}/>} 
     {request.status === "READY_FOR_APPROVAL" && <section className="perfumer-proposal-sent"><span>Proposal Sent</span><h3>Waiting for customer decision</h3><p>The proposal remains attached to this Consultation. Chat stays open while the customer reviews it.</p><dl><div><dt>Summary</dt><dd>{request.artisanReview?.summary || "Recorded in the proposal"}</dd></div><div><dt>Olfactive direction</dt><dd>{request.artisanReview?.olfactiveDirection || "Recorded in the proposal"}</dd></div><div><dt>Drydown</dt><dd>{request.artisanReview?.drydown || "Recorded in the proposal"}</dd></div></dl></section>}
-    {["READY_FOR_PAYMENT", "PAYMENT_PENDING", "PAID", "IN_PRODUCTION", "SHIPPED", "COMPLETED"].includes(request.status) && <section className="perfumer-proposal-sent is-approved"><span>Approved Proposal</span><h3>Customer-approved fragrance direction</h3><p>This proposal is locked as the production reference.</p><dl><div><dt>Summary</dt><dd>{request.artisanReview?.summary || "Recorded in the project"}</dd></div><div><dt>Olfactive direction</dt><dd>{request.artisanReview?.olfactiveDirection || "Recorded in the project"}</dd></div><div><dt>Drydown</dt><dd>{request.artisanReview?.drydown || "Recorded in the project"}</dd></div></dl></section>}
+    {proposalApproved && <section className="perfumer-proposal-sent is-approved"><span>Approved Proposal</span><h3>Customer-approved fragrance direction</h3><p>This proposal is locked as the production reference.</p><dl><div><dt>Summary</dt><dd>{request.artisanReview?.summary || "Recorded in the project"}</dd></div><div><dt>Olfactive direction</dt><dd>{request.artisanReview?.olfactiveDirection || "Recorded in the project"}</dd></div><div><dt>Drydown</dt><dd>{request.artisanReview?.drydown || "Recorded in the project"}</dd></div></dl></section>}
     {["SUBMITTED", "UNDER_REVIEW"].includes(request.status) && <section className="perfumer-proposal-sent is-locked"><span>Perfumer Proposal</span><h3>Proposal editor opens after Consultation begins</h3><p>Complete the internal review and open Consultation first. The editable proposal will then appear here below the chat.</p></section>}
     <section className="perfumer-timeline"><h3>Project Activity</h3>{detail?.activity.slice().reverse().map(item => <article key={item.id}><i>✓</i><span><strong>{item.label}</strong><small>{formatDate(item.createdAt)}</small></span></article>)}</section>
     {request.status === "COMPLETED" && <PerfumerAftercare cases={aftercare} reload={load}/>} 
@@ -89,16 +91,7 @@ export function PerfumerCreationsPage() {
     return (filter === "ALL" || item.status === filter) && `${customer?.displayName} ${customer?.artisanId} ${item.perfumeName} ${item.requestNumber} ${item.fragranceBrief}`.toLowerCase().includes(search.toLowerCase());
   }), [projects, customers, search, filter]);
   const selected = projects.find(item => item.id === selectedId);
-  useEffect(() => {
-    const markClickedProjectRead = (event: MouseEvent) => {
-      const button = (event.target as Element).closest<HTMLButtonElement>(".perfumer-customer-list button");
-      if (!button) return;
-      const clickedProject = projects.find(project => button.textContent?.includes(project.requestNumber) || button.textContent?.includes(project.perfumeName));
-      if (clickedProject) void perfumerService.markMessagesRead(clickedProject.id);
-    };
-    document.addEventListener("click", markClickedProjectRead);
-    return () => document.removeEventListener("click", markClickedProjectRead);
-  }, [projects]);
+  useEffect(() => { if (selectedId) void perfumerService.markMessagesRead(selectedId); }, [selectedId]);
   const groups = customers.map(customer => ({ customer, projects: filtered.filter(item => item.userId === customer.userId) })).filter(group => group.projects.length);
   return <div className="perfumer-page"><Header eyebrow="Assigned Customer Work" title="Customer Projects" copy="Every customer and creation assigned to your atelier, including post-delivery aftercare."/>{!context.data ? <State context={context}/> : <><section className="perfumer-filter"><input placeholder="Search customer, Artisan ID, or creation…" value={search} onChange={e => setSearch(e.target.value)}/><select value={filter} onChange={e => setFilter(e.target.value)}><option value="ALL">All stages</option>{["SUBMITTED", "UNDER_REVIEW", "CONSULTATION", "READY_FOR_PAYMENT", "COMPLETED"].map(item => <option key={item}>{item}</option>)}</select></section><div className="perfumer-customer-layout"><aside className="perfumer-customer-list">{groups.map(({ customer, projects: customerProjects }) => <section key={customer.userId}><header><div><strong>{customer.displayName}</strong><small>{customer.artisanId ?? "Registered customer"}</small></div><b>{customerProjects.length}</b></header>{customerProjects.map(project => { const latest = context.data?.recentMessages.find(item => item.requestId === project.id); const unread = unreadMessages(context.data?.recentMessages ?? [], project.id); const openCases = context.data?.aftercareCases.filter(item => item.reviewRequestId === project.id && item.status !== "RESOLVED").length ?? 0; return <button className={project.id === selectedId ? "active" : ""} onClick={() => setSelectedId(project.id)} key={project.id}><strong>{project.perfumeName}<span>{unread > 0 && <b className="chat-unread-count" aria-label={`${unread} unread messages`}>{unread}</b>}{openCases > 0 && <b className="aftercare-count">{openCases}</b>}</span></strong><small>{project.requestNumber} · {latest?.message ?? WORKFLOW[project.status].label}</small>{status(project.status)}</button>; })}</section>)}{!groups.length && <p className="empty">No customer projects match this view.</p>}</aside>{selected ? <ProjectWorkspace mode="inline" project={selected} onChanged={context.refresh}/> : <section className="perfumer-state perfumer-project-empty">Select a customer project to open its brief and letters.</section>}</div></>}</div>;
 }

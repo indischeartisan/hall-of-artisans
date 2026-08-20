@@ -20,7 +20,7 @@ export default function OrderDetailPage(){
   const[packages,setPackages]=useState<CommissionPackage[]>([]);const[selectedPackageId,setSelectedPackageId]=useState<string|null>(null);
   const includeDemo=import.meta.env.DEV&&search.get("dev")==="1";
   const[latestId,setLatestId]=useState<string|undefined>(requestId==="latest"?undefined:requestId);
-  const{data,loading,error:loadError}=useOrderDetail(latestId);
+  const{data,loading,error:loadError,refresh}=useOrderDetail(latestId);
   useEffect(()=>{if(requestId!=="latest"){setLatestId(requestId);return}void orderService.getRequests(includeDemo).then(items=>{const id=items[0]?.id;setLatestId(id);const base=location.pathname.startsWith("/my-orders")?"/my-orders":"/my-creations";if(id)navigate(`${base}/${id}${includeDemo?"?dev=1":""}`,{replace:true})}).catch(cause=>setError(cause instanceof Error?cause.message:"My Creations could not be loaded."))},[includeDemo,location.pathname,navigate,requestId]);
   useEffect(()=>{document.body.classList.add("order-detail-page");return()=>document.body.classList.remove("order-detail-page")},[]);
   useEffect(()=>{const request=data?.request;if(!request||request.status!=="DRAFT_PREVIEW")return;setSelectedPackageId(request.selectedPackageId);void orderService.getCommissionPackages().then(setPackages).catch(cause=>setError(cause instanceof Error?cause.message:"Packages could not be loaded."))},[data?.request.id,data?.request.status,data?.request.selectedPackageId]);
@@ -48,5 +48,5 @@ export default function OrderDetailPage(){
   else if(room==="review")roomContent=<ArtisanReviewRoom request={request} messages={data.messages} activity={data.activity} busy={actionBusy} onCancel={()=>window.confirm("Cancel this project? Your submitted record will be closed.")&&void run("cancel")}/>;
   else if(room==="closed")roomContent=<ClosedProjectRoom request={request} activity={data.activity}/>;
   else roomContent=<section className="customer-project-room__fallback"><h2>We&apos;re preparing your creation.</h2><p>This Project Room will update as soon as the next step is ready.</p></section>;
-  return <><GlobalHeader variant="light" activeLabel="My Creations"/><ProjectRoomShell request={request} includeDemo={includeDemo} error={error}>{roomContent}</ProjectRoomShell></>;
+  return <><GlobalHeader variant="light" activeLabel="My Creations"/><ProjectRoomShell request={request} includeDemo={includeDemo} error={error||loadError} onRetry={loadError?()=>void refresh():undefined}>{roomContent}</ProjectRoomShell></>;
 }

@@ -2,6 +2,16 @@ import { getSupabaseClient, isSupabaseConfigured } from "../../lib/supabase";
 
 const POLL_INTERVAL_MS = 5000;
 
+function installForegroundRefresh(onChange: () => void) {
+  const refresh = () => { if (document.visibilityState === "visible") onChange(); };
+  window.addEventListener("focus", refresh);
+  document.addEventListener("visibilitychange", refresh);
+  return () => {
+    window.removeEventListener("focus", refresh);
+    document.removeEventListener("visibilitychange", refresh);
+  };
+}
+
 export function subscribeToRequestUpdates(requestId: string, onChange: () => void) {
   if (!requestId) return () => undefined;
   let debounceId: number | undefined;
@@ -12,7 +22,8 @@ export function subscribeToRequestUpdates(requestId: string, onChange: () => voi
   const pollId = window.setInterval(() => {
     if (document.visibilityState === "visible") onChange();
   }, POLL_INTERVAL_MS);
-  if (!isSupabaseConfigured) return () => { window.clearInterval(pollId); window.clearTimeout(debounceId); };
+  const removeForegroundRefresh = installForegroundRefresh(onChange);
+  if (!isSupabaseConfigured) return () => { window.clearInterval(pollId); window.clearTimeout(debounceId); removeForegroundRefresh(); };
 
   const client = getSupabaseClient();
   const channel = client
@@ -25,6 +36,7 @@ export function subscribeToRequestUpdates(requestId: string, onChange: () => voi
   return () => {
     window.clearInterval(pollId);
     window.clearTimeout(debounceId);
+    removeForegroundRefresh();
     void client.removeChannel(channel);
   };
 }
@@ -38,16 +50,20 @@ export function subscribeToStaffMessageUpdates(onChange: () => void) {
   const pollId = window.setInterval(() => {
     if (document.visibilityState === "visible") onChange();
   }, POLL_INTERVAL_MS);
-  if (!isSupabaseConfigured) return () => { window.clearInterval(pollId); window.clearTimeout(debounceId); };
+  const removeForegroundRefresh = installForegroundRefresh(onChange);
+  if (!isSupabaseConfigured) return () => { window.clearInterval(pollId); window.clearTimeout(debounceId); removeForegroundRefresh(); };
 
   const client = getSupabaseClient();
   const channel = client
     .channel(`staff-messages:${crypto.randomUUID()}`)
-    .on("postgres_changes", { event: "INSERT", schema: "public", table: "request_messages" }, notify)
+    .on("postgres_changes", { event: "*", schema: "public", table: "request_messages" }, notify)
+    .on("postgres_changes", { event: "*", schema: "public", table: "request_activity" }, notify)
+    .on("postgres_changes", { event: "*", schema: "public", table: "review_requests" }, notify)
     .subscribe();
   return () => {
     window.clearInterval(pollId);
     window.clearTimeout(debounceId);
+    removeForegroundRefresh();
     void client.removeChannel(channel);
   };
 }

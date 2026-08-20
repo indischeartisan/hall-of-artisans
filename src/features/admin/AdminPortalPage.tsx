@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import GlobalHeader from "../../components/GlobalHeader";
 import { WORKFLOW } from "../../domain/workflow";
+import { OPERATIONAL_STAGE_BY_KEY, isOperationalStageStatus } from "../../domain/operationalStage";
+import { actionableError } from "../../lib/actionError";
 import type { ReviewRequest } from "../orders/types";
 import ContentManager from "./ContentManager";
 import AdminHeader from "./AdminHeader";
@@ -11,8 +13,8 @@ import { staffService, type ArtisanProposalInput, type StaffAccess, type StaffRe
 const queueGroups = [
   { label: "New submissions", statuses: ["SUBMITTED"] },
   { label: "In artisan review", statuses: ["UNDER_REVIEW"] },
-  { label: "Consultation & proposal", statuses: ["CONSULTATION", "READY_FOR_APPROVAL", "REVISION_REQUESTED"] },
-  { label: "Order operations", statuses: ["READY_FOR_PAYMENT", "PAYMENT_PENDING", "PAID", "IN_PRODUCTION", "SHIPPED"] },
+  { label: "Consultation & proposal", statuses: OPERATIONAL_STAGE_BY_KEY.consultation.statuses },
+  { label: "Order operations", statuses: [...OPERATIONAL_STAGE_BY_KEY.payment.statuses, ...OPERATIONAL_STAGE_BY_KEY.crafting.statuses, "SHIPPED"] },
   { label: "Closed", statuses: ["COMPLETED", "CANCELLED"] }
 ] as const;
 
@@ -41,7 +43,7 @@ function RequestWorkspace({ detail, access, reviewers, busy, error, onClaim, onA
   const [message, setMessage] = useState("");
   const admin = access.role === "admin" || access.role === "super_admin";
   const canReview = admin || request.assignedReviewerId === access.userId;
-  const canConsult = canReview && ["CONSULTATION", "READY_FOR_APPROVAL", "REVISION_REQUESTED"].includes(request.status);
+  const canConsult = canReview && isOperationalStageStatus("consultation", request.status);
   const canPrepareProposal = canReview && ["CONSULTATION", "REVISION_REQUESTED"].includes(request.status);
   const action = canReview && request.status === "SUBMITTED" ? ["UNDER_REVIEW", "Begin Artisan Review"] : canReview && request.status === "UNDER_REVIEW" ? ["CONSULTATION", "Open Customer Consultation"] : admin && request.status === "PAYMENT_PENDING" ? ["PAID", "Confirm Payment"] : admin && request.status === "PAID" ? ["IN_PRODUCTION", "Begin Production"] : admin && request.status === "IN_PRODUCTION" ? ["SHIPPED", "Mark as Shipped"] : admin && request.status === "SHIPPED" ? ["COMPLETED", "Confirm Delivery"] : null;
   return <main className="admin-workspace">
@@ -76,7 +78,7 @@ export default function AdminPortalPage() {
   useEffect(() => { void staffService.getAccess().then(async result => { setAccess(result); if (result.role) { await refreshQueue(); if (result.role === "admin" || result.role === "super_admin") setReviewers(await staffService.getReviewers()); } }).catch(cause => setError(cause instanceof Error ? cause.message : "Admin Portal could not be loaded.")).finally(() => setLoading(false)); }, []);
   useEffect(() => { setSection(new URLSearchParams(location.search).get("section") === "content" ? "content" : "operations"); }, [location.search]);
   useEffect(() => { if (access?.role && selected) void refreshDetail(selected).catch(cause => setError(cause instanceof Error ? cause.message : "Project could not be opened.")); }, [access?.role, selected]);
-  const run = async (operation: () => Promise<unknown>) => { setBusy(true); setError(""); try { await operation(); await refreshQueue(); if (selected) await refreshDetail(selected); } catch (cause) { setError(cause instanceof Error ? cause.message : "The staff action could not be completed."); } finally { setBusy(false); } };
+  const run = async (operation: () => Promise<unknown>) => { setBusy(true); setError(""); try { await operation(); await refreshQueue(); if (selected) await refreshDetail(selected); } catch (cause) { setError(actionableError(cause, "The staff action could not be completed.")); } finally { setBusy(false); } };
 
   if (loading) return <div className="admin-loading">Opening the staff workspace…</div>;
   if (!access?.role) return <><GlobalHeader variant="light"/><AccessGate access={access ?? { signedIn: false, role: null, email: "", userId: "" }}/></>;
