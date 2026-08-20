@@ -47,7 +47,7 @@ export default function SimplifiedProjectState({ request, order, messages, activ
   const [conversationOpen, setConversationOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const presentation = getProjectRoomPresentation(request.status);
-  const latestArtisanMessage = messages.findLast((message) => message.senderRole === "artisan");
+  const latestArtisanMessage = [...messages].reverse().find((message) => message.senderRole === "artisan");
   const canOpenConversation = isChatAvailable(request.status);
   const runAction = (action: ProjectRoomAction | null) => {
     if (action === "conversation") {
@@ -65,13 +65,12 @@ export default function SimplifiedProjectState({ request, order, messages, activ
         <h2>{presentation.title}</h2>
         <span>{presentation.description}</span>
         {request.status === "UNDER_REVIEW" ? <div className="simple-project-state__artisan"><i aria-hidden="true">IA</i><span><strong>{latestArtisanMessage?.senderName || "The Hall artisan team"}</strong><small>{request.assignedReviewerId ? "Assigned artisan" : "Artisan review team"}</small></span></div> : null}
-        {request.status === "CONSULTATION" && latestArtisanMessage ? <blockquote><p>{latestArtisanMessage.message}</p><cite>{latestArtisanMessage.senderName} · {formatDate(latestArtisanMessage.createdAt)}</cite></blockquote> : null}
         {presentation.primaryAction ? <button className="simple-project-state__primary" type="button" onClick={() => runAction(presentation.primaryAction)}>{presentation.primaryLabel}<span aria-hidden="true">→</span></button> : null}
         {canOpenConversation && presentation.primaryAction !== "conversation" ? <button className="simple-project-state__secondary" type="button" onClick={() => setConversationOpen(true)}>Open Messages</button> : null}
       </section>
       <aside>
         <p>Current Stage</p>
-        <strong>{request.status === "UNDER_REVIEW" ? "Review" : request.status === "CONSULTATION" ? "Consultation" : request.status === "PAID" || request.status === "IN_PRODUCTION" ? "Crafting" : "Delivery"}</strong>
+        <strong>{request.status === "UNDER_REVIEW" ? "Review" : request.status === "PAID" || request.status === "IN_PRODUCTION" ? "Crafting" : "Delivery"}</strong>
         <span>Last updated {formatDate(request.lastUpdatedAt)}</span>
         {request.status === "SHIPPED" ? <small>{order?.trackingNumber ? `Tracking: ${order.trackingNumber}` : "Tracking details will appear when provided by the courier."}</small> : null}
       </aside>

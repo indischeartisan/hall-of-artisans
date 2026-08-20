@@ -6,7 +6,7 @@ export default function AcademyNotFoundPage() {
   return (
     <main className="academy-page" aria-labelledby="academy-not-found-title">
       <section className="academy-reader-shell">
-        <h1 id="academy-not-found-title">{t("notFound")}</h1>
+        <h1 id="academy-not-found-title">Page not found</h1>
         <Link className="academy-button" to="/academy">{t("title")}</Link>
       </section>
     </main>

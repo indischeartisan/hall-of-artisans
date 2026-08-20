@@ -25,6 +25,7 @@ const demoSnapshot: CreationSubmissionSnapshot = {
   notesToAvoid: ["Strong sweet notes"],
   moodOrDirection: ["Fresh", "Green", "Tea", "Clean"],
   additionalNotes: "Keep the drydown soft and musky.",
+  ambienceImage: null,
   createdAt: at(10, 30)
 };
 
