@@ -60,7 +60,493 @@ body.expert-lab-page .global-header > .theme-toggle .theme-toggle-icon {
   line-height: 1;
 }
 
+body.expert-lab-page .mobile-workbench-status,
+body.expert-lab-page .mobile-workbench-nav,
+body.expert-lab-page .mobile-formula-overview,
+body.expert-lab-page .mobile-layer-tabs,
+body.expert-lab-page .mobile-insights-heading,
+body.expert-lab-page .mobile-notes-intro,
+body.expert-lab-page .mobile-continue-review,
+body.expert-lab-page .mobile-review-summary {
+  display: none;
+}
+
+body.expert-lab-page .mobile-material-browser {
+  display: none;
+}
+
 @media (max-width: 760px) {
+  body.expert-lab-page {
+    height: 100dvh;
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+    overflow: hidden;
+  }
+
+  body.expert-lab-page main {
+    height: calc(100dvh - 64px);
+    overflow: hidden;
+  }
+
+  body.expert-lab-page .hero-lab {
+    display: none !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace {
+    display: block !important;
+    height: 100%;
+    margin: 0 !important;
+    padding: 10px 7px calc(82px + env(safe-area-inset-bottom)) !important;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scroll-margin-top: 72px;
+  }
+
+  body.expert-lab-page .mobile-workbench-status {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    position: relative;
+    z-index: 20;
+    margin: 0 6px 10px;
+    padding: 13px 14px;
+    color: #173b2e;
+    background: rgba(255, 250, 237, 0.96);
+    border: 1px solid rgba(157, 118, 52, 0.36);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(69, 48, 19, 0.12);
+    backdrop-filter: blur(14px);
+  }
+
+  body.expert-lab-page[data-theme="dark"] .mobile-workbench-status {
+    color: #f1d99c;
+    background: rgba(22, 12, 7, 0.96);
+    border-color: rgba(214, 164, 69, 0.4);
+  }
+
+  body.expert-lab-page .mobile-workbench-status > div:first-child {
+    min-width: 0;
+  }
+
+  body.expert-lab-page .mobile-workbench-status__eyebrow {
+    display: block;
+    margin-bottom: 3px;
+    color: #9a6b23;
+    font: 600 9px/1.2 Inter, sans-serif;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  body.expert-lab-page .mobile-workbench-status strong,
+  body.expert-lab-page .mobile-workbench-name-input {
+    display: block;
+    width: min(100%, 230px);
+    overflow: hidden;
+    padding: 0 0 2px;
+    color: inherit;
+    font-size: 17px;
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 700;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  body.expert-lab-page .mobile-workbench-name-display {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    max-width: 238px;
+    padding: 0;
+    color: inherit;
+    text-align: left;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.expert-lab-page .mobile-workbench-name-display strong {
+    width: auto;
+    max-width: 205px;
+  }
+
+  body.expert-lab-page .mobile-workbench-name-display > span {
+    flex: 0 0 auto;
+    color: #a57525;
+    font-size: 15px;
+  }
+
+  body.expert-lab-page .mobile-workbench-name-input:focus {
+    outline: none;
+    border-bottom-color: #b48736;
+  }
+
+  body.expert-lab-page .mobile-workbench-name-input::placeholder {
+    color: currentColor;
+    opacity: 1;
+  }
+
+  body.expert-lab-page .mobile-workbench-status__meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px;
+    max-width: 48%;
+  }
+
+  body.expert-lab-page .mobile-workbench-status__meta span {
+    padding: 4px 7px;
+    font: 600 9px/1 Inter, sans-serif;
+    white-space: nowrap;
+    background: rgba(157, 118, 52, 0.1);
+    border-radius: 999px;
+  }
+
+  body.expert-lab-page .mobile-workbench-status__meta .is-unsaved {
+    color: #8b4719;
+    background: #f5ddbd;
+  }
+
+  body.expert-lab-page .mobile-workbench-status__meta .is-saved {
+    color: #2d5b32;
+    background: #e5edda;
+  }
+
+  body.expert-lab-page .mobile-workspace > :is(.material-library, .top-controls, .build-review-row, .formula-check, .brief-story-row, .next) {
+    display: none !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-materials > .material-library,
+  body.expert-lab-page .mobile-workspace.mobile-view-formula > .build-review-row,
+  body.expert-lab-page .mobile-workspace.mobile-view-insights > .build-review-row,
+  body.expert-lab-page .mobile-workspace.mobile-view-insights > .formula-check,
+  body.expert-lab-page .mobile-workspace.mobile-view-notes > .brief-story-row,
+  body.expert-lab-page .mobile-workspace.mobile-view-review > .brief-story-row,
+  body.expert-lab-page .mobile-workspace.mobile-view-review > .next {
+    display: grid !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-materials > .material-library {
+    display: block !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula {
+    overflow: hidden;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula > .build-review-row {
+    width: auto !important;
+    height: calc(100% - 102px);
+    min-height: 0;
+    margin-inline: 6px !important;
+    gap: 0 !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula > .build-review-row > :not(.formula-builder),
+  body.expert-lab-page .mobile-workspace.mobile-view-insights > .build-review-row > .formula-builder,
+  body.expert-lab-page .mobile-workspace.mobile-view-notes > .brief-story-row > :not(.perfumer-notes),
+  body.expert-lab-page .mobile-workspace.mobile-view-review > .brief-story-row > :not(.story-card-section) {
+    display: none !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder {
+    display: flex !important;
+    flex-direction: column;
+    grid-area: auto !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 12px !important;
+    overflow: hidden !important;
+    border-radius: 14px !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder > .panel-heading {
+    display: none !important;
+  }
+
+  body.expert-lab-page .mobile-formula-overview {
+    display: grid;
+    grid-template-columns: 118px minmax(0, 1fr);
+    align-items: center;
+    gap: 13px;
+    flex: 0 0 auto;
+    padding: 12px;
+    color: #244031;
+    background: rgba(255, 251, 239, 0.88);
+    border: 1px solid rgba(169, 129, 58, 0.34);
+    border-radius: 13px;
+  }
+
+  body.expert-lab-page[data-theme="dark"] .mobile-formula-overview {
+    color: #eadcb7;
+    background: rgba(29, 18, 11, 0.88);
+    border-color: rgba(207, 155, 64, 0.35);
+  }
+
+  body.expert-lab-page .mobile-formula-ring {
+    display: grid;
+    place-items: center;
+    width: 112px;
+    aspect-ratio: 1;
+    padding: 10px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(135, 101, 41, 0.25);
+  }
+
+  body.expert-lab-page .mobile-formula-ring > div {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    color: #274635;
+    background: #faf4e6;
+    border-radius: 50%;
+  }
+
+  body.expert-lab-page[data-theme="dark"] .mobile-formula-ring > div {
+    color: #f1d998;
+    background: #17100b;
+  }
+
+  body.expert-lab-page .mobile-formula-ring small {
+    align-self: end;
+    font: 600 10px/1 Inter, sans-serif;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  body.expert-lab-page .mobile-formula-ring strong {
+    align-self: start;
+    font: 600 34px/1 "Cormorant Garamond", serif;
+  }
+
+  body.expert-lab-page .mobile-formula-balance-copy {
+    display: grid;
+    gap: 7px;
+    min-width: 0;
+  }
+
+  body.expert-lab-page .mobile-formula-balance-copy > span {
+    color: #a37524;
+    font: 600 10px/1.2 Inter, sans-serif;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+
+  body.expert-lab-page .mobile-formula-balance-copy > strong {
+    font: 600 15px/1.15 "Cormorant Garamond", serif;
+  }
+
+  body.expert-lab-page .mobile-formula-totals {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+  }
+
+  body.expert-lab-page .mobile-formula-totals span {
+    display: grid;
+    place-items: center;
+    gap: 2px;
+    min-width: 0;
+    padding: 6px 2px;
+    font: 600 9px/1 Inter, sans-serif;
+    text-transform: uppercase;
+    border: 1px solid rgba(169, 129, 58, 0.28);
+    border-radius: 7px;
+  }
+
+  body.expert-lab-page .mobile-formula-totals b {
+    color: #a87924;
+    font: 700 15px/1 "Cormorant Garamond", serif;
+  }
+
+  body.expert-lab-page .mobile-layer-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    flex: 0 0 auto;
+    margin-top: 9px;
+    border: 1px solid rgba(169, 129, 58, 0.38);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  body.expert-lab-page .mobile-layer-tabs button {
+    min-width: 0;
+    min-height: 42px;
+    padding: 7px 3px;
+    color: #4a4b3f;
+    font: 600 10px/1 Inter, sans-serif;
+    text-transform: capitalize;
+    background: rgba(255, 251, 239, 0.74);
+    border: 0;
+    border-right: 1px solid rgba(169, 129, 58, 0.28);
+  }
+
+  body.expert-lab-page .mobile-layer-tabs button:last-child {
+    border-right: 0;
+  }
+
+  body.expert-lab-page .mobile-layer-tabs button.is-active {
+    color: #fff9df;
+    background: #174b38;
+  }
+
+  body.expert-lab-page[data-theme="dark"] .mobile-layer-tabs button {
+    color: #cdbd9b;
+    background: rgba(25, 16, 10, 0.86);
+  }
+
+  body.expert-lab-page[data-theme="dark"] .mobile-layer-tabs button.is-active {
+    color: #f8e5aa;
+    background: #174b38;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder > .layer-grid {
+    display: block !important;
+    flex: 1 1 auto;
+    min-height: 0 !important;
+    margin-top: 9px;
+    overflow: hidden;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .layer-card {
+    display: none !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 12px !important;
+    overflow: hidden !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder.mobile-layer-top .layer-card[data-layer="top"],
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder.mobile-layer-heart .layer-card[data-layer="heart"],
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder.mobile-layer-base .layer-card[data-layer="base"] {
+    display: flex !important;
+    flex-direction: column;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula section.formula-builder.mobile-layer-top > div.layer-grid.inner-grid > div.layer-card[data-layer="heart"],
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula section.formula-builder.mobile-layer-top > div.layer-grid.inner-grid > div.layer-card[data-layer="base"],
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula section.formula-builder.mobile-layer-heart > div.layer-grid.inner-grid > div.layer-card[data-layer="top"],
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula section.formula-builder.mobile-layer-heart > div.layer-grid.inner-grid > div.layer-card[data-layer="base"],
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula section.formula-builder.mobile-layer-base > div.layer-grid.inner-grid > div.layer-card[data-layer="top"],
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula section.formula-builder.mobile-layer-base > div.layer-grid.inner-grid > div.layer-card[data-layer="heart"] {
+    display: none !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .layer-card > .selected-list {
+    flex: 1 1 auto;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .layer-card > .add-btn {
+    flex: 0 0 auto;
+    min-height: 46px !important;
+    margin-top: 8px !important;
+    color: #fff8dc !important;
+    background: #174b38 !important;
+    border-color: #b68a34 !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder > :is(.formula-summary-strip, .actions) {
+    display: none !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row,
+  body.expert-lab-page .mobile-workspace.mobile-view-review > .brief-story-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row {
+    grid-template-areas: none !important;
+    grid-auto-flow: row !important;
+    grid-auto-rows: auto !important;
+    gap: 12px !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row > :is(.analysis, .drydown) {
+    display: flex !important;
+    grid-area: auto !important;
+    grid-column: 1 !important;
+    grid-row: auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row > .analysis {
+    order: 1;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row > .drydown {
+    order: 2;
+  }
+
+  body.expert-lab-page .mobile-workbench-nav {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    position: fixed;
+    z-index: 1000;
+    right: 8px;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    left: 8px;
+    min-height: 64px;
+    padding: 5px;
+    background: rgba(255, 250, 237, 0.97);
+    border: 1px solid rgba(157, 118, 52, 0.42);
+    border-radius: 16px;
+    box-shadow: 0 12px 32px rgba(38, 25, 9, 0.24);
+    backdrop-filter: blur(16px);
+  }
+
+  body.expert-lab-page[data-theme="dark"] .mobile-workbench-nav {
+    background: rgba(20, 11, 6, 0.97);
+    border-color: rgba(214, 164, 69, 0.45);
+  }
+
+  body.expert-lab-page .mobile-workbench-nav button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    min-height: 52px;
+    padding: 4px 2px;
+    color: #655d4d;
+    background: transparent;
+    border: 0;
+    border-radius: 11px;
+  }
+
+  body.expert-lab-page[data-theme="dark"] .mobile-workbench-nav button {
+    color: #b9a98c;
+  }
+
+  body.expert-lab-page .mobile-workbench-nav button > span {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  body.expert-lab-page .mobile-workbench-nav button > small {
+    overflow: hidden;
+    width: 100%;
+    font: 600 9px/1 Inter, sans-serif;
+    text-overflow: ellipsis;
+  }
+
+  body.expert-lab-page .mobile-workbench-nav button.is-active {
+    color: #fff8df;
+    background: #174b38;
+    box-shadow: inset 0 0 0 1px rgba(227, 187, 96, 0.44);
+  }
+
   body.expert-lab-page .global-header {
     grid-template-columns: minmax(0, 1fr) 56px 42px 42px !important;
     gap: 4px !important;
@@ -100,6 +586,794 @@ body.expert-lab-page .global-header > .theme-toggle .theme-toggle-icon {
 
   body.expert-lab-page .global-header > .theme-toggle .theme-toggle-label {
     display: none !important;
+  }
+
+  /* Mobile Materials */
+  body.expert-lab-page .mobile-workspace.mobile-view-materials {
+    overflow: hidden;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-materials > .material-library {
+    width: auto !important;
+    height: calc(100% - 102px) !important;
+    min-height: 0 !important;
+    margin-inline: 6px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-materials > .material-library::before,
+  body.expert-lab-page .mobile-workspace.mobile-view-materials > .material-library::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  body.expert-lab-page .mobile-view-materials .material-library > .panel-title {
+    display: none !important;
+  }
+
+  body.expert-lab-page .mobile-view-materials .material-library > .panel-title h2 {
+    font-size: 25px !important;
+  }
+
+  body.expert-lab-page .mobile-view-materials .material-library > .panel-title small {
+    color: #776d5a;
+    font: 500 11px/1.35 Inter, sans-serif;
+  }
+
+  body.expert-lab-page .mobile-view-materials .material-library > .search-label {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+  }
+
+  body.expert-lab-page .mobile-view-materials #materialSearch {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 48px !important;
+    margin: 0 !important;
+    padding: 0 16px 0 42px !important;
+    font-size: 14px !important;
+    background-image: radial-gradient(circle at 22px 22px, transparent 7px, #a77a28 8px, #a77a28 9px, transparent 10px), linear-gradient(45deg, transparent 48%, #a77a28 49%, #a77a28 54%, transparent 55%) !important;
+    background-position: 0 0, 27px 29px !important;
+    background-size: 44px 44px, 10px 10px !important;
+    background-repeat: no-repeat !important;
+    border-radius: 11px !important;
+  }
+
+  body.expert-lab-page .mobile-material-search-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 52px;
+    gap: 0;
+    margin-bottom: 12px;
+    overflow: hidden;
+    background: rgba(255, 252, 244, .94);
+    border: 1px solid rgba(157, 116, 45, .35);
+    border-radius: 12px;
+    box-shadow: 0 5px 14px rgba(68, 47, 18, .07);
+  }
+
+  body.expert-lab-page .mobile-material-search-row #materialSearch {
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.expert-lab-page #mobileMaterialFilter {
+    display: grid;
+    place-items: center;
+    color: #9b6d20;
+    font-size: 23px;
+    background: transparent;
+    border: 0;
+    border-left: 1px solid rgba(157, 116, 45, .25);
+  }
+
+  body.expert-lab-page #mobileMaterialFilter[aria-pressed="true"] {
+    color: #fff7df;
+    background: #174c34;
+  }
+
+  body.expert-lab-page .mobile-view-materials #categoryList {
+    height: calc(100% - 62px) !important;
+    min-height: 0 !important;
+    padding-right: 3px;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+
+  body.expert-lab-page .mobile-view-materials #categoryList::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.expert-lab-page .mobile-view-materials .desktop-material-browser {
+    display: none !important;
+  }
+
+  body.expert-lab-page .mobile-view-materials .mobile-material-browser {
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  body.expert-lab-page .mobile-material-categories {
+    display: flex;
+    gap: 7px;
+    padding: 1px 0 8px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    touch-action: pan-x;
+  }
+
+  body.expert-lab-page .mobile-material-categories::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.expert-lab-page .mobile-material-category {
+    flex: 0 0 auto;
+    min-height: 36px;
+    padding: 8px 17px;
+    color: #365141;
+    font: 600 13px/1 "Cormorant Garamond", serif;
+    background: rgba(255, 251, 240, .76);
+    border: 1px solid rgba(157, 116, 45, .36);
+    border-radius: 999px;
+    scroll-snap-align: start;
+  }
+
+  body.expert-lab-page .mobile-material-category.is-active {
+    color: #fff9e8 !important;
+    background: #174c34 !important;
+    border-color: #174c34 !important;
+    box-shadow: 0 5px 12px rgba(23, 76, 52, .2);
+  }
+
+  body.expert-lab-page[data-theme="bright"] .mobile-workspace.mobile-view-materials .mobile-material-category.is-active {
+    color: #fff9e8 !important;
+    background: #174c34 !important;
+    border-color: #174c34 !important;
+  }
+
+  body.expert-lab-page .mobile-material-results {
+    display: grid;
+    align-content: start;
+    gap: 9px;
+    min-height: 0;
+    padding: 1px 3px 12px 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    touch-action: pan-y;
+  }
+
+  body.expert-lab-page .mobile-material-results::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.expert-lab-page .mobile-material-card {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    height: max-content !important;
+    min-height: 156px !important;
+    padding: 14px !important;
+    overflow: visible !important;
+    background: rgba(255, 252, 243, .92) !important;
+    border: 1px solid rgba(157, 116, 45, .25) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 13px rgba(70, 48, 18, .06);
+  }
+
+  body.expert-lab-page .mobile-material-card__info {
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+    height: auto !important;
+    min-height: 94px !important;
+    padding: 0;
+    overflow: visible !important;
+    color: #244332;
+    text-align: left;
+    background: transparent;
+    border: 0;
+  }
+
+  body.expert-lab-page .mobile-material-card__symbol {
+    display: grid;
+    place-items: center;
+    width: 104px;
+    height: 94px;
+    overflow: hidden;
+    font-size: 38px;
+    background: radial-gradient(circle, #fffdf5 0 46%, #efe2bd 48% 50%, transparent 51%);
+  }
+
+  body.expert-lab-page .mobile-material-card__symbol img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 7px 7px rgba(70, 46, 16, .13));
+  }
+
+  body.expert-lab-page .mobile-material-card__copy {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  body.expert-lab-page .mobile-material-card__copy strong {
+    overflow: hidden;
+    font: 600 24px/1.02 "Cormorant Garamond", serif;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  body.expert-lab-page .mobile-material-card__copy small {
+    color: #6e6a5d;
+    font: 500 11px/1.25 Inter, sans-serif;
+  }
+
+  body.expert-lab-page .mobile-material-card__copy em {
+    overflow: hidden;
+    color: #75664c;
+    font: italic 11px/1.25 Inter, sans-serif;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  body.expert-lab-page .mobile-material-card__used {
+    justify-self: start;
+    margin-top: 3px;
+    padding: 3px 7px;
+    color: #315a39;
+    font: 600 10px/1.1 Inter, sans-serif;
+    text-transform: capitalize;
+    background: #e7eddc;
+    border-radius: 999px;
+  }
+
+  body.expert-lab-page .mobile-material-card__bookmark {
+    align-self: start;
+    color: #a57a2b;
+    font-size: 22px;
+  }
+
+  body.expert-lab-page .mobile-material-card__description {
+    display: none;
+    padding: 9px 2px 2px;
+    color: #575448;
+    font: 500 12px/1.45 Inter, sans-serif;
+    border-top: 1px solid rgba(157, 116, 45, .2);
+  }
+
+  body.expert-lab-page .mobile-material-card__description small {
+    display: block;
+    margin-top: 5px;
+    color: #8a6423;
+  }
+
+  body.expert-lab-page .mobile-material-card.is-open .mobile-material-card__description {
+    display: block;
+  }
+
+  body.expert-lab-page .mobile-material-card__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 7px;
+    padding-left: 116px;
+  }
+
+  body.expert-lab-page .mobile-material-layer {
+    min-width: 67px;
+    min-height: 34px;
+    padding: 7px 10px;
+    color: #294535;
+    font: 600 12px/1 Inter, sans-serif;
+    background: #fffaf0;
+    border: 1px solid rgba(157, 116, 45, .4);
+    border-radius: 7px;
+  }
+
+  body.expert-lab-page .mobile-material-sheet {
+    position: fixed;
+    z-index: 75;
+    right: 12px;
+    bottom: calc(78px + env(safe-area-inset-bottom));
+    left: 12px;
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 15px;
+    max-height: min(390px, calc(100dvh - 170px));
+    padding: 26px 18px 18px;
+    overflow-y: auto;
+    color: #244332;
+    background: linear-gradient(145deg, rgba(255,253,247,.99), rgba(249,239,218,.99));
+    border: 1px solid rgba(157, 116, 45, .38);
+    border-radius: 22px 22px 10px 10px;
+    box-shadow: 0 -16px 42px rgba(43, 30, 13, .2);
+    scrollbar-width: none;
+  }
+
+  body.expert-lab-page .mobile-material-sheet::-webkit-scrollbar { display: none; }
+
+  body.expert-lab-page .mobile-material-sheet::before {
+    content: "";
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    width: 56px;
+    height: 5px;
+    border-radius: 99px;
+    background: rgba(112, 88, 49, .32);
+    transform: translateX(-50%);
+  }
+
+  body.expert-lab-page .mobile-material-sheet__close {
+    position: absolute;
+    top: 17px;
+    right: 17px;
+    width: 36px;
+    height: 36px;
+    color: #5c492a;
+    font-size: 27px;
+    line-height: 1;
+    background: transparent;
+    border: 0;
+  }
+
+  body.expert-lab-page .mobile-material-sheet__art {
+    display: grid;
+    place-items: center;
+    min-height: 130px;
+    font-size: 58px;
+  }
+
+  body.expert-lab-page .mobile-material-sheet__art img {
+    width: 100%;
+    max-height: 150px;
+    object-fit: contain;
+  }
+
+  body.expert-lab-page .mobile-material-sheet__content {
+    display: grid;
+    align-content: start;
+    gap: 5px;
+    padding-right: 28px;
+  }
+
+  body.expert-lab-page .mobile-material-sheet__content > strong {
+    font: 600 28px/1 "Cormorant Garamond", serif;
+  }
+
+  body.expert-lab-page .mobile-material-sheet__content > span,
+  body.expert-lab-page .mobile-material-sheet__content > p {
+    margin: 0;
+    color: #625c50;
+    font: 500 12px/1.5 Inter, sans-serif;
+  }
+
+  body.expert-lab-page .mobile-material-sheet__content > small {
+    margin-top: 5px;
+    color: #9b6d20;
+    font: 600 10px/1 Inter, sans-serif;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  body.expert-lab-page .mobile-material-sheet__pairs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  body.expert-lab-page .mobile-material-sheet__pairs span,
+  body.expert-lab-page .mobile-material-sheet__content > em {
+    padding: 5px 8px;
+    color: #31563d;
+    font: 600 10px/1.2 Inter, sans-serif;
+    background: rgba(229, 236, 217, .85);
+    border-radius: 999px;
+  }
+
+  body.expert-lab-page .mobile-material-toast {
+    position: fixed;
+    z-index: 80;
+    right: 28px;
+    bottom: calc(92px + env(safe-area-inset-bottom));
+    left: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 50px;
+    padding: 11px 15px;
+    color: #fff2cb;
+    font: 600 13px/1.35 "Cormorant Garamond", serif;
+    background: #174c34;
+    border: 1px solid #bc8b35;
+    border-radius: 10px;
+    box-shadow: 0 12px 28px rgba(20, 49, 35, .28);
+  }
+
+  body.expert-lab-page .mobile-material-toast button {
+    color: inherit;
+    font-size: 22px;
+    background: transparent;
+    border: 0;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-materials > .mobile-workbench-nav {
+    color: #ead49a;
+    background: linear-gradient(180deg, #123e2d, #092b20) !important;
+    border-color: rgba(190, 143, 55, .7) !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-materials > .mobile-workbench-nav button {
+    color: #e4cf9b !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-materials > .mobile-workbench-nav button.is-active {
+    color: #fff3c6 !important;
+    background: linear-gradient(180deg, rgba(181,132,43,.25), rgba(91,67,20,.1)) !important;
+    box-shadow: inset 0 3px 0 #c8973b !important;
+  }
+
+  @media (max-width: 420px) {
+    body.expert-lab-page .mobile-material-card__info { grid-template-columns: 82px minmax(0, 1fr) auto; }
+    body.expert-lab-page .mobile-material-card__symbol { width: 82px; height: 82px; }
+    body.expert-lab-page .mobile-material-card__actions { padding-left: 94px; }
+    body.expert-lab-page .mobile-material-layer { min-width: 61px; padding-inline: 7px; }
+    body.expert-lab-page .mobile-material-sheet { grid-template-columns: 90px minmax(0, 1fr); }
+  }
+
+  body.expert-lab-page .mobile-material-layer.is-active {
+    color: #fff8e5;
+    background: #174c34;
+    border-color: #174c34;
+  }
+
+  body.expert-lab-page[data-theme="dark"] .mobile-material-card,
+  body.expert-lab-page[data-theme="dark"] .mobile-material-category {
+    color: #ecd49b;
+    background: rgba(25, 14, 8, .94) !important;
+    border-color: rgba(205, 157, 67, .35) !important;
+  }
+
+  body.expert-lab-page[data-theme="dark"] .mobile-material-card__info,
+  body.expert-lab-page[data-theme="dark"] .mobile-material-card__copy small,
+  body.expert-lab-page[data-theme="dark"] .mobile-material-card__copy em {
+    color: #ecd49b;
+  }
+
+  body.expert-lab-page .mobile-view-materials #categoryList .category {
+    min-height: 46px !important;
+    margin-bottom: 8px !important;
+    border-color: rgba(162, 120, 50, .28) !important;
+    border-radius: 11px !important;
+  }
+
+  body.expert-lab-page .mobile-view-materials #categoryList .category > summary {
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 10px 12px !important;
+    color: #214332 !important;
+    font-size: 13px !important;
+  }
+
+  body.expert-lab-page .mobile-view-materials .material-item {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 8px !important;
+    margin: 7px !important;
+    padding: 11px !important;
+    background: rgba(255, 252, 242, .86) !important;
+    border: 1px solid rgba(162, 120, 50, .24) !important;
+    border-radius: 10px !important;
+  }
+
+  body.expert-lab-page .mobile-view-materials .material-info-button {
+    padding: 0 !important;
+    text-align: left !important;
+  }
+
+  body.expert-lab-page .mobile-view-materials .material-info-button > span {
+    color: #173e2d !important;
+    font: 600 17px/1.1 "Cormorant Garamond", serif !important;
+  }
+
+  body.expert-lab-page .mobile-view-materials .material-info-button :is(p, .pairing-hint) {
+    display: none !important;
+  }
+
+  body.expert-lab-page .mobile-view-materials .material-layer-actions {
+    align-self: center !important;
+    display: flex !important;
+    gap: 4px !important;
+  }
+
+  body.expert-lab-page .mobile-view-materials .mini-layer-button {
+    min-width: 48px !important;
+    min-height: 36px !important;
+    padding: 6px !important;
+    color: #234333 !important;
+    background: #fffaf0 !important;
+    border: 1px solid rgba(160, 115, 40, .4) !important;
+    border-radius: 7px !important;
+    text-transform: capitalize !important;
+  }
+
+  body.expert-lab-page .mobile-view-materials .material-library > .coming-soon {
+    display: none !important;
+  }
+
+  /* Mobile Insights */
+  body.expert-lab-page .mobile-workspace.mobile-view-insights > .build-review-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  body.expert-lab-page .mobile-insights-heading {
+    display: grid;
+    gap: 6px;
+    flex: 0 0 auto;
+    padding: 14px !important;
+    color: #244031;
+    background: rgba(255, 251, 239, .91);
+    border: 1px solid rgba(169, 129, 58, .32);
+    border-radius: 13px;
+  }
+
+  body.expert-lab-page .mobile-insights-heading > span,
+  body.expert-lab-page .mobile-notes-intro > span {
+    color: #a37524;
+    font: 700 10px/1.2 Inter, sans-serif;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  body.expert-lab-page .mobile-insights-heading > strong,
+  body.expert-lab-page .mobile-notes-intro > strong {
+    font: 600 22px/1.05 "Cormorant Garamond", serif;
+  }
+
+  body.expert-lab-page .mobile-insights-heading > p,
+  body.expert-lab-page .mobile-notes-intro > p {
+    margin: 0;
+    color: #716959;
+    font: 500 11px/1.4 Inter, sans-serif;
+  }
+
+  body.expert-lab-page .mobile-insights-heading nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 5px;
+    border: 1px solid rgba(169, 129, 58, .38);
+    border-radius: 9px;
+    overflow: hidden;
+  }
+
+  body.expert-lab-page .mobile-insights-heading nav button {
+    min-height: 39px;
+    color: #31503d;
+    background: transparent;
+    border: 0;
+  }
+
+  body.expert-lab-page .mobile-insights-heading nav button.is-active {
+    color: #fff7dc !important;
+    background: #174b38 !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row > :is(.analysis, .drydown) {
+    display: none !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    padding: 14px !important;
+    overflow-y: auto !important;
+    border-radius: 13px !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row > :is(.analysis, .drydown).is-mobile-active {
+    display: flex !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .formula-check {
+    flex: 0 0 auto;
+    margin-top: 10px !important;
+    padding: 12px !important;
+    border-radius: 13px !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .formula-check > .panel-title,
+  body.expert-lab-page .mobile-view-insights .formula-check > #checkFormula {
+    display: none !important;
+  }
+
+  /* Mobile Notes */
+  body.expert-lab-page .mobile-workspace.mobile-view-notes {
+    overflow: hidden;
+  }
+
+  body.expert-lab-page .mobile-view-notes > .brief-story-row {
+    display: block !important;
+    height: calc(100% - 78px) !important;
+    min-height: 0 !important;
+  }
+
+  body.expert-lab-page .mobile-view-notes .perfumer-notes {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 16px !important;
+    overflow: hidden !important;
+    border-radius: 14px !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-notes > section.brief-story-row > section.perfumer-notes {
+    height: 100% !important;
+    max-height: none !important;
+  }
+
+  body.expert-lab-page .mobile-view-notes .perfumer-notes > .panel-title,
+  body.expert-lab-page .mobile-view-notes .perfumer-notes > label {
+    display: none !important;
+  }
+
+  body.expert-lab-page .mobile-notes-intro {
+    display: grid;
+    gap: 5px;
+    flex: 0 0 auto;
+    margin-bottom: 12px;
+  }
+
+  body.expert-lab-page .mobile-view-notes #perfumerNotesInput {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    padding: 22px !important;
+    color: #264132 !important;
+    font: italic 19px/1.55 "Cormorant Garamond", serif !important;
+    background-color: #f8efda !important;
+    border-radius: 12px !important;
+    resize: none !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-notes textarea#perfumerNotesInput.brief-paper {
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  body.expert-lab-page .mobile-view-notes .perfumer-notes > small {
+    margin: 7px 0;
+    font-size: 9px !important;
+  }
+
+  body.expert-lab-page .mobile-continue-review {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex: 0 0 auto;
+    min-height: 48px;
+    color: #fff6d9;
+    font: 600 15px/1 "Cormorant Garamond", serif;
+    background: #174b38;
+    border: 1px solid #b58b3c;
+    border-radius: 10px;
+  }
+
+  /* Mobile Review */
+  body.expert-lab-page .mobile-view-review > .brief-story-row {
+    gap: 10px !important;
+  }
+
+  body.expert-lab-page .mobile-view-review .story-card-section {
+    padding: 15px !important;
+    border-radius: 14px !important;
+  }
+
+  body.expert-lab-page .mobile-view-review .story-card-section > .panel-title {
+    display: grid !important;
+    gap: 3px;
+    text-align: center;
+  }
+
+  body.expert-lab-page .mobile-view-review .story-card-section > .panel-title h2 {
+    font-size: 25px !important;
+  }
+
+  body.expert-lab-page .mobile-review-summary {
+    display: grid;
+    gap: 7px;
+    margin: 12px 0;
+  }
+
+  body.expert-lab-page .mobile-review-summary > div {
+    display: grid;
+    gap: 3px;
+    padding: 9px 11px;
+    background: rgba(255, 251, 239, .76);
+    border: 1px solid rgba(169, 129, 58, .24);
+    border-radius: 8px;
+  }
+
+  body.expert-lab-page .mobile-review-summary span {
+    color: #a37524;
+    font: 700 8px/1 Inter, sans-serif;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  body.expert-lab-page .mobile-review-summary strong {
+    overflow: hidden;
+    color: #294535;
+    font: 600 11px/1.35 Inter, sans-serif;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  body.expert-lab-page .mobile-view-review #storyCardPreview {
+    max-height: 54vh !important;
+    overflow: hidden !important;
+  }
+
+  body.expert-lab-page .mobile-view-review .story-card-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 7px !important;
+  }
+
+  body.expert-lab-page .mobile-view-review > .next {
+    padding: 12px !important;
+    border-radius: 13px !important;
+  }
+
+  body.expert-lab-page .mobile-view-review > .next > :is(.panel-title, .next-creation) {
+    display: none !important;
+  }
+
+  body.expert-lab-page .mobile-view-review .next-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 7px !important;
+  }
+
+  body.expert-lab-page .mobile-view-review .review-creation-cta {
+    grid-column: 1 / -1 !important;
+    min-height: 48px !important;
+    color: #fff6d9 !important;
+    background: #174b38 !important;
+  }
+
+  body.expert-lab-page[data-theme="dark"] :is(.mobile-insights-heading, .mobile-review-summary > div) {
+    color: #eadcb7;
+    background: rgba(29, 18, 11, .9);
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace nav.mobile-workbench-nav > button.is-active {
+    color: #fff8df !important;
+    background: #174b38 !important;
+    box-shadow: inset 0 0 0 1px rgba(227, 187, 96, .5) !important;
   }
 
 }

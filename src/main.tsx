@@ -48,6 +48,12 @@ import "./styles/accessibility.css";
 import { DraftProvider } from "./contexts/DraftContext";
 import { AuthProvider } from "./contexts/AuthContext";
 
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    void navigator.serviceWorker.register("/sw.js");
+  });
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>

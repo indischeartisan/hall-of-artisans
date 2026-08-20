@@ -71,6 +71,14 @@ let storyCardRenderTimer = 0;
 let storyCardRenderId = 0;
 let openMaterialId = null;
 let openCategoryName = null;
+let mobileMaterialCategory = 'All';
+let mobileFormulaOnly = false;
+let mobileToast = '';
+let mobileToastTimer = 0;
+const mobileBookmarks = new Set();
+const mobileMaterialRandomOrder = [...materials]
+  .sort(() => Math.random() - 0.5)
+  .map((item) => item.id);
 
 const $ = (id) => document.getElementById(id);
 const layerDefaultPercent = { top: 5, heart: 10, base: 15 };
@@ -294,17 +302,78 @@ function pairingLabel(item) {
     .join(', ');
 }
 
-function renderMaterialLibrary() {
+function materialArtwork(item) {
+  if (item.category === 'Citrus') {
+    const slug = item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return `<img src="/assets/library/citrus-icons/citrus-${slug}.webp" alt="" loading="lazy" />`;
+  }
+  return `<span aria-hidden="true">${materialIconMap[item.category] || '✦'}</span>`;
+}
+
+function renderMaterialLibrary(preserveMobileScroll = false) {
+  const previousResults = document.querySelector('.mobile-material-results');
+  const previousCategories = document.querySelector('.mobile-material-categories');
+  const previousResultsScroll = preserveMobileScroll ? previousResults?.scrollTop || 0 : 0;
+  const previousCategoryScroll = previousCategories?.scrollLeft || 0;
   const query = $('materialSearch')?.value?.toLowerCase().trim() || '';
-  const grouped = materials.reduce((acc, item) => {
-    if (!materialMatchesQuery(item, query)) return acc;
+  const matchingMaterials = materials.filter((item) => materialMatchesQuery(item, query) && (!mobileFormulaOnly || state.formula.some((entry) => entry.id === item.id)));
+  const grouped = matchingMaterials.reduce((acc, item) => {
     acc[item.category] = acc[item.category] || [];
     acc[item.category].push(item);
     return acc;
   }, {});
 
   const entries = Object.entries(grouped);
-  $('categoryList').innerHTML = entries.length ? entries.map(([category, items]) => `
+  const categories = [...new Set(materials.map((item) => item.category))];
+  if (mobileMaterialCategory !== 'All' && !categories.includes(mobileMaterialCategory)) mobileMaterialCategory = 'All';
+  const mobileItems = mobileMaterialCategory === 'All'
+    ? [...matchingMaterials].sort((left, right) => mobileMaterialRandomOrder.indexOf(left.id) - mobileMaterialRandomOrder.indexOf(right.id))
+    : matchingMaterials.filter((item) => item.category === mobileMaterialCategory);
+  const sheetItem = openMaterialId ? getMaterial(openMaterialId) : null;
+  const sheetFormulaItem = sheetItem ? state.formula.find((entry) => entry.id === sheetItem.id) : null;
+  const mobileBrowser = `
+    <section class="mobile-material-browser" aria-label="Material browser">
+      <nav class="mobile-material-categories" aria-label="Material categories">
+        ${['All', ...categories].map((category) => `
+          <button type="button" class="mobile-material-category ${mobileMaterialCategory === category ? 'is-active' : ''}" data-mobile-material-category="${category}">${category}</button>
+        `).join('')}
+      </nav>
+      <div class="mobile-material-results">
+        ${mobileItems.length ? mobileItems.map((item) => {
+          const isOpen = openMaterialId === item.id;
+          const formulaItem = state.formula.find((entry) => entry.id === item.id);
+          const layers = ['top', 'heart', 'base'];
+          return `<article class="mobile-material-card inner-panel ${isOpen ? 'is-open' : ''} ${formulaItem ? 'is-used' : ''}">
+            <button type="button" class="mobile-material-card__info" data-toggle-material="${item.id}" aria-expanded="${isOpen}">
+              <span class="mobile-material-card__symbol">${materialArtwork(item)}</span>
+              <span class="mobile-material-card__copy">
+                <strong>${item.name}</strong>
+                <small>${item.category} · ${layerLabel(item)}</small>
+                <em>${(item.tags || []).slice(0, 3).join(' · ')}</em>
+                ${formulaItem ? `<span class="mobile-material-card__used">✓ Used in ${formulaLayer(formulaItem)} ${formulaItem.percent}%</span>` : ''}
+              </span>
+              <span class="mobile-material-card__bookmark" aria-hidden="true">${mobileBookmarks.has(item.id) ? '◆' : '◇'}</span>
+            </button>
+            <div class="mobile-material-card__actions" aria-label="Add ${item.name} to formula">
+              ${layers.map((layer) => `<button type="button" class="mobile-material-layer ${formulaItem && formulaLayer(formulaItem) === layer ? 'is-active' : ''}" data-material="${item.id}" data-layer="${layer}">+ ${layer[0].toUpperCase()}${layer.slice(1)}</button>`).join('')}
+            </div>
+          </article>`;
+        }).join('') : '<div class="message warn">No materials match this search.</div>'}
+      </div>
+      ${sheetItem ? `<aside class="mobile-material-sheet" aria-label="${sheetItem.name} details">
+        <button type="button" class="mobile-material-sheet__close" data-close-material-sheet aria-label="Close material details">×</button>
+        <div class="mobile-material-sheet__art">${materialArtwork(sheetItem)}</div>
+        <div class="mobile-material-sheet__content">
+          <strong>${sheetItem.name}</strong>
+          <span>${sheetItem.category} · ${layerLabel(sheetItem)}</span>
+          <p>${sheetItem.description}</p>
+          ${pairingLabel(sheetItem) ? `<small>Pairs beautifully with</small><div class="mobile-material-sheet__pairs">${pairingLabel(sheetItem).split(', ').map((name) => `<span>${name}</span>`).join('')}</div>` : ''}
+          ${sheetFormulaItem ? `<em>✓ Used in ${formulaLayer(sheetFormulaItem)} ${sheetFormulaItem.percent}%</em>` : ''}
+        </div>
+      </aside>` : ''}
+      ${mobileToast ? `<div class="mobile-material-toast" role="status">✓ ${mobileToast}<button type="button" data-dismiss-material-toast aria-label="Dismiss">×</button></div>` : ''}
+    </section>`;
+  const desktopBrowser = `<div class="desktop-material-browser">${entries.length ? entries.map(([category, items]) => `
     <details class="category inner-panel" data-category="${category}" ${openCategoryName === category ? 'open' : ''}>
       <summary>
         <span class="category-icon" aria-hidden="true"></span>
@@ -327,7 +396,15 @@ function renderMaterialLibrary() {
       </article>`;
       }).join('')}
     </details>
-  `).join('') : '<div class="message warn">No basic materials match this search.</div>';
+  `).join('') : '<div class="message warn">No basic materials match this search.</div>'}</div>`;
+  $('categoryList').innerHTML = mobileBrowser + desktopBrowser;
+  requestAnimationFrame(() => {
+    const nextCategories = document.querySelector('.mobile-material-categories');
+    if (nextCategories) nextCategories.scrollLeft = previousCategoryScroll;
+    if (!preserveMobileScroll) return;
+    const nextResults = document.querySelector('.mobile-material-results');
+    if (nextResults) nextResults.scrollTop = previousResultsScroll;
+  });
 }
 
 function renderFormula() {
@@ -555,9 +632,16 @@ function addMaterialToFormula(materialId, targetLayer) {
 
   const material = getMaterial(materialId);
   if (!material) return;
-  const layer = materialLayers(material).includes(targetLayer) ? targetLayer : materialLayers(material)[0];
+  const layer = ['top', 'heart', 'base'].includes(targetLayer) ? targetLayer : materialLayers(material)[0];
   state.formula.push({ id: materialId, layer, percent: layerDefaultPercent[layer] || 10 });
+  mobileToast = `${material.name} added to ${layer[0].toUpperCase()}${layer.slice(1)} Notes.`;
+  window.clearTimeout(mobileToastTimer);
+  mobileToastTimer = window.setTimeout(() => {
+    mobileToast = '';
+    renderMaterialLibrary(true);
+  }, 2600);
   renderFormula();
+  renderMaterialLibrary(true);
 }
 
 function updateAll() {
@@ -573,6 +657,37 @@ document.addEventListener('click', (event) => {
   const target = event.target.closest('button');
   if (!target) return;
 
+  const mobileCategory = target.dataset.mobileMaterialCategory;
+  if (mobileCategory) {
+    mobileMaterialCategory = mobileCategory;
+    openMaterialId = null;
+    renderMaterialLibrary();
+    return;
+  }
+
+  if (target.id === 'mobileMaterialFilter') {
+    mobileFormulaOnly = !mobileFormulaOnly;
+    target.setAttribute('aria-pressed', String(mobileFormulaOnly));
+    openMaterialId = null;
+    renderMaterialLibrary();
+    const nextFilter = $('mobileMaterialFilter');
+    if (nextFilter) nextFilter.setAttribute('aria-pressed', String(mobileFormulaOnly));
+    return;
+  }
+
+  if (target.hasAttribute('data-close-material-sheet')) {
+    openMaterialId = null;
+    renderMaterialLibrary(true);
+    return;
+  }
+
+  if (target.hasAttribute('data-dismiss-material-toast')) {
+    mobileToast = '';
+    window.clearTimeout(mobileToastTimer);
+    renderMaterialLibrary(true);
+    return;
+  }
+
   const concentration = target.dataset.concentration;
   if (concentration) {
     state.concentration = concentration;
@@ -581,8 +696,14 @@ document.addEventListener('click', (event) => {
 
   const toggleMaterialId = target.dataset.toggleMaterial;
   if (toggleMaterialId) {
-    openMaterialId = openMaterialId === toggleMaterialId ? null : toggleMaterialId;
-    renderMaterialLibrary();
+    if (event.target.closest('.mobile-material-card__bookmark')) {
+      if (mobileBookmarks.has(toggleMaterialId)) mobileBookmarks.delete(toggleMaterialId);
+      else mobileBookmarks.add(toggleMaterialId);
+      renderMaterialLibrary(true);
+      return;
+    }
+    openMaterialId = toggleMaterialId;
+    renderMaterialLibrary(true);
     return;
   }
 

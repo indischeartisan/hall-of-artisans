@@ -9,6 +9,9 @@ import { authPathWithReturnTo } from "../features/auth/returnTo";
 import { isArtisanBenchDraft, type ArtisanBenchState, type NewDraftData } from "../types/perfumeDraft";
 
 type Theme = "dark" | "bright";
+type MobileWorkspace = "materials" | "formula" | "insights" | "notes" | "review";
+type FormulaLayer = "top" | "heart" | "base";
+type InsightsView = "balance" | "drydown";
 
 const createEmptyBenchState = (): ArtisanBenchState => ({
   concentration: "edp",
@@ -54,7 +57,7 @@ const scripts = [
   "/assets/js/fragrance-data.js?v=4",
   "/assets/js/formula-engine.js?v=5",
   "/assets/js/story-card-generator.js?v=4",
-  "/assets/js/expert-lab-app.js?v=18"
+  "/assets/js/expert-lab-app.js?v=22"
 ];
 
 function loadScript(src: string) {
@@ -77,6 +80,12 @@ export default function ArtisanBenchPage() {
   const [isDirty, setIsDirty] = useState(false);
   const [draftSaveStatus, setDraftSaveStatus] = useState("");
   const [draftsOpen, setDraftsOpen] = useState(false);
+  const [mobileWorkspace, setMobileWorkspace] = useState<MobileWorkspace>("formula");
+  const [mobileFormulaLayer, setMobileFormulaLayer] = useState<FormulaLayer>("top");
+  const [mobileInsightsView, setMobileInsightsView] = useState<InsightsView>("drydown");
+  const [isMobileNameEditing, setIsMobileNameEditing] = useState(false);
+  const [, setBenchRevision] = useState(0);
+  const workspaceRef = useRef<HTMLElement>(null);
   const savedSignature = useRef(activeDraft ? JSON.stringify(activeDraft.benchState) : "");
   const hasBaseline = useRef(Boolean(activeDraft));
   const pendingPreview = useRef(activeDraft ? null : readPendingBenchPreview()).current;
@@ -89,6 +98,27 @@ export default function ArtisanBenchPage() {
     return saved === "dark" || saved === "bright" ? saved : "bright";
   });
   const isDark = theme === "dark";
+
+  const selectMobileWorkspace = (workspace: MobileWorkspace) => {
+    setMobileWorkspace(workspace);
+    window.requestAnimationFrame(() => {
+      const top = workspaceRef.current?.getBoundingClientRect().top ?? 0;
+      if (top < 72) workspaceRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  };
+
+  const updateMobilePerfumeName = (value: string) => {
+    const input = document.getElementById("perfumeNameInput") as HTMLInputElement | null;
+    if (!input) return;
+    input.value = value;
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  };
+
+  const finishMobilePerfumeName = () => {
+    const input = document.getElementById("perfumeNameInput") as HTMLInputElement | null;
+    input?.dispatchEvent(new FocusEvent("blur"));
+    setIsMobileNameEditing(false);
+  };
 
   useEffect(() => {
     const bridgeWindow = window as typeof window & { __hoaArtisanBenchAuthenticated?: boolean; __hoaArtisanBenchCreatorName?: string };
@@ -187,6 +217,7 @@ export default function ArtisanBenchPage() {
       const snapshot = (event as CustomEvent<ArtisanBenchState>).detail;
       if (!snapshot || !Array.isArray(snapshot.formula) || !snapshot.formulaMetadata) return;
       latestBenchState.current = snapshot;
+      setBenchRevision(revision => revision + 1);
       if (!hasBaseline.current) {
         savedSignature.current = JSON.stringify(snapshot);
         hasBaseline.current = true;
@@ -342,11 +373,53 @@ export default function ArtisanBenchPage() {
           </div>
         </section>
 
-        <section className="expert-workshop" aria-label="Expert formula workspace">
+        <section
+          ref={workspaceRef}
+          className={`expert-workshop mobile-workspace mobile-view-${mobileWorkspace}`}
+          aria-label="Expert formula workspace"
+        >
+          <header className="mobile-workbench-status" aria-label="Current creation status">
+            <div>
+              <span className="mobile-workbench-status__eyebrow">Artisan Workbook</span>
+              {isMobileNameEditing ? (
+                <input
+                  autoFocus
+                  className="mobile-workbench-name-input"
+                  aria-label="Edit creation name"
+                  value={latestBenchState.current.perfumeName}
+                  placeholder="Untitled Creation"
+                  onChange={(event) => updateMobilePerfumeName(event.currentTarget.value)}
+                  onBlur={finishMobilePerfumeName}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") event.currentTarget.blur();
+                    if (event.key === "Escape") event.currentTarget.blur();
+                  }}
+                />
+              ) : (
+                <button
+                  type="button"
+                  className="mobile-workbench-name-display"
+                  aria-label="Edit creation name"
+                  onClick={() => setIsMobileNameEditing(true)}
+                >
+                  <strong>{latestBenchState.current.perfumeName || "Untitled Creation"}</strong>
+                  <span aria-hidden="true">✎</span>
+                </button>
+              )}
+            </div>
+            <div className="mobile-workbench-status__meta">
+              <span>{latestBenchState.current.concentration.toUpperCase()}</span>
+              <span>{latestBenchState.current.formulaMetadata.total}% formula</span>
+              <span className={isDirty ? "is-unsaved" : "is-saved"}>{isDirty ? "Unsaved" : "Saved"}</span>
+            </div>
+          </header>
           <aside className="material-library panel ornate-panel">
-            <div className="panel-title"><p className="step">01 Material Library</p><h2>Materials</h2></div>
+            <div className="panel-title"><p className="step">Material Library</p><h2>Find Your Materials</h2><small>Explore accords and add them directly to your formula.</small></div>
             <label className="search-label" htmlFor="materialSearch">Search materials</label>
-            <input id="materialSearch" placeholder="Rose, tea, cedarwood..." />
+            <div className="mobile-material-search-row">
+              <input id="materialSearch" placeholder="Search materials" />
+              <button id="mobileMaterialFilter" type="button" aria-label="Show materials in formula" aria-pressed="false"><span aria-hidden="true">☷</span></button>
+            </div>
             <div id="categoryList" className="category-list" />
             <div className="coming-soon inner-panel">
               <p className="step">Indische Materials</p><h3>Coming Soon</h3>
@@ -391,8 +464,40 @@ export default function ArtisanBenchPage() {
           </section>
 
           <section className="build-review-row">
-            <section className="formula-builder panel ornate-panel">
+            <section className={`formula-builder panel ornate-panel mobile-layer-${mobileFormulaLayer}`}>
               <div className="panel-heading"><div><p className="step">05 Formula Builder</p><h2>Build Your Structure</h2></div></div>
+              <section className="mobile-formula-overview" aria-label="Formula balance">
+                <div
+                  className="mobile-formula-ring"
+                  style={{
+                    background: `conic-gradient(#204f38 0 ${latestBenchState.current.formulaMetadata.layerTotals.top}%, #c49a3a ${latestBenchState.current.formulaMetadata.layerTotals.top}% ${latestBenchState.current.formulaMetadata.layerTotals.top + latestBenchState.current.formulaMetadata.layerTotals.heart}%, #8d8a78 ${latestBenchState.current.formulaMetadata.layerTotals.top + latestBenchState.current.formulaMetadata.layerTotals.heart}% ${latestBenchState.current.formulaMetadata.total}%, rgba(145, 126, 91, .16) ${latestBenchState.current.formulaMetadata.total}% 100%)`
+                  }}
+                >
+                  <div><small>Total</small><strong>{latestBenchState.current.formulaMetadata.total}%</strong></div>
+                </div>
+                <div className="mobile-formula-balance-copy">
+                  <span>Formula Balance</span>
+                  <strong>{latestBenchState.current.formulaMetadata.total === 100 ? "The formula is perfectly balanced." : "Continue balancing your formula."}</strong>
+                  <div className="mobile-formula-totals">
+                    <span>Top <b>{latestBenchState.current.formulaMetadata.layerTotals.top}%</b></span>
+                    <span>Heart <b>{latestBenchState.current.formulaMetadata.layerTotals.heart}%</b></span>
+                    <span>Base <b>{latestBenchState.current.formulaMetadata.layerTotals.base}%</b></span>
+                  </div>
+                </div>
+              </section>
+              <nav className="mobile-layer-tabs" aria-label="Formula note layers">
+                {(["top", "heart", "base"] as FormulaLayer[]).map((layer) => (
+                  <button
+                    key={layer}
+                    type="button"
+                    className={mobileFormulaLayer === layer ? "is-active" : ""}
+                    aria-pressed={mobileFormulaLayer === layer}
+                    onClick={() => setMobileFormulaLayer(layer)}
+                  >
+                    {layer === "top" ? "❧" : layer === "heart" ? "❀" : "♢"} {layer} notes
+                  </button>
+                ))}
+              </nav>
               <div className="layer-grid inner-grid">
                 <div className="layer-card inner-panel" data-layer="top">
                   <h3><span>Top Notes</span> <strong data-layer-total="top">0%</strong></h3>
@@ -426,12 +531,25 @@ export default function ArtisanBenchPage() {
               </div>
             </section>
 
-            <aside className="analysis panel ornate-panel">
+            <section className="mobile-insights-heading" aria-label="Scent direction">
+              <span>Scent Direction</span>
+              <strong>
+                {latestBenchState.current.fragranceBrief?.olfactiveFamily
+                  || "Build your formula to reveal its scent direction."}
+              </strong>
+              <p>Understand the balance and how your creation develops on skin.</p>
+              <nav aria-label="Insight view">
+                <button type="button" className={mobileInsightsView === "balance" ? "is-active" : ""} onClick={() => setMobileInsightsView("balance")}>Balance</button>
+                <button type="button" className={mobileInsightsView === "drydown" ? "is-active" : ""} onClick={() => setMobileInsightsView("drydown")}>Drydown</button>
+              </nav>
+            </section>
+
+            <aside className={`analysis panel ornate-panel ${mobileInsightsView === "balance" ? "is-mobile-active" : ""}`}>
               <div className="panel-title"><p className="step">06 Formula Analysis</p><h2>Formula Balance</h2></div>
               <div id="profileBars" />
             </aside>
 
-            <section className="drydown panel ornate-panel">
+            <section className={`drydown panel ornate-panel ${mobileInsightsView === "drydown" ? "is-mobile-active" : ""}`}>
               <div className="panel-title"><p className="step">07 Drydown Journey</p><h2>Drydown Journey</h2></div>
               <div id="drydownTimeline" className="timeline" />
             </section>
@@ -446,13 +564,24 @@ export default function ArtisanBenchPage() {
           <section className="brief-story-row">
             <section className="brief perfumer-notes panel ornate-panel">
               <div className="panel-title"><p className="step">09 Notes for Perfumer</p><h2>Notes</h2></div>
+              <div className="mobile-notes-intro">
+                <span>Notes for Perfumer</span>
+                <strong>Give your creation a story.</strong>
+                <p>Tell the perfumer about mood, memory, occasion, or anything important.</p>
+              </div>
               <label htmlFor="perfumerNotesInput">Write anything the perfumer should know</label>
               <textarea id="perfumerNotesInput" className="brief-paper inner-panel" maxLength={3000} placeholder="Describe the mood, memory, occasion, preferences, concerns, or any detail you want the perfumer to consider…" />
               <small>Your notes are saved with this draft and included when you send the creation for review.</small>
+              <button className="mobile-continue-review" type="button" onClick={() => selectMobileWorkspace("review")}>Continue to Review <span aria-hidden="true">→</span></button>
               <div id="briefOutput" hidden />
             </section>
             <section id="story-card" className="story-card-section panel ornate-panel">
-              <div className="panel-title"><p className="step">10 Story Card</p><h2>Fragrance Brief Story Card</h2></div>
+              <div className="panel-title"><p className="step">Review Your Creation</p><h2>{latestBenchState.current.perfumeName || "Untitled Creation"}</h2><small>Check every detail before sending it to an artisan.</small></div>
+              <section className="mobile-review-summary" aria-label="Creation summary">
+                <div><span>Identity</span><strong>{latestBenchState.current.concentration.toUpperCase()} · {latestBenchState.current.formulaMetadata.total}% total</strong></div>
+                <div><span>Formula Structure</span><strong>Top {latestBenchState.current.formulaMetadata.layerTotals.top}% · Heart {latestBenchState.current.formulaMetadata.layerTotals.heart}% · Base {latestBenchState.current.formulaMetadata.layerTotals.base}%</strong></div>
+                <div><span>Perfumer Notes</span><strong>{latestBenchState.current.perfumerNotes || "No notes added yet."}</strong></div>
+              </section>
               <div id="storyCardPreview" className="story-card-preview inner-panel" aria-live="polite" />
               <div className="story-card-actions">
                 <button id="downloadStoryCard" className="panel-button">Download Story Card</button>
@@ -473,6 +602,27 @@ export default function ArtisanBenchPage() {
             </div>
             <p className="story-card-message" role="status" aria-live="polite">{draftSaveStatus}</p>
           </section>
+
+          <nav className="mobile-workbench-nav" aria-label="Artisan Bench workspace">
+            {([
+              ["materials", "Materials", "✦"],
+              ["formula", "Formula", "◫"],
+              ["insights", "Insights", "◇"],
+              ["notes", "Notes", "✎"],
+              ["review", "Review", "✓"]
+            ] as Array<[MobileWorkspace, string, string]>).map(([id, label, icon]) => (
+              <button
+                key={id}
+                type="button"
+                className={mobileWorkspace === id ? "is-active" : ""}
+                aria-current={mobileWorkspace === id ? "page" : undefined}
+                onClick={() => selectMobileWorkspace(id)}
+              >
+                <span aria-hidden="true">{icon}</span>
+                <small>{label}</small>
+              </button>
+            ))}
+          </nav>
         </section>
 
         <section className="disclaimer panel ornate-panel">
