@@ -95,7 +95,7 @@ body.expert-lab-page .mobile-material-browser {
     display: block !important;
     height: 100%;
     margin: 0 !important;
-    padding: 10px 7px calc(82px + env(safe-area-inset-bottom)) !important;
+    padding: 18px 7px calc(82px + env(safe-area-inset-bottom)) !important;
     overflow: auto;
     overscroll-behavior: contain;
     scroll-margin-top: 72px;
@@ -103,18 +103,20 @@ body.expert-lab-page .mobile-material-browser {
 
   body.expert-lab-page .mobile-workbench-status {
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
     position: relative;
+    overflow: visible !important;
     z-index: 20;
-    margin: 0 6px 10px;
-    padding: 13px 14px;
+    margin: 0 12px 14px;
+    padding: 15px 16px;
     color: #173b2e;
     background: rgba(255, 250, 237, 0.96);
     border: 1px solid rgba(157, 118, 52, 0.36);
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(69, 48, 19, 0.12);
+    border-radius: 14px;
+    box-shadow: 0 10px 26px rgba(46, 32, 13, 0.16);
     backdrop-filter: blur(14px);
   }
 
@@ -196,7 +198,8 @@ body.expert-lab-page .mobile-material-browser {
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: 4px;
-    max-width: 48%;
+    align-items: center;
+    max-width: 55%;
   }
 
   body.expert-lab-page .mobile-workbench-status__meta span {
@@ -205,6 +208,62 @@ body.expert-lab-page .mobile-material-browser {
     white-space: nowrap;
     background: rgba(157, 118, 52, 0.1);
     border-radius: 999px;
+  }
+
+  body.expert-lab-page .mobile-workbench-status__more {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    padding: 0 0 8px;
+    color: #735522;
+    font: 700 19px/1 Georgia, serif;
+    background: rgba(255, 252, 243, .74);
+    border: 1px solid rgba(157, 118, 52, .35);
+    border-radius: 50%;
+  }
+
+  body.expert-lab-page .mobile-workbench-options {
+    position: static;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 0;
+    margin-top: 4px;
+    padding: 6px;
+    background: #fffaf0;
+    border: 1px solid rgba(157, 118, 52, .36);
+    border-radius: 12px;
+    box-shadow: 0 14px 30px rgba(46, 32, 13, .2);
+  }
+
+  body.expert-lab-page .mobile-workbench-options button {
+    padding: 11px 12px;
+    color: #244332;
+    font: 600 13px/1.2 Inter, sans-serif;
+    text-align: left;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+  }
+
+  body.expert-lab-page .mobile-workbench-options button:hover,
+  body.expert-lab-page .mobile-workbench-options button:focus-visible {
+    color: #fffaf0;
+    background: #174c34;
+    outline: none;
+  }
+
+  body.expert-lab-page[data-theme="dark"] .mobile-workbench-options {
+    background: #1c1009;
+    border-color: rgba(214, 164, 69, .4);
+  }
+
+  body.expert-lab-page[data-theme="dark"] .mobile-workbench-options button {
+    color: #f1d99c;
   }
 
   body.expert-lab-page .mobile-workbench-status__meta .is-unsaved {
@@ -589,21 +648,62 @@ body.expert-lab-page .mobile-material-browser {
   }
 
   /* Mobile Materials */
+  body.expert-lab-page .global-header,
+  body.expert-lab-page[data-theme="bright"] .global-header {
+    color: #fff3d3 !important;
+    background: linear-gradient(135deg, #123e2d, #082a20 72%) !important;
+    border-bottom-color: rgba(194, 150, 66, .55) !important;
+    box-shadow: 0 7px 18px rgba(8, 35, 26, .2) !important;
+  }
+
+  body.expert-lab-page[data-theme="bright"] .global-header :is(.brand, .brand-text, .main-nav a) {
+    color: #fff4d5 !important;
+  }
+
+  body.expert-lab-page[data-theme="bright"] .global-header .brand-world {
+    color: #d8b665 !important;
+  }
+
   body.expert-lab-page .mobile-workspace.mobile-view-materials {
     overflow: hidden;
+    padding-top: 0 !important;
+    background-position: center top;
   }
 
   body.expert-lab-page .mobile-workspace.mobile-view-materials > .material-library {
     width: auto !important;
-    height: calc(100% - 102px) !important;
+    height: calc(100% - 105px) !important;
     min-height: 0 !important;
-    margin-inline: 6px !important;
+    margin-inline: 12px !important;
     padding: 0 !important;
     overflow: hidden !important;
     background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
     border: 0 !important;
+    outline: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* The materials page itself is scenery-backed. Only the material cards keep a
+     parchment surface; the library shell and its scrolling viewport must not
+     introduce another rectangular panel. */
+  body.expert-lab-page .mobile-workspace.mobile-view-materials > .material-library.panel,
+  body.expert-lab-page .mobile-workspace.mobile-view-materials > .material-library.ornate-panel,
+  body.expert-lab-page .mobile-view-materials #categoryList,
+  body.expert-lab-page .mobile-view-materials .mobile-material-browser,
+  body.expert-lab-page .mobile-view-materials .mobile-material-results {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
   body.expert-lab-page .mobile-workspace.mobile-view-materials > .material-library::before,
@@ -613,16 +713,24 @@ body.expert-lab-page .mobile-material-browser {
   }
 
   body.expert-lab-page .mobile-view-materials .material-library > .panel-title {
-    display: none !important;
+    display: block !important;
+    margin: 0 0 10px !important;
+    padding: 0 2px !important;
   }
 
   body.expert-lab-page .mobile-view-materials .material-library > .panel-title h2 {
-    font-size: 25px !important;
+    display: none !important;
   }
 
   body.expert-lab-page .mobile-view-materials .material-library > .panel-title small {
-    color: #776d5a;
-    font: 500 11px/1.35 Inter, sans-serif;
+    display: none !important;
+  }
+
+  body.expert-lab-page .mobile-view-materials .material-library > .panel-title .step {
+    margin: 0 !important;
+    color: #9b6d20 !important;
+    font: 600 11px/1.2 Inter, sans-serif !important;
+    letter-spacing: .16em !important;
   }
 
   body.expert-lab-page .mobile-view-materials .material-library > .search-label {
@@ -636,7 +744,7 @@ body.expert-lab-page .mobile-material-browser {
   body.expert-lab-page .mobile-view-materials #materialSearch {
     width: auto !important;
     min-width: 0 !important;
-    min-height: 48px !important;
+    min-height: 46px !important;
     margin: 0 !important;
     padding: 0 16px 0 42px !important;
     font-size: 14px !important;
@@ -651,11 +759,11 @@ body.expert-lab-page .mobile-material-browser {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 52px;
     gap: 0;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     overflow: hidden;
     background: rgba(255, 252, 244, .94);
     border: 1px solid rgba(157, 116, 45, .35);
-    border-radius: 12px;
+    border-radius: 10px;
     box-shadow: 0 5px 14px rgba(68, 47, 18, .07);
   }
 
@@ -681,12 +789,13 @@ body.expert-lab-page .mobile-material-browser {
   }
 
   body.expert-lab-page .mobile-view-materials #categoryList {
-    height: calc(100% - 62px) !important;
+    height: calc(100% - 89px) !important;
     min-height: 0 !important;
     padding-right: 3px;
     overflow-y: auto !important;
     overscroll-behavior: contain;
     scrollbar-width: none;
+    background: transparent !important;
   }
 
   body.expert-lab-page .mobile-view-materials #categoryList::-webkit-scrollbar {
@@ -703,17 +812,18 @@ body.expert-lab-page .mobile-material-browser {
     height: 100%;
     min-height: 0;
     overflow: hidden;
+    background: transparent !important;
   }
 
   body.expert-lab-page .mobile-material-categories {
     display: flex;
     gap: 7px;
-    padding: 1px 0 8px;
+    padding: 0 0 9px;
     overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x proximity;
+    overscroll-behavior-x: auto;
     scrollbar-width: none;
     touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
   }
 
   body.expert-lab-page .mobile-material-categories::-webkit-scrollbar {
@@ -722,14 +832,13 @@ body.expert-lab-page .mobile-material-browser {
 
   body.expert-lab-page .mobile-material-category {
     flex: 0 0 auto;
-    min-height: 36px;
-    padding: 8px 17px;
+    min-height: 34px;
+    padding: 7px 15px;
     color: #365141;
     font: 600 13px/1 "Cormorant Garamond", serif;
     background: rgba(255, 251, 240, .76);
     border: 1px solid rgba(157, 116, 45, .36);
     border-radius: 999px;
-    scroll-snap-align: start;
   }
 
   body.expert-lab-page .mobile-material-category.is-active {
@@ -748,13 +857,14 @@ body.expert-lab-page .mobile-material-browser {
   body.expert-lab-page .mobile-material-results {
     display: grid;
     align-content: start;
-    gap: 9px;
+    gap: 8px;
     min-height: 0;
     padding: 1px 3px 12px 0;
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: none;
     touch-action: pan-y;
+    background: transparent !important;
   }
 
   body.expert-lab-page .mobile-material-results::-webkit-scrollbar {
@@ -764,13 +874,13 @@ body.expert-lab-page .mobile-material-browser {
   body.expert-lab-page .mobile-material-card {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) !important;
-    gap: 8px !important;
+    gap: 5px !important;
     margin: 0 !important;
     height: max-content !important;
-    min-height: 156px !important;
-    padding: 14px !important;
+    min-height: 118px !important;
+    padding: 9px 10px !important;
     overflow: visible !important;
-    background: rgba(255, 252, 243, .92) !important;
+    background: #fffaf0 !important;
     border: 1px solid rgba(157, 116, 45, .25) !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 13px rgba(70, 48, 18, .06);
@@ -778,27 +888,40 @@ body.expert-lab-page .mobile-material-browser {
 
   body.expert-lab-page .mobile-material-card__info {
     display: grid;
-    grid-template-columns: 104px minmax(0, 1fr) auto;
-    gap: 12px;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 10px;
     align-items: center;
     width: 100%;
     height: auto !important;
-    min-height: 94px !important;
+    min-height: 64px !important;
     padding: 0;
     overflow: visible !important;
     color: #244332;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
     text-align: left;
     background: transparent;
     border: 0;
   }
 
+  body.expert-lab-page .mobile-material-card::before,
+  body.expert-lab-page .mobile-material-card::after,
+  body.expert-lab-page .mobile-material-card__info::before,
+  body.expert-lab-page .mobile-material-card__info::after {
+    display: none !important;
+    content: none !important;
+    background: none !important;
+  }
+
   body.expert-lab-page .mobile-material-card__symbol {
     display: grid;
     place-items: center;
-    width: 104px;
-    height: 94px;
+    width: 72px;
+    height: 64px;
     overflow: hidden;
-    font-size: 38px;
+    font-size: 27px;
     background: radial-gradient(circle, #fffdf5 0 46%, #efe2bd 48% 50%, transparent 51%);
   }
 
@@ -817,39 +940,33 @@ body.expert-lab-page .mobile-material-browser {
 
   body.expert-lab-page .mobile-material-card__copy strong {
     overflow: hidden;
-    font: 600 24px/1.02 "Cormorant Garamond", serif;
+    font: 600 20px/1.02 "Cormorant Garamond", serif;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   body.expert-lab-page .mobile-material-card__copy small {
     color: #6e6a5d;
-    font: 500 11px/1.25 Inter, sans-serif;
+    font: 500 10px/1.2 Inter, sans-serif;
   }
 
   body.expert-lab-page .mobile-material-card__copy em {
     overflow: hidden;
     color: #75664c;
-    font: italic 11px/1.25 Inter, sans-serif;
+    font: italic 10px/1.2 Inter, sans-serif;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   body.expert-lab-page .mobile-material-card__used {
     justify-self: start;
-    margin-top: 3px;
-    padding: 3px 7px;
+    margin-top: 2px;
+    padding: 3px 6px;
     color: #315a39;
     font: 600 10px/1.1 Inter, sans-serif;
     text-transform: capitalize;
     background: #e7eddc;
     border-radius: 999px;
-  }
-
-  body.expert-lab-page .mobile-material-card__bookmark {
-    align-self: start;
-    color: #a57a2b;
-    font-size: 22px;
   }
 
   body.expert-lab-page .mobile-material-card__description {
@@ -873,14 +990,14 @@ body.expert-lab-page .mobile-material-browser {
   body.expert-lab-page .mobile-material-card__actions {
     display: flex;
     justify-content: flex-end;
-    gap: 7px;
-    padding-left: 116px;
+    gap: 6px;
+    padding-left: 82px;
   }
 
   body.expert-lab-page .mobile-material-layer {
-    min-width: 67px;
-    min-height: 34px;
-    padding: 7px 10px;
+    min-width: 65px;
+    min-height: 40px;
+    padding: 8px 9px;
     color: #294535;
     font: 600 12px/1 Inter, sans-serif;
     background: #fffaf0;
@@ -1017,13 +1134,13 @@ body.expert-lab-page .mobile-material-browser {
   }
 
   body.expert-lab-page .mobile-workspace.mobile-view-materials > .mobile-workbench-nav {
-    color: #ead49a;
-    background: linear-gradient(180deg, #123e2d, #092b20) !important;
-    border-color: rgba(190, 143, 55, .7) !important;
+    color: #5e4b2e;
+    background: rgba(255, 250, 238, .98) !important;
+    border-color: rgba(168, 125, 49, .4) !important;
   }
 
   body.expert-lab-page .mobile-workspace.mobile-view-materials > .mobile-workbench-nav button {
-    color: #e4cf9b !important;
+    color: #695737 !important;
     background: transparent !important;
     border-color: transparent !important;
     border-radius: 0 !important;
@@ -1032,14 +1149,15 @@ body.expert-lab-page .mobile-material-browser {
 
   body.expert-lab-page .mobile-workspace.mobile-view-materials > .mobile-workbench-nav button.is-active {
     color: #fff3c6 !important;
-    background: linear-gradient(180deg, rgba(181,132,43,.25), rgba(91,67,20,.1)) !important;
-    box-shadow: inset 0 3px 0 #c8973b !important;
+    background: linear-gradient(180deg, #19543b, #103d2d) !important;
+    border-radius: 10px !important;
+    box-shadow: inset 0 0 0 1px rgba(205, 162, 80, .55) !important;
   }
 
   @media (max-width: 420px) {
-    body.expert-lab-page .mobile-material-card__info { grid-template-columns: 82px minmax(0, 1fr) auto; }
-    body.expert-lab-page .mobile-material-card__symbol { width: 82px; height: 82px; }
-    body.expert-lab-page .mobile-material-card__actions { padding-left: 94px; }
+    body.expert-lab-page .mobile-material-card__info { grid-template-columns: 64px minmax(0, 1fr); }
+    body.expert-lab-page .mobile-material-card__symbol { width: 64px; height: 60px; }
+    body.expert-lab-page .mobile-material-card__actions { padding-left: 74px; }
     body.expert-lab-page .mobile-material-layer { min-width: 61px; padding-inline: 7px; }
     body.expert-lab-page .mobile-material-sheet { grid-template-columns: 90px minmax(0, 1fr); }
   }

@@ -50,14 +50,14 @@ const stylesheets = [
   "/assets/css/expert-lab.css?v=4",
   "/assets/css/expert-panel-system.css?v=9",
   "/assets/css/expert-lab-refinements.css?v=24",
-  "/assets/css/expert-lab-theme.css?v=21"
+  "/assets/css/expert-lab-theme.css?v=27"
 ];
 
 const scripts = [
   "/assets/js/fragrance-data.js?v=4",
   "/assets/js/formula-engine.js?v=5",
   "/assets/js/story-card-generator.js?v=4",
-  "/assets/js/expert-lab-app.js?v=22"
+  "/assets/js/expert-lab-app.js?v=26"
 ];
 
 function loadScript(src: string) {
@@ -77,13 +77,14 @@ export default function ArtisanBenchPage() {
   const { activeDraft: activeCreationDraft, clearActiveDraft, createDraft, saveDraft, source } = useDrafts();
   const activeDraft = isArtisanBenchDraft(activeCreationDraft) ? activeCreationDraft : null;
   const isAuthenticated = Boolean(user);
-  const [isDirty, setIsDirty] = useState(false);
+  const [isDirty, setIsDirty] = useState(!activeDraft);
   const [draftSaveStatus, setDraftSaveStatus] = useState("");
   const [draftsOpen, setDraftsOpen] = useState(false);
   const [mobileWorkspace, setMobileWorkspace] = useState<MobileWorkspace>("formula");
   const [mobileFormulaLayer, setMobileFormulaLayer] = useState<FormulaLayer>("top");
   const [mobileInsightsView, setMobileInsightsView] = useState<InsightsView>("drydown");
   const [isMobileNameEditing, setIsMobileNameEditing] = useState(false);
+  const [isMobileOptionsOpen, setIsMobileOptionsOpen] = useState(false);
   const [, setBenchRevision] = useState(0);
   const workspaceRef = useRef<HTMLElement>(null);
   const savedSignature = useRef(activeDraft ? JSON.stringify(activeDraft.benchState) : "");
@@ -102,8 +103,11 @@ export default function ArtisanBenchPage() {
   const selectMobileWorkspace = (workspace: MobileWorkspace) => {
     setMobileWorkspace(workspace);
     window.requestAnimationFrame(() => {
-      const top = workspaceRef.current?.getBoundingClientRect().top ?? 0;
-      if (top < 72) workspaceRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      const workspaceElement = workspaceRef.current;
+      if (!workspaceElement) return;
+      workspaceElement.scrollTo({ top: 0, behavior: "auto" });
+      const top = workspaceElement.getBoundingClientRect().top;
+      if (top < 72) workspaceElement.scrollIntoView({ behavior: "auto", block: "start" });
     });
   };
 
@@ -207,7 +211,7 @@ export default function ArtisanBenchPage() {
     latestBenchState.current = emptyState;
     savedSignature.current = JSON.stringify(emptyState);
     hasBaseline.current = false;
-    setIsDirty(false);
+    setIsDirty(true);
     setDraftSaveStatus("New draft started. Your previously saved drafts remain in My Drafts.");
     window.dispatchEvent(new CustomEvent("hoa:artisan-bench-load-state", { detail: emptyState }));
   }, [clearActiveDraft, isDirty]);
@@ -221,7 +225,7 @@ export default function ArtisanBenchPage() {
       if (!hasBaseline.current) {
         savedSignature.current = JSON.stringify(snapshot);
         hasBaseline.current = true;
-        setIsDirty(false);
+        setIsDirty(true);
         return;
       }
       setIsDirty(Boolean(savedSignature.current) && JSON.stringify(snapshot) !== savedSignature.current);
@@ -378,9 +382,11 @@ export default function ArtisanBenchPage() {
           className={`expert-workshop mobile-workspace mobile-view-${mobileWorkspace}`}
           aria-label="Expert formula workspace"
         >
-          <header className="mobile-workbench-status" aria-label="Current creation status">
+          <header
+            className={`mobile-workbench-status${isMobileOptionsOpen ? " is-options-open" : ""}`}
+            aria-label="Current creation status"
+          >
             <div>
-              <span className="mobile-workbench-status__eyebrow">Artisan Workbook</span>
               {isMobileNameEditing ? (
                 <input
                   autoFocus
@@ -411,14 +417,33 @@ export default function ArtisanBenchPage() {
               <span>{latestBenchState.current.concentration.toUpperCase()}</span>
               <span>{latestBenchState.current.formulaMetadata.total}% formula</span>
               <span className={isDirty ? "is-unsaved" : "is-saved"}>{isDirty ? "Unsaved" : "Saved"}</span>
+              <button
+                className="mobile-workbench-status__more"
+                type="button"
+                aria-label="Creation options"
+                aria-expanded={isMobileOptionsOpen}
+                onClick={() => setIsMobileOptionsOpen((open) => !open)}
+              >...</button>
             </div>
+            {isMobileOptionsOpen ? (
+              <div className="mobile-workbench-options" role="menu" aria-label="Creation options menu">
+                <button type="button" role="menuitem" onClick={() => {
+                  setIsMobileOptionsOpen(false);
+                  document.getElementById("saveDraft")?.click();
+                }}>Save Draft</button>
+                <button type="button" role="menuitem" onClick={() => {
+                  setIsMobileOptionsOpen(false);
+                  setDraftsOpen(true);
+                }}>My Drafts</button>
+              </div>
+            ) : null}
           </header>
           <aside className="material-library panel ornate-panel">
             <div className="panel-title"><p className="step">Material Library</p><h2>Find Your Materials</h2><small>Explore accords and add them directly to your formula.</small></div>
             <label className="search-label" htmlFor="materialSearch">Search materials</label>
             <div className="mobile-material-search-row">
               <input id="materialSearch" placeholder="Search materials" />
-              <button id="mobileMaterialFilter" type="button" aria-label="Show materials in formula" aria-pressed="false"><span aria-hidden="true">☷</span></button>
+              <button id="mobileMaterialFilter" type="button" aria-label="Filter: show only materials already in formula" title="Show materials in formula" aria-pressed="false"><span aria-hidden="true">☷</span></button>
             </div>
             <div id="categoryList" className="category-list" />
             <div className="coming-soon inner-panel">

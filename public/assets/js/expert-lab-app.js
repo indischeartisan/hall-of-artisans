@@ -343,8 +343,8 @@ function renderMaterialLibrary(preserveMobileScroll = false) {
           const isOpen = openMaterialId === item.id;
           const formulaItem = state.formula.find((entry) => entry.id === item.id);
           const layers = ['top', 'heart', 'base'];
-          return `<article class="mobile-material-card inner-panel ${isOpen ? 'is-open' : ''} ${formulaItem ? 'is-used' : ''}">
-            <button type="button" class="mobile-material-card__info" data-toggle-material="${item.id}" aria-expanded="${isOpen}">
+          return `<article class="mobile-material-card inner-panel ${isOpen ? 'is-open' : ''} ${formulaItem ? 'is-used' : ''}" style="background:#fffaf0!important;background-color:#fffaf0!important;background-image:none!important">
+            <button type="button" class="mobile-material-card__info" style="background:transparent!important;background-color:transparent!important;background-image:none!important" data-toggle-material="${item.id}" aria-expanded="${isOpen}">
               <span class="mobile-material-card__symbol">${materialArtwork(item)}</span>
               <span class="mobile-material-card__copy">
                 <strong>${item.name}</strong>
@@ -352,7 +352,6 @@ function renderMaterialLibrary(preserveMobileScroll = false) {
                 <em>${(item.tags || []).slice(0, 3).join(' · ')}</em>
                 ${formulaItem ? `<span class="mobile-material-card__used">✓ Used in ${formulaLayer(formulaItem)} ${formulaItem.percent}%</span>` : ''}
               </span>
-              <span class="mobile-material-card__bookmark" aria-hidden="true">${mobileBookmarks.has(item.id) ? '◆' : '◇'}</span>
             </button>
             <div class="mobile-material-card__actions" aria-label="Add ${item.name} to formula">
               ${layers.map((layer) => `<button type="button" class="mobile-material-layer ${formulaItem && formulaLayer(formulaItem) === layer ? 'is-active' : ''}" data-material="${item.id}" data-layer="${layer}">+ ${layer[0].toUpperCase()}${layer.slice(1)}</button>`).join('')}
@@ -625,14 +624,29 @@ function renderBrief() {
 }
 
 function addMaterialToFormula(materialId, targetLayer) {
-  if (state.formula.some((item) => item.id === materialId)) {
-    $('formulaMessages').innerHTML = '<div class="message warn">This material is already in the formula.</div>';
-    return;
-  }
-
   const material = getMaterial(materialId);
   if (!material) return;
   const layer = ['top', 'heart', 'base'].includes(targetLayer) ? targetLayer : materialLayers(material)[0];
+  const existingIndex = state.formula.findIndex((item) => item.id === materialId);
+  if (existingIndex >= 0) {
+    const existing = state.formula[existingIndex];
+    if (formulaLayer(existing) === layer) {
+      state.formula.splice(existingIndex, 1);
+      mobileToast = `${material.name} removed from the formula.`;
+    } else {
+      state.formula[existingIndex] = { ...existing, layer };
+      mobileToast = `${material.name} moved to ${layer[0].toUpperCase()}${layer.slice(1)} Notes.`;
+    }
+    window.clearTimeout(mobileToastTimer);
+    mobileToastTimer = window.setTimeout(() => {
+      mobileToast = '';
+      renderMaterialLibrary(true);
+    }, 2600);
+    renderFormula();
+    renderMaterialLibrary(true);
+    return;
+  }
+
   state.formula.push({ id: materialId, layer, percent: layerDefaultPercent[layer] || 10 });
   mobileToast = `${material.name} added to ${layer[0].toUpperCase()}${layer.slice(1)} Notes.`;
   window.clearTimeout(mobileToastTimer);
@@ -696,12 +710,6 @@ document.addEventListener('click', (event) => {
 
   const toggleMaterialId = target.dataset.toggleMaterial;
   if (toggleMaterialId) {
-    if (event.target.closest('.mobile-material-card__bookmark')) {
-      if (mobileBookmarks.has(toggleMaterialId)) mobileBookmarks.delete(toggleMaterialId);
-      else mobileBookmarks.add(toggleMaterialId);
-      renderMaterialLibrary(true);
-      return;
-    }
     openMaterialId = toggleMaterialId;
     renderMaterialLibrary(true);
     return;
@@ -723,6 +731,7 @@ document.addEventListener('click', (event) => {
   if (removeId) {
     state.formula = state.formula.filter((item) => item.id !== removeId);
     renderFormula();
+    renderMaterialLibrary(true);
   }
 
   const addLayer = target.dataset.add;
