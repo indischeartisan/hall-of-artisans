@@ -93,10 +93,13 @@ body.expert-lab-page .mobile-material-browser {
 
   body.expert-lab-page .expert-workshop.mobile-workspace {
     display: block !important;
-    height: 100%;
+    height: calc(100dvh - 70px) !important;
+    min-height: 0 !important;
     margin: 0 !important;
     padding: 18px 7px calc(82px + env(safe-area-inset-bottom)) !important;
-    overflow: auto;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     scroll-margin-top: 72px;
   }
@@ -874,11 +877,11 @@ body.expert-lab-page .mobile-material-browser {
   body.expert-lab-page .mobile-material-card {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) !important;
-    gap: 5px !important;
+    gap: 3px !important;
     margin: 0 !important;
     height: max-content !important;
-    min-height: 118px !important;
-    padding: 9px 10px !important;
+    min-height: 100px !important;
+    padding: 7px 8px !important;
     overflow: visible !important;
     background: #fffaf0 !important;
     border: 1px solid rgba(157, 116, 45, .25) !important;
@@ -888,12 +891,12 @@ body.expert-lab-page .mobile-material-browser {
 
   body.expert-lab-page .mobile-material-card__info {
     display: grid;
-    grid-template-columns: 72px minmax(0, 1fr);
-    gap: 10px;
+    grid-template-columns: 60px minmax(0, 1fr);
+    gap: 8px;
     align-items: center;
     width: 100%;
     height: auto !important;
-    min-height: 64px !important;
+    min-height: 54px !important;
     padding: 0;
     overflow: visible !important;
     color: #244332;
@@ -918,10 +921,10 @@ body.expert-lab-page .mobile-material-browser {
   body.expert-lab-page .mobile-material-card__symbol {
     display: grid;
     place-items: center;
-    width: 72px;
-    height: 64px;
+    width: 60px;
+    height: 54px;
     overflow: hidden;
-    font-size: 27px;
+    font-size: 23px;
     background: radial-gradient(circle, #fffdf5 0 46%, #efe2bd 48% 50%, transparent 51%);
   }
 
@@ -940,7 +943,7 @@ body.expert-lab-page .mobile-material-browser {
 
   body.expert-lab-page .mobile-material-card__copy strong {
     overflow: hidden;
-    font: 600 20px/1.02 "Cormorant Garamond", serif;
+    font: 600 18px/1.02 "Cormorant Garamond", serif;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -990,14 +993,14 @@ body.expert-lab-page .mobile-material-browser {
   body.expert-lab-page .mobile-material-card__actions {
     display: flex;
     justify-content: flex-end;
-    gap: 6px;
-    padding-left: 82px;
+    gap: 5px;
+    padding-left: 68px;
   }
 
   body.expert-lab-page .mobile-material-layer {
-    min-width: 65px;
-    min-height: 40px;
-    padding: 8px 9px;
+    min-width: 61px;
+    min-height: 36px;
+    padding: 7px 8px;
     color: #294535;
     font: 600 12px/1 Inter, sans-serif;
     background: #fffaf0;
@@ -1155,10 +1158,10 @@ body.expert-lab-page .mobile-material-browser {
   }
 
   @media (max-width: 420px) {
-    body.expert-lab-page .mobile-material-card__info { grid-template-columns: 64px minmax(0, 1fr); }
-    body.expert-lab-page .mobile-material-card__symbol { width: 64px; height: 60px; }
-    body.expert-lab-page .mobile-material-card__actions { padding-left: 74px; }
-    body.expert-lab-page .mobile-material-layer { min-width: 61px; padding-inline: 7px; }
+    body.expert-lab-page .mobile-material-card__info { grid-template-columns: 56px minmax(0, 1fr); }
+    body.expert-lab-page .mobile-material-card__symbol { width: 56px; height: 52px; }
+    body.expert-lab-page .mobile-material-card__actions { padding-left: 64px; }
+    body.expert-lab-page .mobile-material-layer { min-width: 58px; padding-inline: 6px; }
     body.expert-lab-page .mobile-material-sheet { grid-template-columns: 90px minmax(0, 1fr); }
   }
 
@@ -1247,6 +1250,9 @@ body.expert-lab-page .mobile-material-browser {
     display: flex !important;
     flex-direction: column !important;
     gap: 10px !important;
+    height: auto !important;
+    min-height: 100% !important;
+    overflow: visible !important;
   }
 
   body.expert-lab-page .mobile-insights-heading {
@@ -1306,7 +1312,7 @@ body.expert-lab-page .mobile-material-browser {
     flex: 1 1 auto !important;
     min-height: 0 !important;
     padding: 14px !important;
-    overflow-y: auto !important;
+    overflow: visible !important;
     border-radius: 13px !important;
   }
 
@@ -1328,27 +1334,28 @@ body.expert-lab-page .mobile-material-browser {
 
   /* Mobile Notes */
   body.expert-lab-page .mobile-workspace.mobile-view-notes {
-    overflow: hidden;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
   }
 
   body.expert-lab-page .mobile-view-notes > .brief-story-row {
     display: block !important;
-    height: calc(100% - 78px) !important;
-    min-height: 0 !important;
+    height: auto !important;
+    min-height: calc(100% - 78px) !important;
   }
 
   body.expert-lab-page .mobile-view-notes .perfumer-notes {
     display: flex !important;
     flex-direction: column !important;
-    height: 100% !important;
-    min-height: 0 !important;
+    height: auto !important;
+    min-height: calc(100dvh - 190px) !important;
     padding: 16px !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     border-radius: 14px !important;
   }
 
   body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-notes > section.brief-story-row > section.perfumer-notes {
-    height: 100% !important;
+    height: auto !important;
     max-height: none !important;
   }
 
@@ -1367,7 +1374,7 @@ body.expert-lab-page .mobile-material-browser {
   body.expert-lab-page .mobile-view-notes #perfumerNotesInput {
     flex: 1 1 auto !important;
     width: 100% !important;
-    min-height: 0 !important;
+    min-height: 52dvh !important;
     padding: 22px !important;
     color: #264132 !important;
     font: italic 19px/1.55 "Cormorant Garamond", serif !important;
@@ -1403,6 +1410,9 @@ body.expert-lab-page .mobile-material-browser {
   /* Mobile Review */
   body.expert-lab-page .mobile-view-review > .brief-story-row {
     gap: 10px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
   }
 
   body.expert-lab-page .mobile-view-review .story-card-section {
@@ -1451,8 +1461,8 @@ body.expert-lab-page .mobile-material-browser {
   }
 
   body.expert-lab-page .mobile-view-review #storyCardPreview {
-    max-height: 54vh !important;
-    overflow: hidden !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
 
   body.expert-lab-page .mobile-view-review .story-card-actions {

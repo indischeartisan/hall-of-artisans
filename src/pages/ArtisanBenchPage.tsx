@@ -50,7 +50,7 @@ const stylesheets = [
   "/assets/css/expert-lab.css?v=4",
   "/assets/css/expert-panel-system.css?v=9",
   "/assets/css/expert-lab-refinements.css?v=24",
-  "/assets/css/expert-lab-theme.css?v=27"
+  "/assets/css/expert-lab-theme.css?v=28"
 ];
 
 const scripts = [
