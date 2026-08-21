@@ -316,13 +316,14 @@
   .artisan-register-body .register-page-shell .register-subtitle { font-size: clamp(20px, 1.55vw, 25px); }
   .artisan-register-body .register-page-shell .register-hero-copy > p:last-of-type { font-size: 14px; }
   .artisan-register-body .hero-story-note { width: min(100%, 410px); align-self: flex-start; text-align: left; }
-  .artisan-register-body .register-page-shell .register-form { padding: 48px clamp(28px, 2.1vw, 38px) 34px; gap: 13px; }
+  .artisan-register-body .register-page-shell .register-form { padding: 30px clamp(28px, 2.1vw, 38px) 22px; gap: 9px; }
   .artisan-register-body .register-page-shell .register-form > label { display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: center; gap: 14px; }
   .artisan-register-body .register-page-shell .register-form > label > span { line-height: 1.25; }
-  .artisan-register-body .register-page-shell .register-section-heading h2 { margin-bottom: 22px; }
+  .artisan-register-body .register-page-shell .register-section-heading h2 { margin-bottom: 10px; }
   .artisan-register-body .specialty-dropdowns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .artisan-register-body .specialty-select-toggle { min-height: 47px; }
-  .artisan-register-body .specialty-result { min-height: 70px; }
+  .artisan-register-body .specialty-result { min-height: 58px; }
+  .artisan-register-body .password-prototype-note { margin-top: 4px; }
   .artisan-register-body .register-page-shell .id-preview-wrap { padding: 48px clamp(22px, 2vw, 34px) 30px; }
   .artisan-register-body .register-page-shell .artisan-card { width: min(100%, 286px); }
   .artisan-register-body .preview-issue-note { width: min(100%, 286px); }

@@ -53,7 +53,6 @@ export const authService={
   observeSession(callback:(session:Session|null)=>void){
     const client=getSupabaseClient();
     let active=true;
-    void client.auth.getSession().then(({data})=>{if(active)callback(data.session)});
     const {data}=client.auth.onAuthStateChange((_event,session)=>{if(active)callback(session)});
     return()=>{active=false;data.subscription.unsubscribe()};
   },

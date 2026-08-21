@@ -50,7 +50,7 @@ const stylesheets = [
   "/assets/css/expert-lab.css?v=4",
   "/assets/css/expert-panel-system.css?v=9",
   "/assets/css/expert-lab-refinements.css?v=24",
-  "/assets/css/expert-lab-theme.css?v=28"
+  "/assets/css/expert-lab-theme.css?v=30"
 ];
 
 const scripts = [
@@ -427,6 +427,10 @@ export default function ArtisanBenchPage() {
             </div>
             {isMobileOptionsOpen ? (
               <div className="mobile-workbench-options" role="menu" aria-label="Creation options menu">
+                <button type="button" role="menuitem" onClick={() => {
+                  setIsMobileOptionsOpen(false);
+                  startNewDraft();
+                }}>New Draft</button>
                 <button type="button" role="menuitem" onClick={() => {
                   setIsMobileOptionsOpen(false);
                   document.getElementById("saveDraft")?.click();

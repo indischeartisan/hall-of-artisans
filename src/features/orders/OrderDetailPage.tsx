@@ -14,17 +14,20 @@ import PaymentTransitionPanel from "./components/PaymentTransitionPanel";
 import { getOrderRoom } from "./orderRoom";
 import { usesSimplifiedProjectState } from "./projectRoomPresentation";
 import type { CommissionPackage } from "./types";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function OrderDetailPage(){
   const{requestId}=useParams();const[search]=useSearchParams();const navigate=useNavigate();const location=useLocation();const[error,setError]=useState("");const[actionBusy,setActionBusy]=useState(false);const{loadDraft}=useDrafts();
+  const{user,loading:authLoading}=useAuth();
   const[packages,setPackages]=useState<CommissionPackage[]>([]);const[selectedPackageId,setSelectedPackageId]=useState<string|null>(null);
   const includeDemo=import.meta.env.DEV&&search.get("dev")==="1";
   const[latestId,setLatestId]=useState<string|undefined>(requestId==="latest"?undefined:requestId);
-  const{data,loading,error:loadError,refresh}=useOrderDetail(latestId);
-  useEffect(()=>{if(requestId!=="latest"){setLatestId(requestId);return}void orderService.getRequests(includeDemo).then(items=>{const id=items[0]?.id;setLatestId(id);const base=location.pathname.startsWith("/my-orders")?"/my-orders":"/my-creations";if(id)navigate(`${base}/${id}${includeDemo?"?dev=1":""}`,{replace:true})}).catch(cause=>setError(cause instanceof Error?cause.message:"My Creations could not be loaded."))},[includeDemo,location.pathname,navigate,requestId]);
+  const[latestResolved,setLatestResolved]=useState(requestId!=="latest");
+  const{data,loading,error:loadError,refresh}=useOrderDetail(authLoading||!user?undefined:latestId);
+  useEffect(()=>{if(authLoading)return;if(!user){setError("Please sign in to open My Creations.");setLatestResolved(true);return}if(requestId!=="latest"){setLatestId(requestId);setLatestResolved(true);return}setLatestResolved(false);void orderService.getRequests(includeDemo).then(items=>{const id=items[0]?.id;setLatestId(id);const base=location.pathname.startsWith("/my-orders")?"/my-orders":"/my-creations";if(id)navigate(`${base}/${id}${includeDemo?"?dev=1":""}`,{replace:true})}).catch(cause=>setError(cause instanceof Error?cause.message:"My Creations could not be loaded.")).finally(()=>setLatestResolved(true))},[authLoading,includeDemo,location.pathname,navigate,requestId,user]);
   useEffect(()=>{document.body.classList.add("order-detail-page");return()=>document.body.classList.remove("order-detail-page")},[]);
   useEffect(()=>{const request=data?.request;if(!request||request.status!=="DRAFT_PREVIEW")return;setSelectedPackageId(request.selectedPackageId);void orderService.getCommissionPackages().then(setPackages).catch(cause=>setError(cause instanceof Error?cause.message:"Packages could not be loaded."))},[data?.request.id,data?.request.status,data?.request.selectedPackageId]);
-  if(loading||(requestId==="latest"&&!latestId))return <div className="od-loading"><span/><span/><span/></div>;
+  if(authLoading||loading||(requestId==="latest"&&!latestResolved))return <div className="od-loading"><span/><span/><span/></div>;
   if(!data)return <main className="od-not-found"><h1>Request not found</h1><p>{loadError||error||"No request is available for this account."}</p><button onClick={()=>navigate("/chamber-of-creation")}>Start a Creation</button></main>;
   const request=data.request;
   const room=getOrderRoom(request.status);

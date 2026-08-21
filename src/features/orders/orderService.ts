@@ -41,11 +41,8 @@ const validCurrency = (value: string) => /^[A-Z]{3}$/.test(value);
 async function verifiedUserId(): Promise<string> {
   if (!isSupabaseConfigured) throw new OrderServiceError("Supabase is not configured for My Creations.");
   const client = getSupabaseClient();
-  const session = await client.auth.getSession();
-  if (session.error) throw new OrderServiceError("Unable to read your sign-in session.", session.error);
-  if (!session.data.session) throw new OrderServiceError("Please sign in to open My Creations.");
   const user = await client.auth.getUser();
-  if (user.error || !user.data.user) throw new OrderServiceError("Your sign-in session could not be verified. Please sign in again.", user.error);
+  if (user.error || !user.data.user) throw new OrderServiceError("Please sign in to open My Creations.", user.error);
   return user.data.user.id;
 }
 

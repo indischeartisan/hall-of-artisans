@@ -216,27 +216,31 @@ body.expert-lab-page .mobile-material-browser {
   body.expert-lab-page .mobile-workbench-status__more {
     display: grid;
     place-items: center;
-    width: 38px;
-    min-width: 38px;
-    height: 38px;
+    flex: 0 0 40px;
+    width: 40px !important;
+    min-width: 40px;
+    height: 40px !important;
+    min-height: 40px;
+    aspect-ratio: 1;
     padding: 0 0 8px;
     color: #735522;
     font: 700 19px/1 Georgia, serif;
     background: rgba(255, 252, 243, .74);
     border: 1px solid rgba(157, 118, 52, .35);
-    border-radius: 50%;
+    border-radius: 999px !important;
   }
 
   body.expert-lab-page .mobile-workbench-options {
     position: static;
     z-index: 30;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     flex: 0 0 100%;
     width: 100%;
     min-width: 0;
     margin-top: 4px;
     padding: 6px;
+    overflow: hidden;
     background: #fffaf0;
     border: 1px solid rgba(157, 118, 52, .36);
     border-radius: 12px;
@@ -244,13 +248,19 @@ body.expert-lab-page .mobile-material-browser {
   }
 
   body.expert-lab-page .mobile-workbench-options button {
-    padding: 11px 12px;
+    min-width: 0;
+    padding: 12px 8px;
     color: #244332;
     font: 600 13px/1.2 Inter, sans-serif;
-    text-align: left;
+    text-align: center;
     background: transparent;
     border: 0;
-    border-radius: 8px;
+    border-right: 1px solid rgba(157, 118, 52, .28);
+    border-radius: 0;
+  }
+
+  body.expert-lab-page .mobile-workbench-options button:last-child {
+    border-right: 0;
   }
 
   body.expert-lab-page .mobile-workbench-options button:hover,
@@ -267,6 +277,11 @@ body.expert-lab-page .mobile-material-browser {
 
   body.expert-lab-page[data-theme="dark"] .mobile-workbench-options button {
     color: #f1d99c;
+    border-right-color: rgba(214, 164, 69, .28);
+  }
+
+  body.expert-lab-page[data-theme="dark"] .mobile-workbench-options button:last-child {
+    border-right: 0;
   }
 
   body.expert-lab-page .mobile-workbench-status__meta .is-unsaved {
@@ -669,7 +684,7 @@ body.expert-lab-page .mobile-material-browser {
 
   body.expert-lab-page .mobile-workspace.mobile-view-materials {
     overflow: hidden;
-    padding-top: 0 !important;
+    padding-top: 18px !important;
     background-position: center top;
   }
 
@@ -876,11 +891,13 @@ body.expert-lab-page .mobile-material-browser {
 
   body.expert-lab-page .mobile-material-card {
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) !important;
-    gap: 3px !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    column-gap: 8px !important;
+    row-gap: 3px !important;
+    align-items: center !important;
     margin: 0 !important;
     height: max-content !important;
-    min-height: 100px !important;
+    min-height: 88px !important;
     padding: 7px 8px !important;
     overflow: visible !important;
     background: #fffaf0 !important;
@@ -974,6 +991,7 @@ body.expert-lab-page .mobile-material-browser {
 
   body.expert-lab-page .mobile-material-card__description {
     display: none;
+    grid-column: 1 / -1;
     padding: 9px 2px 2px;
     color: #575448;
     font: 500 12px/1.45 Inter, sans-serif;
@@ -992,9 +1010,10 @@ body.expert-lab-page .mobile-material-browser {
 
   body.expert-lab-page .mobile-material-card__actions {
     display: flex;
-    justify-content: flex-end;
+    align-self: center;
+    justify-content: center;
     gap: 5px;
-    padding-left: 68px;
+    padding-left: 0;
   }
 
   body.expert-lab-page .mobile-material-layer {
@@ -1160,7 +1179,7 @@ body.expert-lab-page .mobile-material-browser {
   @media (max-width: 420px) {
     body.expert-lab-page .mobile-material-card__info { grid-template-columns: 56px minmax(0, 1fr); }
     body.expert-lab-page .mobile-material-card__symbol { width: 56px; height: 52px; }
-    body.expert-lab-page .mobile-material-card__actions { padding-left: 64px; }
+    body.expert-lab-page .mobile-material-card__actions { padding-left: 0; }
     body.expert-lab-page .mobile-material-layer { min-width: 58px; padding-inline: 6px; }
     body.expert-lab-page .mobile-material-sheet { grid-template-columns: 90px minmax(0, 1fr); }
   }

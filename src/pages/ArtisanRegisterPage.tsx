@@ -6,6 +6,7 @@ import { MIN_PASSWORD_LENGTH, passwordRequirement } from "../features/auth/passw
 import { useLegacyStylesheets } from "../hooks/useLegacyStylesheets";
 import { artisanSpecialtyGroups as groups, defaultArtisanSpecialty, formatArtisanSpecialty } from "../data/artisanSpecialty";
 import { authPathWithReturnTo, sanitizeReturnTo } from "../features/auth/returnTo";
+import { authRedirectUrl } from "../features/auth/authRedirect";
 
 const artisanProfileStyles = [
   "/assets/css/styles.css?v=18",
@@ -24,6 +25,8 @@ export default function ArtisanRegisterPage() {
   const specialtyDropdownsRef = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState("");
+  const [resending, setResending] = useState(false);
   const specialtyLabel = formatArtisanSpecialty(specialty);
 
   useEffect(() => {
@@ -55,12 +58,25 @@ export default function ArtisanRegisterPage() {
     const fullName = String(data.get("fullName")).trim();
     const email = String(data.get("emailAddress")).trim();
     const password = String(data.get("password"));
+    const passwordConfirmation = String(data.get("passwordConfirmation"));
+    if (password !== passwordConfirmation) { setMessage("Password confirmation does not match."); return; }
+    setPendingEmail("");
     setSubmitting(true); setMessage("Creating your secure Hall account...");
     const loginReturnPath = authPathWithReturnTo("/artisan-login", returnTo);
-    const result = await authService.signUp(email, password, fullName, { contact_handle: String(data.get("contactHandle")).trim(), scent_direction: specialty.direction, scent_mood: specialty.mood, artisan_style: specialty.style, specialty: specialtyLabel }, `${window.location.origin}${loginReturnPath}`);
+    const result = await authService.signUp(email, password, fullName, { contact_handle: String(data.get("contactHandle")).trim(), scent_direction: specialty.direction, scent_mood: specialty.mood, artisan_style: specialty.style, specialty: specialtyLabel }, authRedirectUrl(loginReturnPath));
     if (!result.ok) { setMessage(result.error.message); setSubmitting(false); return; }
-    const response = result.data as { session?: unknown } | null;
-    if (!response?.session) { setMessage("Registration received. Check your email and confirm your address, then sign in to receive your Artisan ID."); setSubmitting(false); return; }
+    const response = result.data as { session?: unknown; user?: { identities?: unknown[] } | null } | null;
+    if (response?.user && Array.isArray(response.user.identities) && response.user.identities.length === 0) {
+      setMessage("Email ini sudah terdaftar. Silakan pilih ‘I Already Have an ID’ untuk masuk, atau gunakan ‘Forgot your password?’ jika lupa password.");
+      setSubmitting(false);
+      return;
+    }
+    if (!response?.session) {
+      setPendingEmail(email);
+      setMessage("Check your inbox and spam folder for the verification email. If this address already has an Artisan account, no new signup email will be sent—sign in or reset your password instead.");
+      setSubmitting(false);
+      return;
+    }
     const identity = await authService.getArtisanIdentity();
     if (!identity.ok) { setMessage(identity.error.message); setSubmitting(false); return; }
     navigate(returnTo);
@@ -73,14 +89,22 @@ export default function ArtisanRegisterPage() {
       <div className="register-hero-veil" aria-hidden="true" />
       <div className="register-layout">
         <div className="register-left"><div className="register-hero-copy"><p className="section-kicker">Official Hall Desk</p><h1 id="registerTitle">Artisan Register</h1><p className="register-subtitle">Register your name within The Hall.</p><p>Every creation belongs to a creator. Create your Artisan ID to save fragrance drafts, generate shareable story cards, and submit a creation to be crafted into a real perfume.</p><div className="hero-story-note"><span aria-hidden="true">❧</span><p><strong>Every great fragrance begins with a story.</strong><br />Let your journey as an artisan begin here.</p></div></div></div>
-        <form className="register-form ornate-panel bright-register-panel" id="artisanRegisterForm" noValidate onSubmit={submit}>
+        <form className="register-form ornate-panel bright-register-panel" id="artisanRegisterForm" autoComplete="off" noValidate onSubmit={submit}>
           <div className="register-section-heading"><p className="section-kicker">Create Your Artisan ID</p><h2>Create Your Artisan ID</h2></div>
-          <label><span>Full Name</span><input name="fullName" type="text" autoComplete="name" placeholder="Enter your full name" required /></label>
+          <label><span>Full Name</span><input name="fullName" type="text" autoComplete="off" placeholder="Enter your full name" required /></label>
           <label><span>Email Address</span><input name="emailAddress" type="email" autoComplete="email" placeholder="Enter your email address" required /></label>
           <label><span>Password</span><input name="password" type="password" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} aria-describedby="register-password-requirement" placeholder="Create a password" required /><small id="register-password-requirement">{passwordRequirement}</small></label>
+          <label><span>Confirm Password</span><input name="passwordConfirmation" type="password" autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} placeholder="Enter the same password again" required /></label>
           <label><span>Instagram / WhatsApp <small>optional</small></span><input name="contactHandle" type="text" autoComplete="off" placeholder="@username or phone number" /></label>
           <section className="specialty-selectors" aria-label="Artisan specialty"><div className="specialty-dropdowns" ref={specialtyDropdownsRef}>{groups.map(group => { const isOpen = openGroup === group.id; return <div className={`specialty-select${isOpen ? " open" : ""}`} key={group.id}><span className="specialty-select-label">{group.label}</span><button className="specialty-select-toggle" type="button" aria-expanded={isOpen} onClick={() => setOpenGroup(isOpen ? null : group.id)}><span className="specialty-selected">{specialty[group.id]}</span><span className="specialty-caret" aria-hidden="true" /></button><div className="specialty-select-menu" hidden={!isOpen}>{group.options.map(option => <button className={`specialty-option${specialty[group.id] === option ? " active" : ""}`} type="button" data-value={option} key={option} onClick={() => { setSpecialty(current => ({ ...current, [group.id]: option })); setOpenGroup(null); }}>{option}</button>)}</div></div>; })}</div><p className="specialty-summary-label">Specialty Preview</p><p className="specialty-result"><strong>{specialtyLabel}</strong></p></section>
-          <p className="form-message" role="status" aria-live="polite">{message}</p><button className="register-submit" type="submit" disabled={submitting}>{submitting ? "Creating Secure Account..." : returnTo === "/my-artisan-id" ? "Register & Create My ID" : "Register & Continue"}</button><div className="existing-artisan-divider" aria-hidden="true"><span>or</span></div><a className="form-existing-artisan" href={authPathWithReturnTo("/artisan-login", returnTo)}>I Already Have an ID</a><p className="password-prototype-note"><span aria-hidden="true">♙</span>Your account is protected by Supabase Auth. Your password is never stored by this website.</p>
+          <p className="form-message" role="status" aria-live="polite">{message}</p>
+          {pendingEmail && <button className="form-existing-artisan" type="button" disabled={resending} onClick={async () => {
+            setResending(true);
+            const resent = await authService.resendVerificationEmail(pendingEmail, authRedirectUrl(authPathWithReturnTo("/artisan-login", returnTo)));
+            setMessage(resent.ok ? "Verification email requested again. Check your inbox and spam folder. If the address is already verified, please sign in instead." : resent.error.message);
+            setResending(false);
+          }}>{resending ? "Requesting Email..." : "Resend Verification Email"}</button>}
+          <button className="register-submit" type="submit" disabled={submitting}>{submitting ? "Creating Secure Account..." : returnTo === "/my-artisan-id" ? "Register & Create My ID" : "Register & Continue"}</button><div className="existing-artisan-divider" aria-hidden="true"><span>or</span></div><a className="form-existing-artisan" href={authPathWithReturnTo("/artisan-login", returnTo)}>I Already Have an ID</a><p className="password-prototype-note"><span aria-hidden="true">♙</span>Your account is protected by Supabase Auth. Your password is never stored by this website.</p>
         </form>
         <aside className="id-preview-wrap blank-id-preview ornate-panel bright-preview-panel" aria-label="Blank Artisan ID card preview"><p className="section-kicker">Artisan ID Card Preview</p><p className="card-size-label">Instagram Story Size 1080 × 1920</p><div className="artisan-card artisan-card-template"><img className="artisan-card-template-image" src="/assets/images/artisan-id-card-botanical-v2.webp" alt="" /><span className="id-card-text id-card-name">Your Name</span><span className="id-card-text id-card-artisan-id">HA-YYYY-XXXX</span><span className="id-card-text id-card-specialty">Your Specialty</span><span className="id-card-text id-card-status">Pending Registration</span><span className="id-card-text id-card-registered-within">Indische World</span><span className="id-card-text id-card-registered-since">YYYY</span></div><p className="preview-issue-note">Your official Artisan ID Card will be issued after registration.</p></aside>
       </div>

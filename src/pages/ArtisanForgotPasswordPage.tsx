@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import GlobalHeader from "../components/GlobalHeader";
 import { authService } from "../features/auth/authService";
 import { useLegacyStylesheets } from "../hooks/useLegacyStylesheets";
+import { authRedirectUrl } from "../features/auth/authRedirect";
 
 const artisanProfileStyles = [
   "/assets/css/styles.css?v=18",
@@ -29,7 +30,7 @@ export default function ArtisanForgotPasswordPage() {
     const email = String(new FormData(form).get("email")).trim().toLowerCase();
     setSubmitting(true);
     setMessage("Preparing your recovery letter...");
-    const result = await authService.requestPasswordReset(email, `${window.location.origin}/artisan-reset-password`);
+    const result = await authService.requestPasswordReset(email, authRedirectUrl("/artisan-reset-password"));
     if (!result.ok) {
       setMessage(result.error.message);
       setSubmitting(false);
