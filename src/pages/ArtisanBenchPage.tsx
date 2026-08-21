@@ -505,8 +505,11 @@ export default function ArtisanBenchPage() {
                   <div><small>Total</small><strong>{latestBenchState.current.formulaMetadata.total}%</strong></div>
                 </div>
                 <div className="mobile-formula-balance-copy">
-                  <span>Formula Balance</span>
-                  <strong>{latestBenchState.current.formulaMetadata.total === 100 ? "The formula is perfectly balanced." : "Continue balancing your formula."}</strong>
+                  <span>Formula Balance <i aria-hidden="true">⚖</i></span>
+                  <strong>
+                    {latestBenchState.current.formulaMetadata.total === 100 ? "The formula is perfectly balanced." : "Continue balancing your formula."}
+                    {latestBenchState.current.formulaMetadata.total === 100 ? <i className="mobile-balance-check" aria-hidden="true">✓</i> : null}
+                  </strong>
                   <div className="mobile-formula-totals">
                     <span>Top <b>{latestBenchState.current.formulaMetadata.layerTotals.top}%</b></span>
                     <span>Heart <b>{latestBenchState.current.formulaMetadata.layerTotals.heart}%</b></span>
@@ -529,24 +532,25 @@ export default function ArtisanBenchPage() {
               </nav>
               <div className="layer-grid inner-grid">
                 <div className="layer-card inner-panel" data-layer="top">
-                  <h3><span>Top Notes</span> <strong data-layer-total="top">0%</strong></h3>
-                  <small>Opening | <span data-range="top">10-25%</span></small>
+                  <header className="mobile-layer-heading"><div><h3>Top Notes</h3><small>The first impression · Light &amp; Evaporative</small></div><strong data-layer-total="top">0%</strong></header>
                   <div className="selected-list" id="topList" />
-                  <button data-add="top" className="add-btn panel-button">+ Add Top Note</button>
+                  <button data-add="top" className="add-btn panel-button"><span aria-hidden="true">＋</span> Add Material</button>
                 </div>
                 <div className="layer-card inner-panel" data-layer="heart">
-                  <h3><span>Heart Notes</span> <strong data-layer-total="heart">0%</strong></h3>
-                  <small>Body | <span data-range="heart">30-50%</span></small>
+                  <header className="mobile-layer-heading"><div><h3>Heart Notes</h3><small>The character · Rich &amp; Expressive</small></div><strong data-layer-total="heart">0%</strong></header>
                   <div className="selected-list" id="heartList" />
-                  <button data-add="heart" className="add-btn panel-button">+ Add Heart Note</button>
+                  <button data-add="heart" className="add-btn panel-button"><span aria-hidden="true">＋</span> Add Material</button>
                 </div>
                 <div className="layer-card inner-panel" data-layer="base">
-                  <h3><span>Base Notes</span> <strong data-layer-total="base">0%</strong></h3>
-                  <small>Drydown | <span data-range="base">30-50%</span></small>
+                  <header className="mobile-layer-heading"><div><h3>Base Notes</h3><small>The lasting impression · Deep &amp; Enduring</small></div><strong data-layer-total="base">0%</strong></header>
                   <div className="selected-list" id="baseList" />
-                  <button data-add="base" className="add-btn panel-button">+ Add Base Note</button>
+                  <button data-add="base" className="add-btn panel-button"><span aria-hidden="true">＋</span> Add Material</button>
                 </div>
               </div>
+              <section className={`mobile-formula-validation ${latestBenchState.current.formulaMetadata.total === 100 ? "is-balanced" : ""}`} aria-live="polite">
+                <span aria-hidden="true">{latestBenchState.current.formulaMetadata.total === 100 ? "✓" : "!"}</span>
+                <div><strong>{latestBenchState.current.formulaMetadata.total === 100 ? "Formula is balanced at 100%" : `Formula total is ${latestBenchState.current.formulaMetadata.total}%`}</strong><small>{latestBenchState.current.formulaMetadata.total === 100 ? "Well done, Artisan." : "Continue balancing to reach 100%."}</small></div>
+              </section>
               <div className="formula-summary-strip">
                 <span>Total Formula <strong id="totalPercent">0%</strong></span>
                 <span>Top <strong id="topTotal">0%</strong></span>

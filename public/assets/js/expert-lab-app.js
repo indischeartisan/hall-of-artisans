@@ -411,13 +411,14 @@ function renderFormula() {
     const items = state.formula.filter((item) => formulaLayer(item) === layer);
     $(`${layer}List`).innerHTML = items.map((item) => {
       const material = getMaterial(item.id);
-      const icon = materialIconMap[material.category] || '✦';
-      return `<div class="selected-material inner-panel compact-material-row">
-        <header>
-          <span class="selected-material-name"><span class="material-note-icon" aria-hidden="true">${icon}</span>${material.name}</span>
-          <span class="selected-material-controls"><span class="material-percent">${item.percent}%</span><button class="remove-btn panel-button" data-remove="${item.id}" aria-label="Remove ${material.name}">×</button></span>
-        </header>
+      const family = Array.isArray(material.family) ? material.family[0] : material.family;
+      return `<div class="selected-material inner-panel compact-material-row mobile-formula-material">
+        <span class="mobile-formula-material__grip" aria-hidden="true">⠿</span>
+        <span class="mobile-formula-material__art">${materialArtwork(material)}</span>
+        <span class="mobile-formula-material__copy"><strong>${material.name}</strong><small>${material.category}${family ? ` · ${family}` : ''}</small></span>
+        <span class="selected-material-controls"><span class="material-percent">${item.percent}%</span><button class="remove-btn panel-button" data-remove="${item.id}" aria-label="Remove ${material.name}">×</button></span>
         <input type="range" min="1" max="60" value="${item.percent}" data-percent="${item.id}" aria-label="${material.name} percentage" />
+        <span class="mobile-formula-material__layer">${layer.toUpperCase()}</span>
       </div>`;
     }).join('');
   });

@@ -45,6 +45,7 @@ import "./styles/describe-creation-overrides.css";
 import "./styles/bright-title-clarity.css";
 import "./styles/beta-environment.css";
 import "./styles/accessibility.css";
+import "./styles/artisan-bench-formula-mobile.css";
 import { DraftProvider } from "./contexts/DraftContext";
 import { AuthProvider } from "./contexts/AuthContext";
 

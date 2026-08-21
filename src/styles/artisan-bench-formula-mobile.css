@@ -1,0 +1,390 @@
+/* Final mobile Formula cascade. Kept separate so the editorial workspace wins
+   over the legacy compact mobile rules in artisan-bench-shell.css. */
+@media (max-width: 760px) {
+  body.expert-lab-page .mobile-workspace.mobile-view-formula {
+    overflow: hidden !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula > .build-review-row {
+    height: calc(100% - 102px) !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 12px 94px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scrollbar-width: none;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula > .build-review-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100% !important;
+    padding: 12px !important;
+    overflow: visible !important;
+    background: rgba(255, 250, 238, .82) !important;
+  }
+
+  body.expert-lab-page .mobile-formula-overview {
+    display: grid !important;
+    grid-template-columns: 128px minmax(0, 1fr) !important;
+    gap: 16px !important;
+    min-height: 164px !important;
+    padding: 14px !important;
+    border-radius: 15px !important;
+  }
+
+  body.expert-lab-page .mobile-formula-ring {
+    width: 126px !important;
+    height: 126px !important;
+    padding: 13px !important;
+  }
+
+  body.expert-lab-page .mobile-formula-ring strong {
+    font-size: 39px !important;
+  }
+
+  body.expert-lab-page .mobile-formula-balance-copy > span {
+    display: flex !important;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px !important;
+  }
+
+  body.expert-lab-page .mobile-formula-balance-copy > span i {
+    font: normal 19px/1 serif;
+  }
+
+  body.expert-lab-page .mobile-formula-balance-copy > strong {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font: 500 16px/1.3 Inter, sans-serif !important;
+  }
+
+  body.expert-lab-page .mobile-balance-check {
+    display: grid;
+    place-items: center;
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+  }
+
+  body.expert-lab-page .mobile-formula-totals {
+    gap: 7px !important;
+    margin-top: 8px !important;
+  }
+
+  body.expert-lab-page .mobile-formula-totals span {
+    min-height: 59px !important;
+    padding: 7px 3px !important;
+    border-radius: 10px !important;
+  }
+
+  body.expert-lab-page .mobile-formula-totals b {
+    font-size: 23px !important;
+  }
+
+  body.expert-lab-page .mobile-layer-tabs {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    width: 100% !important;
+    min-height: 52px !important;
+    margin: 13px 0 0 !important;
+    border-radius: 12px !important;
+  }
+
+  body.expert-lab-page .mobile-layer-tabs button {
+    min-height: 50px !important;
+    padding: 6px 4px !important;
+    font: 600 12px/1 Inter, sans-serif !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder > .layer-grid {
+    display: block !important;
+    min-height: 0 !important;
+    margin-top: 13px !important;
+    overflow: visible !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .layer-card {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.expert-lab-page .mobile-layer-heading {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 8px 12px;
+  }
+
+  body.expert-lab-page .mobile-layer-heading h3 {
+    margin: 0 0 4px !important;
+    color: #174633;
+    font: 600 27px/1 "Cormorant Garamond", serif !important;
+    text-transform: uppercase;
+  }
+
+  body.expert-lab-page .mobile-layer-heading small {
+    color: #9c6d25;
+    font: 500 12px/1.2 Inter, sans-serif;
+  }
+
+  body.expert-lab-page .mobile-layer-heading > strong {
+    min-width: 68px;
+    padding: 9px 12px;
+    color: #ae7a20;
+    font: 600 26px/1 "Cormorant Garamond", serif;
+    text-align: center;
+    border: 1px solid rgba(169, 129, 58, .3);
+    border-radius: 24px;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .layer-card > .selected-list {
+    display: grid !important;
+    gap: 9px !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  body.expert-lab-page .mobile-formula-material {
+    display: grid !important;
+    grid-template-columns: 12px 72px minmax(0, 1fr) auto !important;
+    grid-template-rows: auto 31px !important;
+    align-items: center !important;
+    gap: 4px 10px !important;
+    min-height: 122px !important;
+    padding: 11px 13px !important;
+    background: rgba(255, 251, 241, .97) !important;
+    border: 1px solid rgba(169, 129, 58, .28) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 4px 12px rgba(91, 64, 22, .06) !important;
+  }
+
+  body.expert-lab-page .mobile-formula-material__grip {
+    grid-row: 1 / 3;
+    color: #b19a6a;
+    font: 700 19px/1 monospace;
+    writing-mode: vertical-rl;
+  }
+
+  body.expert-lab-page .mobile-formula-material__art {
+    display: grid;
+    place-items: center;
+    grid-row: 1 / 3;
+    width: 72px;
+    height: 72px;
+    overflow: hidden;
+    font-size: 33px;
+    background: #f8f0dc;
+    border-radius: 50%;
+  }
+
+  body.expert-lab-page .mobile-formula-material__art img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  body.expert-lab-page .mobile-formula-material__copy {
+    display: grid;
+    align-self: end;
+    min-width: 0;
+  }
+
+  body.expert-lab-page .mobile-formula-material__copy strong {
+    overflow: hidden;
+    color: #174633;
+    font: 600 22px/1.05 "Cormorant Garamond", serif;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  body.expert-lab-page .mobile-formula-material__copy small {
+    color: #67685e;
+    font: 500 12px/1.2 Inter, sans-serif;
+  }
+
+  body.expert-lab-page .mobile-formula-material .selected-material-controls {
+    display: flex !important;
+    align-self: start;
+    align-items: center;
+    gap: 8px;
+  }
+
+  body.expert-lab-page .mobile-formula-material .material-percent {
+    color: #ac771d;
+    font: 600 27px/1 "Cormorant Garamond", serif;
+  }
+
+  body.expert-lab-page .mobile-formula-material .remove-btn {
+    display: grid;
+    place-items: center;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border-radius: 50% !important;
+  }
+
+  body.expert-lab-page .mobile-formula-material input[type="range"] {
+    grid-column: 3 / 4;
+    grid-row: 2;
+    width: 100%;
+    margin: 0;
+    accent-color: #c69028;
+  }
+
+  body.expert-lab-page .mobile-formula-material__layer {
+    grid-column: 4;
+    grid-row: 2;
+    justify-self: end;
+    padding: 5px 9px;
+    color: #765b2e;
+    font: 600 11px/1 Inter, sans-serif;
+    border: 1px solid rgba(169, 129, 58, .28);
+    border-radius: 8px;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .layer-card > .add-btn {
+    width: 100%;
+    min-height: 58px !important;
+    margin-top: 12px !important;
+    color: #fff4d7 !important;
+    font: 600 19px/1 "Cormorant Garamond", serif !important;
+    background: #174b38 !important;
+    border-radius: 13px !important;
+  }
+
+  body.expert-lab-page .mobile-formula-validation {
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    margin-top: 13px;
+    padding: 12px 14px;
+    color: #6b5229;
+    background: rgba(255, 250, 231, .93);
+    border: 1px solid rgba(169, 129, 58, .25);
+    border-radius: 13px;
+  }
+
+  body.expert-lab-page .mobile-formula-validation > span {
+    display: grid;
+    place-items: center;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    color: #174b38;
+    font: 700 20px/1 Inter, sans-serif;
+    border: 3px solid currentColor;
+    border-radius: 50%;
+  }
+
+  body.expert-lab-page .mobile-formula-validation div {
+    display: grid;
+    gap: 3px;
+  }
+
+  body.expert-lab-page .mobile-formula-validation strong {
+    color: #244031;
+    font: 600 17px/1.2 "Cormorant Garamond", serif;
+  }
+
+  body.expert-lab-page .mobile-formula-validation small {
+    font: 500 12px/1.2 Inter, sans-serif;
+  }
+
+  body.expert-lab-page[data-theme="dark"] .mobile-workspace.mobile-view-formula .formula-builder {
+    background: rgba(25, 16, 10, .88) !important;
+  }
+
+  body.expert-lab-page[data-theme="dark"] :is(.mobile-formula-material, .mobile-formula-validation) {
+    color: #d8c7a5;
+    background: rgba(35, 22, 13, .96) !important;
+  }
+
+  /* The legacy lab styles are injected after the React bundle. These selectors
+     deliberately outrank their compact selected-material treatment. */
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder .selected-list .selected-material.inner-panel.mobile-formula-material {
+    display: grid !important;
+    grid-template-columns: 12px 82px minmax(0, 1fr) auto !important;
+    grid-template-rows: auto 34px !important;
+    gap: 6px 12px !important;
+    min-height: 132px !important;
+    height: auto !important;
+    padding: 13px 14px !important;
+    overflow: visible !important;
+    background: rgba(255, 251, 241, .98) !important;
+    border: 1px solid rgba(169, 129, 58, .28) !important;
+    border-radius: 15px !important;
+    box-shadow: 0 4px 12px rgba(91, 64, 22, .06) !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder .selected-list .selected-material.mobile-formula-material input[type="range"] {
+    display: block !important;
+    grid-column: 3 / 4 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    height: 20px !important;
+    margin: 0 !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder .selected-list {
+    gap: 10px !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .mobile-formula-material__art {
+    width: 82px !important;
+    height: 82px !important;
+  }
+}
+
+/* Mobile workbench tabs share the same open-canvas treatment as Materials.
+   Only the page-level wrapper is removed; all functional inner cards remain. */
+@media (max-width: 760px) {
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder.panel,
+  body.expert-lab-page .mobile-workspace.mobile-view-insights .analysis.panel,
+  body.expert-lab-page .mobile-workspace.mobile-view-insights .drydown.panel,
+  body.expert-lab-page .mobile-workspace.mobile-view-insights > .formula-check.panel,
+  body.expert-lab-page .mobile-workspace.mobile-view-notes .perfumer-notes.panel,
+  body.expert-lab-page .mobile-workspace.mobile-view-review .story-card-section.panel,
+  body.expert-lab-page .mobile-workspace.mobile-view-review > .next.panel {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder.panel,
+  body.expert-lab-page .mobile-workspace.mobile-view-notes .perfumer-notes.panel,
+  body.expert-lab-page .mobile-workspace.mobile-view-review .story-card-section.panel,
+  body.expert-lab-page .mobile-workspace.mobile-view-review > .next.panel {
+    padding-inline: 0 !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-insights .analysis.panel,
+  body.expert-lab-page .mobile-workspace.mobile-view-insights .drydown.panel,
+  body.expert-lab-page .mobile-workspace.mobile-view-insights > .formula-check.panel {
+    padding-inline: 0 !important;
+  }
+}
