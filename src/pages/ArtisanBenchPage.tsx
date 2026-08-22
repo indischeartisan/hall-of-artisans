@@ -386,7 +386,7 @@ export default function ArtisanBenchPage() {
             className={`mobile-workbench-status${isMobileOptionsOpen ? " is-options-open" : ""}`}
             aria-label="Current creation status"
           >
-            <div>
+            <div className="mobile-workbench-status__content">
               {isMobileNameEditing ? (
                 <input
                   autoFocus
@@ -412,19 +412,19 @@ export default function ArtisanBenchPage() {
                   <span aria-hidden="true">✎</span>
                 </button>
               )}
+              <div className="mobile-workbench-status__meta">
+                <span>{latestBenchState.current.concentration.toUpperCase()}</span>
+                <span>{latestBenchState.current.formulaMetadata.total}% formula</span>
+                <span className={isDirty ? "is-unsaved" : "is-saved"}>{isDirty ? "Unsaved" : "Saved"}</span>
+              </div>
             </div>
-            <div className="mobile-workbench-status__meta">
-              <span>{latestBenchState.current.concentration.toUpperCase()}</span>
-              <span>{latestBenchState.current.formulaMetadata.total}% formula</span>
-              <span className={isDirty ? "is-unsaved" : "is-saved"}>{isDirty ? "Unsaved" : "Saved"}</span>
-              <button
-                className="mobile-workbench-status__more"
-                type="button"
-                aria-label="Creation options"
-                aria-expanded={isMobileOptionsOpen}
-                onClick={() => setIsMobileOptionsOpen((open) => !open)}
-              >...</button>
-            </div>
+            <button
+              className="mobile-workbench-status__more"
+              type="button"
+              aria-label="Creation options"
+              aria-expanded={isMobileOptionsOpen}
+              onClick={() => setIsMobileOptionsOpen((open) => !open)}
+            >...</button>
             {isMobileOptionsOpen ? (
               <div className="mobile-workbench-options" role="menu" aria-label="Creation options menu">
                 <button type="button" role="menuitem" onClick={() => {
@@ -493,7 +493,7 @@ export default function ArtisanBenchPage() {
           </section>
 
           <section className="build-review-row">
-            <section className={`formula-builder panel ornate-panel mobile-layer-${mobileFormulaLayer}`}>
+            <section id="mobileFormulaBuilder" className={`formula-builder panel ornate-panel mobile-layer-${mobileFormulaLayer}`}>
               <div className="panel-heading"><div><p className="step">05 Formula Builder</p><h2>Build Your Structure</h2></div></div>
               <section className="mobile-formula-overview" aria-label="Formula balance">
                 <div
@@ -558,9 +558,9 @@ export default function ArtisanBenchPage() {
                 <span>Base <strong id="baseTotal">0%</strong></span>
               </div>
               <div className="actions inner-panel">
-                <button id="autoBalance" className="panel-button">Auto Balance to 100%</button>
+                <button id="autoBalance" className="panel-button">Auto 100%</button>
+                <button id="generateBrief" className="gold gold-button">Generate</button>
                 <button id="clearFormula" className="quiet panel-button">Clear All</button>
-                <button id="generateBrief" className="gold gold-button">Generate Fragrance Brief</button>
               </div>
             </section>
 

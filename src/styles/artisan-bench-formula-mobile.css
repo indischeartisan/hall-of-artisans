@@ -1,5 +1,8 @@
-/* Final mobile Formula cascade. Kept separate so the editorial workspace wins
-   over the legacy compact mobile rules in artisan-bench-shell.css. */
+/*
+ * Sole owner of the Artisan Bench mobile Formula presentation.
+ * Shared workbench chrome and the other mobile tabs belong in
+ * artisan-bench-shell.css; do not duplicate Formula styling there.
+ */
 @media (max-width: 760px) {
   body.expert-lab-page .mobile-workspace.mobile-view-formula {
     overflow: hidden !important;
@@ -26,37 +29,86 @@
     min-height: 100% !important;
     padding: 12px !important;
     overflow: visible !important;
-    background: rgba(255, 250, 238, .82) !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder > .panel-heading {
+    display: none !important;
   }
 
   body.expert-lab-page .mobile-formula-overview {
     display: grid !important;
-    grid-template-columns: 128px minmax(0, 1fr) !important;
-    gap: 16px !important;
-    min-height: 164px !important;
-    padding: 14px !important;
+    grid-template-columns: 100px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 12px !important;
+    min-height: 132px !important;
+    padding: 11px !important;
+    color: #244031 !important;
+    background: rgba(255, 251, 241, .96) !important;
+    border: 1px solid rgba(169, 129, 58, .3) !important;
     border-radius: 15px !important;
+    box-shadow: 0 5px 16px rgba(76, 53, 18, .08) !important;
   }
 
   body.expert-lab-page .mobile-formula-ring {
-    width: 126px !important;
-    height: 126px !important;
-    padding: 13px !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 100px !important;
+    height: 100px !important;
+    padding: 10px !important;
+    aspect-ratio: 1 !important;
+    border-radius: 50% !important;
+    box-shadow: inset 0 0 0 1px rgba(135, 101, 41, .22) !important;
+  }
+
+  body.expert-lab-page .mobile-formula-ring > div {
+    display: grid !important;
+    place-items: center !important;
+    align-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    color: #274635 !important;
+    background: #fffaf0 !important;
+    border-radius: 50% !important;
+  }
+
+  body.expert-lab-page .mobile-formula-ring small {
+    font: 600 9px/1 Inter, sans-serif !important;
+    letter-spacing: .13em !important;
+    text-transform: uppercase !important;
   }
 
   body.expert-lab-page .mobile-formula-ring strong {
-    font-size: 39px !important;
+    font-family: "Cormorant Garamond", serif !important;
+    font-weight: 600 !important;
+    line-height: .9 !important;
+    font-size: 31px !important;
+  }
+
+  body.expert-lab-page .mobile-formula-balance-copy {
+    display: grid !important;
+    gap: 6px !important;
+    min-width: 0 !important;
   }
 
   body.expert-lab-page .mobile-formula-balance-copy > span {
     display: flex !important;
     align-items: center;
     gap: 7px;
-    font-size: 11px !important;
+    color: #a37524 !important;
+    font-family: Inter, sans-serif !important;
+    font-weight: 600 !important;
+    letter-spacing: .12em !important;
+    text-transform: uppercase !important;
+    font-size: 10px !important;
   }
 
   body.expert-lab-page .mobile-formula-balance-copy > span i {
-    font: normal 19px/1 serif;
+    font: normal 16px/1 serif;
   }
 
   body.expert-lab-page .mobile-formula-balance-copy > strong {
@@ -64,7 +116,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    font: 500 16px/1.3 Inter, sans-serif !important;
+    font: 500 14px/1.25 Inter, sans-serif !important;
   }
 
   body.expert-lab-page .mobile-balance-check {
@@ -78,33 +130,73 @@
   }
 
   body.expert-lab-page .mobile-formula-totals {
-    gap: 7px !important;
-    margin-top: 8px !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    margin-top: 2px !important;
   }
 
   body.expert-lab-page .mobile-formula-totals span {
-    min-height: 59px !important;
-    padding: 7px 3px !important;
+    display: grid !important;
+    place-items: center !important;
+    gap: 3px !important;
+    min-height: 48px !important;
+    padding: 5px 2px !important;
+    color: #4a5148 !important;
+    font: 600 9px/1 Inter, sans-serif !important;
+    text-transform: uppercase !important;
+    border: 1px solid rgba(169, 129, 58, .3) !important;
     border-radius: 10px !important;
   }
 
   body.expert-lab-page .mobile-formula-totals b {
-    font-size: 23px !important;
+    color: #a87924 !important;
+    font-family: "Cormorant Garamond", serif !important;
+    font-weight: 600 !important;
+    font-size: 18px !important;
   }
 
   body.expert-lab-page .mobile-layer-tabs {
     display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0 !important;
     width: 100% !important;
-    min-height: 52px !important;
+    min-height: 42px !important;
     margin: 13px 0 0 !important;
-    border-radius: 12px !important;
+    padding: 3px !important;
+    overflow: hidden !important;
+    background: rgba(255, 250, 239, .9) !important;
+    border: 1px solid rgba(169, 129, 58, .42) !important;
+    border-radius: 9px !important;
+    box-shadow: 0 2px 8px rgba(78, 55, 20, .08), inset 0 0 0 1px rgba(169, 129, 58, .12) !important;
   }
 
   body.expert-lab-page .mobile-layer-tabs button {
-    min-height: 50px !important;
-    padding: 6px 4px !important;
-    font: 600 12px/1 Inter, sans-serif !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 36px !important;
+    padding: 5px 3px !important;
+    color: #3e463c !important;
+    font: 600 10px/1 "Cormorant Garamond", serif !important;
+    letter-spacing: .025em !important;
+    text-transform: uppercase !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-right: 1px solid rgba(169, 129, 58, .25) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.expert-lab-page .mobile-layer-tabs button:last-child {
+    border-right: 0 !important;
+  }
+
+  body.expert-lab-page .mobile-layer-tabs button.is-active {
+    color: #fff9e8 !important;
+    background: linear-gradient(135deg, #174c34, #103d2a) !important;
+    border-right-color: transparent !important;
+    border-radius: 6px !important;
+    box-shadow: 0 3px 8px rgba(18, 57, 39, .24) !important;
   }
 
   body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder > .layer-grid {
@@ -121,6 +213,7 @@
     padding: 0 !important;
     overflow: visible !important;
     background: transparent !important;
+    background-image: none !important;
     border: 0 !important;
     box-shadow: none !important;
   }
@@ -358,33 +451,359 @@
   }
 }
 
+/* Keep every mobile panel on the same reference-style 20px viewport inset. */
+@media (max-width: 760px) {
+  body.expert-lab-page .mobile-workbench-status {
+    position: relative !important;
+    left: 6px !important;
+    flex: none !important;
+    width: calc(100vw - 40px) !important;
+    min-width: calc(100vw - 40px) !important;
+    max-width: calc(100vw - 40px) !important;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula > .build-review-row {
+    display: block !important;
+    position: relative !important;
+    left: 6px !important;
+    width: calc(100vw - 40px) !important;
+    min-width: calc(100vw - 40px) !important;
+    max-width: calc(100vw - 40px) !important;
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder,
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .mobile-formula-overview,
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .mobile-layer-tabs,
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder > .layer-grid,
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .layer-card {
+    width: 100% !important;
+    max-width: none !important;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  body.expert-lab-page .mobile-workbench-nav {
+    right: 20px !important;
+    left: 20px !important;
+  }
+}
+
 /* Mobile workbench tabs share the same open-canvas treatment as Materials.
    Only the page-level wrapper is removed; all functional inner cards remain. */
 @media (max-width: 760px) {
-  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder.panel,
-  body.expert-lab-page .mobile-workspace.mobile-view-insights .analysis.panel,
-  body.expert-lab-page .mobile-workspace.mobile-view-insights .drydown.panel,
-  body.expert-lab-page .mobile-workspace.mobile-view-insights > .formula-check.panel,
-  body.expert-lab-page .mobile-workspace.mobile-view-notes .perfumer-notes.panel,
-  body.expert-lab-page .mobile-workspace.mobile-view-review .story-card-section.panel,
-  body.expert-lab-page .mobile-workspace.mobile-view-review > .next.panel {
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula > .build-review-row > .formula-builder.panel.ornate-panel,
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row > .analysis.panel.ornate-panel,
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row > .drydown.panel.ornate-panel,
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .formula-check.panel.ornate-panel,
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-notes > .brief-story-row > .perfumer-notes.panel.ornate-panel,
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-review > .brief-story-row > .story-card-section.panel.ornate-panel,
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-review > .next.panel.ornate-panel {
     background: transparent !important;
+    background-image: none !important;
     border: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
     outline: 0 !important;
   }
 
-  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder.panel,
-  body.expert-lab-page .mobile-workspace.mobile-view-notes .perfumer-notes.panel,
-  body.expert-lab-page .mobile-workspace.mobile-view-review .story-card-section.panel,
-  body.expert-lab-page .mobile-workspace.mobile-view-review > .next.panel {
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula > .build-review-row > .formula-builder.panel.ornate-panel,
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-notes > .brief-story-row > .perfumer-notes.panel.ornate-panel,
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-review > .brief-story-row > .story-card-section.panel.ornate-panel,
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-review > .next.panel.ornate-panel {
     padding-inline: 0 !important;
   }
 
-  body.expert-lab-page .mobile-workspace.mobile-view-insights .analysis.panel,
-  body.expert-lab-page .mobile-workspace.mobile-view-insights .drydown.panel,
-  body.expert-lab-page .mobile-workspace.mobile-view-insights > .formula-check.panel {
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row > .analysis.panel.ornate-panel,
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row > .drydown.panel.ornate-panel,
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .formula-check.panel.ornate-panel {
     padding-inline: 0 !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder.panel::before,
+  body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder.panel::after,
+  body.expert-lab-page .mobile-workspace.mobile-view-insights .analysis.panel::before,
+  body.expert-lab-page .mobile-workspace.mobile-view-insights .analysis.panel::after,
+  body.expert-lab-page .mobile-workspace.mobile-view-insights .drydown.panel::before,
+  body.expert-lab-page .mobile-workspace.mobile-view-insights .drydown.panel::after,
+  body.expert-lab-page .mobile-workspace.mobile-view-insights > .formula-check.panel::before,
+  body.expert-lab-page .mobile-workspace.mobile-view-insights > .formula-check.panel::after,
+  body.expert-lab-page .mobile-workspace.mobile-view-notes .perfumer-notes.panel::before,
+  body.expert-lab-page .mobile-workspace.mobile-view-notes .perfumer-notes.panel::after,
+  body.expert-lab-page .mobile-workspace.mobile-view-review .story-card-section.panel::before,
+  body.expert-lab-page .mobile-workspace.mobile-view-review .story-card-section.panel::after,
+  body.expert-lab-page .mobile-workspace.mobile-view-review > .next.panel::before,
+  body.expert-lab-page .mobile-workspace.mobile-view-review > .next.panel::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace nav.mobile-layer-tabs > button.is-active {
+    color: #fff9e8 !important;
+    background: linear-gradient(135deg, #174c34, #103d2a) !important;
+    border-right-color: transparent !important;
+    border-radius: 6px !important;
+    box-shadow: 0 3px 8px rgba(18, 57, 39, .24) !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder > .layer-grid > .layer-card {
+    display: none !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder.mobile-layer-top > .layer-grid > .layer-card[data-layer="top"],
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder.mobile-layer-heart > .layer-grid > .layer-card[data-layer="heart"],
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder.mobile-layer-base > .layer-grid > .layer-card[data-layer="base"] {
+    display: block !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .mobile-layer-heading {
+    min-height: 48px !important;
+    padding: 5px 4px 8px !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .mobile-layer-heading h3 {
+    margin-bottom: 2px !important;
+    font-size: 21px !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .mobile-layer-heading small {
+    font-size: 10px !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .mobile-layer-heading > strong {
+    min-width: 57px !important;
+    padding: 7px 10px !important;
+    font-size: 21px !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder .selected-list .selected-material.inner-panel.mobile-formula-material {
+    grid-template-columns: 8px 60px minmax(0, 1fr) auto !important;
+    grid-template-rows: auto 24px !important;
+    gap: 2px 8px !important;
+    min-height: 84px !important;
+    padding: 7px 9px !important;
+    border-radius: 9px !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .mobile-formula-material__art {
+    width: 60px !important;
+    height: 60px !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .mobile-formula-material__grip {
+    font-size: 14px !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .mobile-formula-material__copy strong {
+    font-size: 18px !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .mobile-formula-material__copy small {
+    font-size: 10px !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .mobile-formula-material .material-percent {
+    font-size: 21px !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .mobile-formula-material .remove-btn {
+    width: 28px !important;
+    min-width: 28px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .mobile-formula-material__layer {
+    padding: 4px 8px !important;
+    font-size: 9px !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .layer-card > .add-btn {
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    margin-top: 8px !important;
+    padding: 5px 12px !important;
+    font-size: 15px !important;
+    border-radius: 8px !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .mobile-formula-validation,
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-summary-strip {
+    display: none !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace > .mobile-workbench-status {
+    gap: 8px !important;
+    padding: 9px 12px !important;
+    border-radius: 11px !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace > .mobile-workbench-status .mobile-workbench-status__content {
+    gap: 3px !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace > .mobile-workbench-status .mobile-workbench-name-display strong,
+  html body.expert-lab-page .expert-workshop.mobile-workspace > .mobile-workbench-status .mobile-workbench-name-input {
+    font-size: 15px !important;
+    line-height: 1 !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace > .mobile-workbench-status .mobile-workbench-name-display,
+  html body.expert-lab-page .expert-workshop.mobile-workspace > .mobile-workbench-status .mobile-workbench-name-input {
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace > .mobile-workbench-status .mobile-workbench-name-display > span {
+    font-size: 12px !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace > .mobile-workbench-status .mobile-workbench-status__meta span {
+    padding: 3px 6px !important;
+    font-size: 8px !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace > .mobile-workbench-status .mobile-workbench-status__more {
+    flex-basis: 34px !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    padding-bottom: 7px !important;
+    font-size: 16px !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder > .actions.inner-panel {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr) !important;
+    gap: 0 !important;
+    position: fixed !important;
+    z-index: 999 !important;
+    top: auto !important;
+    right: 20px !important;
+    bottom: calc(max(8px, env(safe-area-inset-bottom)) + 72px) !important;
+    left: 20px !important;
+    width: auto !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 3px !important;
+    overflow: hidden !important;
+    background: rgba(255, 250, 239, .9) !important;
+    border: 1px solid rgba(169, 129, 58, .42) !important;
+    border-radius: 9px !important;
+    box-shadow: 0 2px 8px rgba(78, 55, 20, .08) !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula > .build-review-row > .formula-builder.panel.ornate-panel {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  body.expert-lab-page #mobileFormulaBuilder {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder > .actions.inner-panel > button {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 36px !important;
+    margin: 0 !important;
+    padding: 5px 3px !important;
+    color: #3e463c !important;
+    font: 600 10px/1 "Cormorant Garamond", serif !important;
+    letter-spacing: .025em !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-right: 1px solid rgba(169, 129, 58, .25) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder > .actions.inner-panel > button:last-child {
+    border-right: 0 !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder > .actions.inner-panel > #generateBrief {
+    color: #fffdf5 !important;
+    background: linear-gradient(135deg, #174c34, #103d2a) !important;
+    border-right-color: transparent !important;
+    border-radius: 6px !important;
+    box-shadow: 0 3px 8px rgba(18, 57, 39, .24) !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula > .mobile-workbench-status {
+    flex: 0 0 auto !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula > .build-review-row {
+    display: block !important;
+    flex: 1 1 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding-bottom: 40px !important;
+    overflow: hidden !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder > .mobile-formula-overview,
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder > .mobile-layer-tabs {
+    flex: 0 0 auto !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder > .layer-grid {
+    display: block !important;
+    flex: 1 1 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder > .layer-grid > .layer-card[data-layer] {
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder.mobile-layer-top > .layer-grid > .layer-card[data-layer="top"],
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder.mobile-layer-heart > .layer-grid > .layer-card[data-layer="heart"],
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder.mobile-layer-base > .layer-grid > .layer-card[data-layer="base"] {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder .layer-card > .selected-list {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding-right: 2px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    scrollbar-width: thin;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder .mobile-layer-heading,
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder .layer-card > .add-btn {
+    flex: 0 0 auto !important;
   }
 }

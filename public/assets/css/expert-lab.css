@@ -882,6 +882,13 @@ dialog::backdrop {
   pointer-events: none;
 }
 
+@media (max-width: 760px) {
+  #mobileFormulaBuilder {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
 .ornate-panel::after {
   content: "";
   position: absolute;
