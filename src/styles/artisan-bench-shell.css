@@ -60,6 +60,361 @@ body.expert-lab-page .global-header > .theme-toggle .theme-toggle-icon {
   line-height: 1;
 }
 
+@media (max-width: 760px) {
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .analysis.is-mobile-active {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 7px !important;
+    padding: 3px 0 12px !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .analysis > .panel-title {
+    margin: 0 !important;
+    padding: 0 5px !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .analysis > .panel-title .step {
+    margin: 0 0 4px !important;
+    color: #9f7020 !important;
+    font: 600 9px/1.2 "Cormorant Garamond", serif !important;
+    letter-spacing: .19em !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .analysis > .panel-title h2 {
+    margin: 0 !important;
+    color: #123f30 !important;
+    font: 600 27px/.95 "Cormorant Garamond", serif !important;
+    letter-spacing: .055em !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars {
+    display: grid !important;
+    gap: 8px !important;
+    padding: 0 !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .mobile-balance-copy {
+    margin: 0 5px 2px !important;
+    color: #4e4b43 !important;
+    font: 500 11px/1.35 Inter, sans-serif !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars :is(.balance-trait-card, .balance-direction-card, .balance-verdict-card) {
+    background: rgba(255, 251, 241, .92) !important;
+    border: 1px solid rgba(169, 129, 58, .34) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 5px 13px rgba(74, 53, 21, .06) !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .balance-trait-card {
+    display: grid !important;
+    gap: 1px !important;
+    padding: 9px 12px !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars h3 {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 0 0 5px !important;
+    color: #473c2d !important;
+    font: 600 11px/1.2 "Cormorant Garamond", serif !important;
+    letter-spacing: .16em !important;
+    text-transform: uppercase !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars h3 > span {
+    color: #a9761d !important;
+    font-size: 15px !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .balance-trait-row {
+    display: grid !important;
+    grid-template-columns: 18px 82px minmax(60px, 1fr) 34px !important;
+    align-items: center !important;
+    gap: 5px !important;
+    min-height: 25px !important;
+    color: #253b30 !important;
+    font: 500 10px/1 Inter, sans-serif !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .balance-trait-icon {
+    color: #315541 !important;
+    font: 600 15px/1 serif !important;
+    text-align: center !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .balance-trait-label {
+    text-transform: capitalize !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .bar-track {
+    width: 100% !important;
+    height: 4px !important;
+    background: #e8e0d0 !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    overflow: hidden !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .bar-fill {
+    height: 100% !important;
+    background: linear-gradient(90deg, #b77b1c, #e9b84e) !important;
+    border-radius: inherit !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .balance-trait-row strong {
+    color: #342f27 !important;
+    font: 500 11px/1 Inter, sans-serif !important;
+    text-align: right !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .balance-direction-card {
+    padding: 9px 12px 11px !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .balance-direction-card > div {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .balance-direction-card > div > span {
+    padding: 6px 11px !important;
+    color: #4b4436 !important;
+    font: 500 10px/1 Inter, sans-serif !important;
+    background: #fffaf0 !important;
+    border: 1px solid rgba(169, 129, 58, .32) !important;
+    border-radius: 999px !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .balance-verdict-card {
+    display: flex !important;
+    align-items: center !important;
+    gap: 11px !important;
+    padding: 10px 12px !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .balance-verdict-seal {
+    display: grid !important;
+    place-items: center !important;
+    flex: 0 0 42px !important;
+    width: 42px !important;
+    height: 42px !important;
+    color: #e5bc58 !important;
+    font-size: 21px !important;
+    background: #15503a !important;
+    border-radius: 50% !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .balance-verdict-card.needs-refinement .balance-verdict-seal {
+    color: #fff8e7 !important;
+    background: #a9761d !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .balance-verdict-card strong {
+    color: #173e30 !important;
+    font: 600 16px/1.05 "Cormorant Garamond", serif !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights #profileBars .balance-verdict-card p {
+    margin: 3px 0 0 !important;
+    color: #625b4e !important;
+    font: 500 9px/1.3 Inter, sans-serif !important;
+  }
+}
+
+@media (max-width: 760px) {
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .mobile-insights-heading {
+    display: block !important;
+    padding: 0 !important;
+    background: rgba(255, 250, 239, .94) !important;
+    border-radius: 8px !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .mobile-insights-heading > :not(nav) {
+    display: none !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .mobile-insights-heading nav {
+    margin: 0 !important;
+    min-height: 36px !important;
+    border-radius: 7px !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .mobile-insights-heading nav button {
+    min-height: 34px !important;
+    padding: 5px 8px !important;
+    font: 600 11px/1 "Cormorant Garamond", serif !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown.is-mobile-active {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 8px 0 0 20px !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown > .panel-title {
+    flex: 0 0 auto !important;
+    margin: 0 0 7px -20px !important;
+    padding: 0 2px !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown > .panel-title h2 {
+    display: none !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown > .panel-title .step {
+    display: block !important;
+    margin: 0 !important;
+    color: #9b6e27 !important;
+    font: 700 9px/1.2 Inter, sans-serif !important;
+    letter-spacing: .13em !important;
+  }
+
+  body.expert-lab-page #drydownTimeline {
+    counter-reset: drydown-step;
+    position: relative !important;
+    display: grid !important;
+    gap: 6px !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    padding: 0 0 0 5px !important;
+    overflow-y: auto !important;
+  }
+
+  body.expert-lab-page #drydownTimeline::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 5px;
+    width: 1px;
+    background: rgba(174, 126, 42, .38);
+  }
+
+  body.expert-lab-page #drydownTimeline .timeline-card {
+    counter-increment: drydown-step;
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: 54px minmax(0, 1fr) 12px !important;
+    grid-template-rows: auto auto auto !important;
+    gap: 2px 7px !important;
+    min-height: 76px !important;
+    padding: 8px 10px 8px 9px !important;
+    overflow: visible !important;
+    background: rgba(255, 251, 241, .94) !important;
+    border: 1px solid rgba(169, 129, 58, .23) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 7px rgba(80, 56, 20, .05) !important;
+  }
+
+  body.expert-lab-page #drydownTimeline .timeline-card::before {
+    content: "✿";
+    grid-column: 1;
+    grid-row: 1 / 4;
+    display: grid;
+    place-items: center;
+    color: #7b873d;
+    font-size: 29px;
+  }
+
+  body.expert-lab-page #drydownTimeline .timeline-card:nth-child(1)::before { content: "🍋"; }
+  body.expert-lab-page #drydownTimeline .timeline-card:nth-child(2)::before { content: "❀"; }
+  body.expert-lab-page #drydownTimeline .timeline-card:nth-child(3)::before { content: "🪻"; }
+  body.expert-lab-page #drydownTimeline .timeline-card:nth-child(4)::before { content: "♨"; }
+
+  body.expert-lab-page #drydownTimeline .timeline-card::after {
+    content: "›";
+    grid-column: 3;
+    grid-row: 1 / 4;
+    align-self: center;
+    color: #ad7a28;
+    font-size: 18px;
+  }
+
+  body.expert-lab-page #drydownTimeline .timeline-card h3::before {
+    content: counter(drydown-step);
+    position: absolute;
+    top: 50%;
+    left: -35px;
+    display: grid;
+    place-items: center;
+    width: 17px;
+    height: 17px;
+    transform: translateY(-50%);
+    color: #fff7da;
+    font: 700 9px/1 Inter, sans-serif;
+    background: #174b38;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(255, 250, 237, .9);
+  }
+
+  body.expert-lab-page #drydownTimeline .timeline-card > strong {
+    grid-column: 2;
+    grid-row: 2;
+    color: #a2772f !important;
+    font: 600 9px/1 Inter, sans-serif !important;
+  }
+
+  body.expert-lab-page #drydownTimeline .timeline-card .journey-cue,
+  body.expert-lab-page #drydownTimeline .timeline-card .journey-detail {
+    display: none !important;
+  }
+
+  body.expert-lab-page #drydownTimeline .timeline-card h3 {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0 !important;
+    color: #244332 !important;
+    font: 600 14px/1.05 "Cormorant Garamond", serif !important;
+  }
+
+  body.expert-lab-page #drydownTimeline .timeline-card p {
+    display: -webkit-box !important;
+    grid-column: 2;
+    grid-row: 3;
+    margin: 0 !important;
+    overflow: hidden !important;
+    color: #625d51 !important;
+    font: 500 9px/1.3 Inter, sans-serif !important;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  body.expert-lab-page .drydown.is-mobile-expanded #drydownTimeline .timeline-card {
+    min-height: 92px !important;
+  }
+
+  body.expert-lab-page .drydown.is-mobile-expanded #drydownTimeline .timeline-card p {
+    display: block !important;
+    overflow: visible !important;
+    -webkit-line-clamp: unset;
+  }
+
+  body.expert-lab-page .mobile-insight-switch {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    flex: 0 0 34px;
+    width: calc(100% + 20px) !important;
+    margin: 7px 0 0 -20px !important;
+    padding: 7px 12px !important;
+    color: #31503d !important;
+    font: 600 10px/1 Inter, sans-serif !important;
+    background: rgba(255, 251, 241, .94) !important;
+    border: 1px solid rgba(169, 129, 58, .25) !important;
+    border-radius: 7px !important;
+  }
+}
+
 
 body.expert-lab-page .mobile-workbench-status,
 body.expert-lab-page .mobile-workbench-nav,
@@ -110,7 +465,14 @@ body.expert-lab-page .mobile-material-browser {
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    scrollbar-width: none;
     scroll-margin-top: 72px;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
   }
 
   body.expert-lab-page .mobile-workbench-status {
@@ -250,20 +612,21 @@ body.expert-lab-page .mobile-material-browser {
     flex: 0 0 100%;
     width: 100%;
     min-width: 0;
-    margin-top: 4px;
-    padding: 6px;
+    margin-top: 2px;
+    padding: 3px;
     overflow: hidden;
     background: #fffaf0;
     border: 1px solid rgba(157, 118, 52, .36);
-    border-radius: 12px;
-    box-shadow: 0 14px 30px rgba(46, 32, 13, .2);
+    border-radius: 8px;
+    box-shadow: 0 8px 18px rgba(46, 32, 13, .14);
   }
 
   body.expert-lab-page .mobile-workbench-options button {
     min-width: 0;
-    padding: 12px 8px;
+    min-height: 30px;
+    padding: 7px 5px;
     color: #244332;
-    font: 600 13px/1.2 Inter, sans-serif;
+    font: 600 10.5px/1.1 Inter, sans-serif;
     text-align: center;
     background: transparent;
     border: 0;
@@ -480,16 +843,16 @@ body.expert-lab-page .mobile-material-browser {
   }
 
   body.expert-lab-page .mobile-workspace.mobile-view-materials {
-    overflow: hidden;
+    overflow: hidden !important;
     padding-top: 18px !important;
     background-position: center top;
   }
 
   body.expert-lab-page .mobile-workspace.mobile-view-materials > .material-library {
     width: auto !important;
-    height: calc(100% - 105px) !important;
+    height: calc(100% - 61px) !important;
     min-height: 0 !important;
-    margin-inline: 12px !important;
+    margin-inline: 6px !important;
     padding: 0 !important;
     overflow: hidden !important;
     background: transparent !important;
@@ -606,7 +969,7 @@ body.expert-lab-page .mobile-material-browser {
   body.expert-lab-page .mobile-view-materials #categoryList {
     height: calc(100% - 89px) !important;
     min-height: 0 !important;
-    padding-right: 3px;
+    padding-right: 0;
     overflow-y: auto !important;
     overscroll-behavior: contain;
     scrollbar-width: none;
@@ -674,7 +1037,7 @@ body.expert-lab-page .mobile-material-browser {
     align-content: start;
     gap: 8px;
     min-height: 0;
-    padding: 1px 3px 12px 0;
+    padding: 1px 0 12px;
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: none;
@@ -809,19 +1172,19 @@ body.expert-lab-page .mobile-material-browser {
     display: flex;
     align-self: center;
     justify-content: center;
-    gap: 5px;
+    gap: 4px;
     padding-left: 0;
   }
 
   body.expert-lab-page .mobile-material-layer {
-    min-width: 61px;
-    min-height: 36px;
-    padding: 7px 8px;
+    min-width: 48px;
+    min-height: 26px;
+    padding: 4px 7px;
     color: #294535;
-    font: 600 12px/1 Inter, sans-serif;
+    font: 600 10px/1 Inter, sans-serif;
     background: #fffaf0;
     border: 1px solid rgba(157, 116, 45, .4);
-    border-radius: 7px;
+    border-radius: 5px;
   }
 
   body.expert-lab-page .mobile-material-sheet {
@@ -977,7 +1340,7 @@ body.expert-lab-page .mobile-material-browser {
     body.expert-lab-page .mobile-material-card__info { grid-template-columns: 56px minmax(0, 1fr); }
     body.expert-lab-page .mobile-material-card__symbol { width: 56px; height: 52px; }
     body.expert-lab-page .mobile-material-card__actions { padding-left: 0; }
-    body.expert-lab-page .mobile-material-layer { min-width: 58px; padding-inline: 6px; }
+    body.expert-lab-page .mobile-material-layer { min-width: 46px; padding-inline: 6px; }
     body.expert-lab-page .mobile-material-sheet { grid-template-columns: 90px minmax(0, 1fr); }
   }
 
@@ -1151,7 +1514,12 @@ body.expert-lab-page .mobile-material-browser {
   /* Mobile Notes */
   body.expert-lab-page .mobile-workspace.mobile-view-notes {
     overflow-x: hidden !important;
-    overflow-y: auto !important;
+    overflow-y: hidden !important;
+    padding-bottom: calc(132px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body.expert-lab-page .mobile-workspace.mobile-view-notes > .mobile-workbench-status {
+    margin-bottom: 5px !important;
   }
 
   body.expert-lab-page .mobile-view-notes > .brief-story-row {
@@ -1163,9 +1531,10 @@ body.expert-lab-page .mobile-material-browser {
   body.expert-lab-page .mobile-view-notes .perfumer-notes {
     display: flex !important;
     flex-direction: column !important;
+    gap: 7px !important;
     height: auto !important;
     min-height: calc(100dvh - 190px) !important;
-    padding: 16px !important;
+    padding: 4px 8px 10px !important;
     overflow: visible !important;
     border-radius: 14px !important;
   }
@@ -1184,7 +1553,7 @@ body.expert-lab-page .mobile-material-browser {
     display: grid;
     gap: 5px;
     flex: 0 0 auto;
-    margin-bottom: 12px;
+    margin-bottom: 2px;
   }
 
   body.expert-lab-page .mobile-view-notes #perfumerNotesInput {
@@ -1209,13 +1578,18 @@ body.expert-lab-page .mobile-material-browser {
     font-size: 9px !important;
   }
 
-  body.expert-lab-page .mobile-continue-review {
+  body.expert-lab-page .mobile-workspace.mobile-view-notes > .mobile-continue-review {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
     flex: 0 0 auto;
-    min-height: 48px;
+    position: fixed;
+    z-index: 999;
+    right: 20px;
+    bottom: calc(78px + env(safe-area-inset-bottom));
+    left: 20px;
+    min-height: 42px;
     color: #fff6d9;
     font: 600 15px/1 "Cormorant Garamond", serif;
     background: #174b38;
@@ -1307,6 +1681,14 @@ body.expert-lab-page .mobile-material-browser {
     min-height: 48px !important;
     color: #fff6d9 !important;
     background: #174b38 !important;
+  }
+
+  /* One shared mobile content rail: match Formula and the fixed footer. */
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > :is(.mobile-insights-heading, .build-review-row, .formula-check),
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-notes > .brief-story-row,
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-review > :is(.brief-story-row, .next) {
+    width: auto !important;
+    margin-inline: 6px !important;
   }
 
   body.expert-lab-page[data-theme="dark"] :is(.mobile-insights-heading, .mobile-review-summary > div) {

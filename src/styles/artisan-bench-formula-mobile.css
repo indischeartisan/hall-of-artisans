@@ -746,6 +746,7 @@
 
   html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula > .mobile-workbench-status {
     flex: 0 0 auto !important;
+    margin-bottom: 0 !important;
   }
 
   html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula > .build-review-row {
@@ -763,11 +764,17 @@
     height: 100% !important;
     min-height: 0 !important;
     overflow: hidden !important;
+    padding-top: 2px !important;
   }
 
   html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder > .mobile-formula-overview,
   html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder > .mobile-layer-tabs {
     flex: 0 0 auto !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder > .mobile-layer-tabs,
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder > .layer-grid {
+    margin-top: 0 !important;
   }
 
   html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder > .layer-grid {
@@ -793,6 +800,8 @@
 
   html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder .layer-card > .selected-list {
     flex: 1 1 auto !important;
+    align-content: start !important;
+    grid-auto-rows: max-content !important;
     min-height: 0 !important;
     max-height: none !important;
     padding-right: 2px !important;
@@ -800,6 +809,33 @@
     overflow-y: auto !important;
     overscroll-behavior: contain !important;
     scrollbar-width: thin;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder .selected-list > .mobile-formula-material {
+    align-self: start !important;
+    height: 84px !important;
+    min-height: 84px !important;
+    max-height: 84px !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder .mobile-layer-heading {
+    min-height: 42px !important;
+    padding: 4px 4px 6px !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder .mobile-layer-heading h3 {
+    margin-bottom: 1px !important;
+    font-size: 18px !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder .mobile-layer-heading small {
+    font-size: 9px !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder .mobile-layer-heading > strong {
+    min-width: 52px !important;
+    padding: 6px 9px !important;
+    font-size: 18px !important;
   }
 
   html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula #mobileFormulaBuilder .mobile-layer-heading,

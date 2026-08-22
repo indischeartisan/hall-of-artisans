@@ -342,7 +342,7 @@ function renderMaterialLibrary(preserveMobileScroll = false) {
         ${mobileItems.length ? mobileItems.map((item) => {
           const isOpen = openMaterialId === item.id;
           const formulaItem = state.formula.find((entry) => entry.id === item.id);
-          const layers = ['top', 'heart', 'base'];
+          const layers = materialLayers(item);
           return `<article class="mobile-material-card inner-panel ${isOpen ? 'is-open' : ''} ${formulaItem ? 'is-used' : ''}" style="background:#fffaf0!important;background-color:#fffaf0!important;background-image:none!important">
             <button type="button" class="mobile-material-card__info" style="background:transparent!important;background-color:transparent!important;background-image:none!important" data-toggle-material="${item.id}" aria-expanded="${isOpen}">
               <span class="mobile-material-card__symbol">${materialArtwork(item)}</span>
@@ -442,13 +442,49 @@ function renderFormula() {
 
 function renderAnalysis() {
   const result = checkFormula(state.formula, state.concentration);
-  const labels = ['freshness', 'sweetness', 'warmth', 'green', 'floral', 'woody', 'powdery', 'clean', 'darkness', 'strangeness', 'intensity', 'longevity'];
-  $('profileBars').innerHTML = labels.map((key) => `
-    <div class="bar">
-      <div class="bar-label"><span>${key}</span><span>${result.profile[key]}%</span></div>
+  const icons = {
+    freshness: '❧', sweetness: '✾', warmth: '♨', intensity: '☀', longevity: '⌛',
+    green: '❧', floral: '✿', woody: '♠', powdery: '⁙', clean: '✦', darkness: '☾', strangeness: '◎'
+  };
+  const groups = [
+    ['Key Traits', ['freshness', 'sweetness', 'warmth', 'intensity', 'longevity']],
+    ['Extended Characteristics', ['green', 'floral', 'woody', 'powdery', 'clean', 'darkness', 'strangeness']]
+  ];
+  const renderRow = (key) => `
+    <div class="balance-trait-row">
+      <span class="balance-trait-icon" aria-hidden="true">${icons[key] || '✦'}</span>
+      <span class="balance-trait-label">${key}</span>
       <div class="bar-track"><div class="bar-fill" style="width:${result.profile[key]}%"></div></div>
-    </div>
-  `).join('');
+      <strong>${result.profile[key]}%</strong>
+    </div>`;
+  const hasData = state.formula.length > 0;
+  const ranked = Object.entries(result.profile).filter(([, value]) => value > 0).sort((a, b) => b[1] - a[1]);
+  const directionLabels = ranked.slice(0, 3).map(([key]) => key === 'sweetness' ? 'Soft Sweet' : key[0].toUpperCase() + key.slice(1));
+  const leading = directionLabels.slice(0, 2).map((label) => label.toLowerCase()).join(', ');
+  const isHarmonious = hasData && result.warnings.length === 0;
+  const statusTitle = isHarmonious
+    ? 'Current balance is harmonious'
+    : result.total !== 100
+      ? 'Formula balance needs adjustment'
+      : 'Balance needs refinement';
+  const statusCopy = isHarmonious
+    ? `Top impression: ${leading}.`
+    : result.warnings[0] || 'Continue developing the formula to reveal its balance.';
+  $('profileBars').innerHTML = `
+    ${hasData ? `<p class="mobile-balance-copy">A ${leading || 'developing'} structure with noticeable character and a refined drydown.</p>` : ''}
+    ${groups.map(([title, keys]) => `
+      <section class="balance-trait-card">
+        <h3><span aria-hidden="true">✦</span>${title}</h3>
+        ${keys.map(renderRow).join('')}
+      </section>`).join('')}
+    ${hasData && directionLabels.length ? `<section class="balance-direction-card">
+      <h3><span aria-hidden="true">✦</span>Scent Direction</h3>
+      <div>${directionLabels.map((label) => `<span>${label}</span>`).join('')}</div>
+    </section>` : ''}
+    ${hasData ? `<section class="balance-verdict-card ${isHarmonious ? 'is-harmonious' : 'needs-refinement'}">
+      <span class="balance-verdict-seal" aria-hidden="true">⚖</span>
+      <div><strong>${statusTitle}</strong><p>${statusCopy}</p></div>
+    </section>` : ''}`;
 }
 
 function renderMessages() {
@@ -627,7 +663,8 @@ function renderBrief() {
 function addMaterialToFormula(materialId, targetLayer) {
   const material = getMaterial(materialId);
   if (!material) return;
-  const layer = ['top', 'heart', 'base'].includes(targetLayer) ? targetLayer : materialLayers(material)[0];
+  const allowedLayers = materialLayers(material);
+  const layer = allowedLayers.includes(targetLayer) ? targetLayer : allowedLayers[0];
   const existingIndex = state.formula.findIndex((item) => item.id === materialId);
   if (existingIndex >= 0) {
     const existing = state.formula[existingIndex];
@@ -910,6 +947,8 @@ window.addEventListener('hoa:artisan-bench-preview-request', () => {
   scheduleStoryCardPreview();
   emitBenchState();
 }, { signal: bridgeController.signal });
+
+window.addEventListener('hoa:artisan-bench-render-analysis', renderAnalysis, { signal: bridgeController.signal });
 
 updateAll();
 renderMessages();

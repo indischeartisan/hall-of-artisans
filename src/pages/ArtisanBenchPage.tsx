@@ -83,6 +83,7 @@ export default function ArtisanBenchPage() {
   const [mobileWorkspace, setMobileWorkspace] = useState<MobileWorkspace>("formula");
   const [mobileFormulaLayer, setMobileFormulaLayer] = useState<FormulaLayer>("top");
   const [mobileInsightsView, setMobileInsightsView] = useState<InsightsView>("drydown");
+  const [isMobileDrydownExpanded, setIsMobileDrydownExpanded] = useState(false);
   const [isMobileNameEditing, setIsMobileNameEditing] = useState(false);
   const [isMobileOptionsOpen, setIsMobileOptionsOpen] = useState(false);
   const [, setBenchRevision] = useState(0);
@@ -93,6 +94,10 @@ export default function ArtisanBenchPage() {
   const pendingRestore = useRef(activeDraft?.benchState ?? pendingPreview);
   const restoringPendingPreview = useRef(Boolean(pendingPreview));
   const latestBenchState = useRef<ArtisanBenchState>(activeDraft?.benchState ?? pendingPreview ?? createEmptyBenchState());
+  const [generatedFormulaMetadata, setGeneratedFormulaMetadata] = useState(() => ({
+    ...latestBenchState.current.formulaMetadata,
+    layerTotals: { ...latestBenchState.current.formulaMetadata.layerTotals }
+  }));
   const loadedDraftId = useRef(activeDraft?.id ?? null);
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = window.localStorage.getItem("hoa-theme");
@@ -136,6 +141,10 @@ export default function ArtisanBenchPage() {
     loadedDraftId.current = activeDraft.id;
     pendingRestore.current = activeDraft.benchState;
     latestBenchState.current = activeDraft.benchState;
+    setGeneratedFormulaMetadata({
+      ...activeDraft.benchState.formulaMetadata,
+      layerTotals: { ...activeDraft.benchState.formulaMetadata.layerTotals }
+    });
     savedSignature.current = JSON.stringify(activeDraft.benchState);
     hasBaseline.current = true;
     setIsDirty(false);
@@ -209,6 +218,10 @@ export default function ArtisanBenchPage() {
     clearActiveDraft();
     pendingRestore.current = null;
     latestBenchState.current = emptyState;
+    setGeneratedFormulaMetadata({
+      ...emptyState.formulaMetadata,
+      layerTotals: { ...emptyState.formulaMetadata.layerTotals }
+    });
     savedSignature.current = JSON.stringify(emptyState);
     hasBaseline.current = false;
     setIsDirty(true);
@@ -499,21 +512,21 @@ export default function ArtisanBenchPage() {
                 <div
                   className="mobile-formula-ring"
                   style={{
-                    background: `conic-gradient(#204f38 0 ${latestBenchState.current.formulaMetadata.layerTotals.top}%, #c49a3a ${latestBenchState.current.formulaMetadata.layerTotals.top}% ${latestBenchState.current.formulaMetadata.layerTotals.top + latestBenchState.current.formulaMetadata.layerTotals.heart}%, #8d8a78 ${latestBenchState.current.formulaMetadata.layerTotals.top + latestBenchState.current.formulaMetadata.layerTotals.heart}% ${latestBenchState.current.formulaMetadata.total}%, rgba(145, 126, 91, .16) ${latestBenchState.current.formulaMetadata.total}% 100%)`
+                    background: `conic-gradient(#204f38 0 ${generatedFormulaMetadata.layerTotals.top}%, #c49a3a ${generatedFormulaMetadata.layerTotals.top}% ${generatedFormulaMetadata.layerTotals.top + generatedFormulaMetadata.layerTotals.heart}%, #8d8a78 ${generatedFormulaMetadata.layerTotals.top + generatedFormulaMetadata.layerTotals.heart}% ${generatedFormulaMetadata.total}%, rgba(145, 126, 91, .16) ${generatedFormulaMetadata.total}% 100%)`
                   }}
                 >
-                  <div><small>Total</small><strong>{latestBenchState.current.formulaMetadata.total}%</strong></div>
+                  <div><small>Total</small><strong>{generatedFormulaMetadata.total}%</strong></div>
                 </div>
                 <div className="mobile-formula-balance-copy">
                   <span>Formula Balance <i aria-hidden="true">⚖</i></span>
                   <strong>
-                    {latestBenchState.current.formulaMetadata.total === 100 ? "The formula is perfectly balanced." : "Continue balancing your formula."}
-                    {latestBenchState.current.formulaMetadata.total === 100 ? <i className="mobile-balance-check" aria-hidden="true">✓</i> : null}
+                    {generatedFormulaMetadata.total === 100 ? "The formula is perfectly balanced." : "Continue balancing your formula."}
+                    {generatedFormulaMetadata.total === 100 ? <i className="mobile-balance-check" aria-hidden="true">✓</i> : null}
                   </strong>
                   <div className="mobile-formula-totals">
-                    <span>Top <b>{latestBenchState.current.formulaMetadata.layerTotals.top}%</b></span>
-                    <span>Heart <b>{latestBenchState.current.formulaMetadata.layerTotals.heart}%</b></span>
-                    <span>Base <b>{latestBenchState.current.formulaMetadata.layerTotals.base}%</b></span>
+                    <span>Top <b>{generatedFormulaMetadata.layerTotals.top}%</b></span>
+                    <span>Heart <b>{generatedFormulaMetadata.layerTotals.heart}%</b></span>
+                    <span>Base <b>{generatedFormulaMetadata.layerTotals.base}%</b></span>
                   </div>
                 </div>
               </section>
@@ -559,7 +572,14 @@ export default function ArtisanBenchPage() {
               </div>
               <div className="actions inner-panel">
                 <button id="autoBalance" className="panel-button">Auto 100%</button>
-                <button id="generateBrief" className="gold gold-button">Generate</button>
+                <button
+                  id="generateBrief"
+                  className="gold gold-button"
+                  onClick={() => window.setTimeout(() => {
+                    const metadata = latestBenchState.current.formulaMetadata;
+                    setGeneratedFormulaMetadata({ ...metadata, layerTotals: { ...metadata.layerTotals } });
+                  }, 0)}
+                >Generate</button>
                 <button id="clearFormula" className="quiet panel-button">Clear All</button>
               </div>
             </section>
@@ -572,7 +592,10 @@ export default function ArtisanBenchPage() {
               </strong>
               <p>Understand the balance and how your creation develops on skin.</p>
               <nav aria-label="Insight view">
-                <button type="button" className={mobileInsightsView === "balance" ? "is-active" : ""} onClick={() => setMobileInsightsView("balance")}>Balance</button>
+                <button type="button" className={mobileInsightsView === "balance" ? "is-active" : ""} onClick={() => {
+                  setMobileInsightsView("balance");
+                  window.setTimeout(() => window.dispatchEvent(new CustomEvent("hoa:artisan-bench-render-analysis")), 0);
+                }}>Balance</button>
                 <button type="button" className={mobileInsightsView === "drydown" ? "is-active" : ""} onClick={() => setMobileInsightsView("drydown")}>Drydown</button>
               </nav>
             </section>
@@ -582,9 +605,12 @@ export default function ArtisanBenchPage() {
               <div id="profileBars" />
             </aside>
 
-            <section className={`drydown panel ornate-panel ${mobileInsightsView === "drydown" ? "is-mobile-active" : ""}`}>
-              <div className="panel-title"><p className="step">07 Drydown Journey</p><h2>Drydown Journey</h2></div>
+            <section className={`drydown panel ornate-panel ${mobileInsightsView === "drydown" ? "is-mobile-active" : ""}${isMobileDrydownExpanded ? " is-mobile-expanded" : ""}`}>
+              <div className="panel-title"><p className="step">Complete Drydown Journey</p><h2>Complete Drydown Journey</h2></div>
               <div id="drydownTimeline" className="timeline" />
+              <button type="button" className="mobile-insight-switch" aria-expanded={isMobileDrydownExpanded} onClick={() => setIsMobileDrydownExpanded(expanded => !expanded)}>
+                {isMobileDrydownExpanded ? "↩ Show Compact Drydown" : "↪ View Complete Drydown"} <span aria-hidden="true">›</span>
+              </button>
             </section>
           </section>
 
@@ -605,7 +631,6 @@ export default function ArtisanBenchPage() {
               <label htmlFor="perfumerNotesInput">Write anything the perfumer should know</label>
               <textarea id="perfumerNotesInput" className="brief-paper inner-panel" maxLength={3000} placeholder="Describe the mood, memory, occasion, preferences, concerns, or any detail you want the perfumer to consider…" />
               <small>Your notes are saved with this draft and included when you send the creation for review.</small>
-              <button className="mobile-continue-review" type="button" onClick={() => selectMobileWorkspace("review")}>Continue to Review <span aria-hidden="true">→</span></button>
               <div id="briefOutput" hidden />
             </section>
             <section id="story-card" className="story-card-section panel ornate-panel">
@@ -623,6 +648,8 @@ export default function ArtisanBenchPage() {
               <p id="storyCardMessage" className="story-card-message" aria-live="polite">Temporary preview mode: download is unlocked for review.</p>
             </section>
           </section>
+
+          <button className="mobile-continue-review" type="button" onClick={() => selectMobileWorkspace("review")}>Continue to Review <span aria-hidden="true">→</span></button>
 
           <section className="next panel ornate-panel">
             <div className="panel-title"><p className="step">11 Save &amp; Next Step</p><h2>Save &amp; Next Step</h2></div>
