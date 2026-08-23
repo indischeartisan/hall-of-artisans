@@ -81,6 +81,7 @@ export default function ArtisanBenchPage() {
   const [draftSaveStatus, setDraftSaveStatus] = useState("");
   const [draftsOpen, setDraftsOpen] = useState(false);
   const [mobileWorkspace, setMobileWorkspace] = useState<MobileWorkspace>("formula");
+  const [isPwaViewport, setIsPwaViewport] = useState(() => window.matchMedia("(max-width: 760px)").matches);
   const [mobileFormulaLayer, setMobileFormulaLayer] = useState<FormulaLayer>("top");
   const [mobileInsightsView, setMobileInsightsView] = useState<InsightsView>("drydown");
   const [isMobileDrydownExpanded, setIsMobileDrydownExpanded] = useState(false);
@@ -181,6 +182,25 @@ export default function ArtisanBenchPage() {
   }, [theme]);
 
   useEffect(() => {
+    const media = window.matchMedia("(max-width: 760px)");
+    const syncViewport = () => setIsPwaViewport(media.matches);
+    syncViewport();
+    media.addEventListener("change", syncViewport);
+    return () => media.removeEventListener("change", syncViewport);
+  }, []);
+
+  useEffect(() => {
+    if (mobileWorkspace !== "insights") return;
+    window.setTimeout(() => {
+      window.dispatchEvent(new CustomEvent(
+        mobileInsightsView === "balance"
+          ? "hoa:artisan-bench-render-analysis"
+          : "hoa:artisan-bench-render-drydown",
+      ));
+    }, 0);
+  }, [mobileInsightsView, mobileWorkspace]);
+
+  useEffect(() => {
     let cancelled = false;
     const initialize = async () => {
       try {
@@ -235,6 +255,7 @@ export default function ArtisanBenchPage() {
       if (!snapshot || !Array.isArray(snapshot.formula) || !snapshot.formulaMetadata) return;
       latestBenchState.current = snapshot;
       setBenchRevision(revision => revision + 1);
+      window.setTimeout(() => window.dispatchEvent(new CustomEvent("hoa:artisan-bench-render-analysis")), 0);
       if (!hasBaseline.current) {
         savedSignature.current = JSON.stringify(snapshot);
         hasBaseline.current = true;
@@ -369,6 +390,31 @@ export default function ArtisanBenchPage() {
     </button>
   );
 
+  const reviewState = latestBenchState.current;
+  const reviewMetadata = reviewState.formulaMetadata;
+  const reviewBrief = reviewState.fragranceBrief;
+  const reviewCreator = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "You";
+  const reviewProfileLabels: Record<keyof typeof reviewMetadata.profile, string> = {
+    freshness: "Fresh", sweetness: "Sweet", warmth: "Warm", green: "Green",
+    floral: "Floral", woody: "Woody", powdery: "Powdery", clean: "Clean",
+    darkness: "Dark", strangeness: "Distinctive", intensity: "Intense", longevity: "Lasting"
+  };
+  const reviewScentProfile = Object.entries(reviewMetadata.profile)
+    .filter(([, value]) => value > 0)
+    .sort(([, left], [, right]) => right - left)
+    .slice(0, 3)
+    .map(([key]) => reviewProfileLabels[key as keyof typeof reviewMetadata.profile]);
+  const reviewNotes = (["top", "heart", "base"] as FormulaLayer[]).reduce<Record<FormulaLayer, string[]>>((notes, layer) => {
+    const generatedNotes = reviewBrief?.notes[layer]?.filter(Boolean) ?? [];
+    notes[layer] = generatedNotes.length
+      ? generatedNotes
+      : reviewState.formula
+          .filter(item => item.layer === layer)
+          .map(item => item.id.replace(/[-_]+/g, " ").replace(/\b\w/g, character => character.toUpperCase()));
+    return notes;
+  }, { top: [], heart: [], base: [] });
+  const reviewIsBalanced = reviewMetadata.total === 100;
+
   return (
     <>
       <GlobalHeader action={themeToggle} activeLabel="Chamber of Creation" variant={isDark ? "default" : "light"} />
@@ -456,12 +502,18 @@ export default function ArtisanBenchPage() {
             ) : null}
           </header>
           <aside className="material-library panel ornate-panel">
-            <div className="panel-title"><p className="step">Material Library</p><h2>Find Your Materials</h2><small>Explore accords and add them directly to your formula.</small></div>
+            {isPwaViewport ? (
+              <div className="panel-title"><p className="step">Material Library</p><h2>Find Your Materials</h2><small>Explore accords and add them directly to your formula.</small></div>
+            ) : (
+              <div className="panel-title"><p className="step">01 Material Library</p><h2>Materials</h2></div>
+            )}
             <label className="search-label" htmlFor="materialSearch">Search materials</label>
-            <div className="mobile-material-search-row">
-              <input id="materialSearch" placeholder="Search materials" />
-              <button id="mobileMaterialFilter" type="button" aria-label="Filter: show only materials already in formula" title="Show materials in formula" aria-pressed="false"><span aria-hidden="true">☷</span></button>
-            </div>
+            {isPwaViewport ? (
+              <div className="mobile-material-search-row">
+                <input id="materialSearch" placeholder="Search materials" />
+                <button id="mobileMaterialFilter" type="button" aria-label="Filter: show only materials already in formula" title="Show materials in formula" aria-pressed="false"><span aria-hidden="true">☷</span></button>
+              </div>
+            ) : <><input id="materialSearch" placeholder="Rose, tea, cedarwood..." /><button id="mobileMaterialFilter" type="button" hidden aria-hidden="true" aria-pressed="false" /></>}
             <div id="categoryList" className="category-list" />
             <div className="coming-soon inner-panel">
               <p className="step">Indische Materials</p><h3>Coming Soon</h3>
@@ -545,19 +597,19 @@ export default function ArtisanBenchPage() {
               </nav>
               <div className="layer-grid inner-grid">
                 <div className="layer-card inner-panel" data-layer="top">
-                  <header className="mobile-layer-heading"><div><h3>Top Notes</h3><small>The first impression · Light &amp; Evaporative</small></div><strong data-layer-total="top">0%</strong></header>
+                  {isPwaViewport ? <header className="mobile-layer-heading"><div><h3>Top Notes</h3><small>The first impression · Light &amp; Evaporative</small></div><strong data-layer-total="top">0%</strong></header> : <><h3><span>Top Notes</span> <strong data-layer-total="top">0%</strong></h3><small>Opening | <span data-range="top">10-25%</span></small></>}
                   <div className="selected-list" id="topList" />
-                  <button data-add="top" className="add-btn panel-button"><span aria-hidden="true">＋</span> Add Material</button>
+                  <button data-add="top" className="add-btn panel-button">{isPwaViewport ? <><span aria-hidden="true">＋</span> Add Material</> : "+ Add Top Note"}</button>
                 </div>
                 <div className="layer-card inner-panel" data-layer="heart">
-                  <header className="mobile-layer-heading"><div><h3>Heart Notes</h3><small>The character · Rich &amp; Expressive</small></div><strong data-layer-total="heart">0%</strong></header>
+                  {isPwaViewport ? <header className="mobile-layer-heading"><div><h3>Heart Notes</h3><small>The character · Rich &amp; Expressive</small></div><strong data-layer-total="heart">0%</strong></header> : <><h3><span>Heart Notes</span> <strong data-layer-total="heart">0%</strong></h3><small>Body | <span data-range="heart">30-50%</span></small></>}
                   <div className="selected-list" id="heartList" />
-                  <button data-add="heart" className="add-btn panel-button"><span aria-hidden="true">＋</span> Add Material</button>
+                  <button data-add="heart" className="add-btn panel-button">{isPwaViewport ? <><span aria-hidden="true">＋</span> Add Material</> : "+ Add Heart Note"}</button>
                 </div>
                 <div className="layer-card inner-panel" data-layer="base">
-                  <header className="mobile-layer-heading"><div><h3>Base Notes</h3><small>The lasting impression · Deep &amp; Enduring</small></div><strong data-layer-total="base">0%</strong></header>
+                  {isPwaViewport ? <header className="mobile-layer-heading"><div><h3>Base Notes</h3><small>The lasting impression · Deep &amp; Enduring</small></div><strong data-layer-total="base">0%</strong></header> : <><h3><span>Base Notes</span> <strong data-layer-total="base">0%</strong></h3><small>Drydown | <span data-range="base">30-50%</span></small></>}
                   <div className="selected-list" id="baseList" />
-                  <button data-add="base" className="add-btn panel-button"><span aria-hidden="true">＋</span> Add Material</button>
+                  <button data-add="base" className="add-btn panel-button">{isPwaViewport ? <><span aria-hidden="true">＋</span> Add Material</> : "+ Add Base Note"}</button>
                 </div>
               </div>
               <section className={`mobile-formula-validation ${latestBenchState.current.formulaMetadata.total === 100 ? "is-balanced" : ""}`} aria-live="polite">
@@ -571,16 +623,17 @@ export default function ArtisanBenchPage() {
                 <span>Base <strong id="baseTotal">0%</strong></span>
               </div>
               <div className="actions inner-panel">
-                <button id="autoBalance" className="panel-button">Auto 100%</button>
-                <button
-                  id="generateBrief"
-                  className="gold gold-button"
-                  onClick={() => window.setTimeout(() => {
-                    const metadata = latestBenchState.current.formulaMetadata;
-                    setGeneratedFormulaMetadata({ ...metadata, layerTotals: { ...metadata.layerTotals } });
-                  }, 0)}
-                >Generate</button>
+                <button id="autoBalance" className="panel-button">{isPwaViewport ? "Auto 100%" : "Auto Balance to 100%"}</button>
+                {isPwaViewport ? <button
+                    id="generateBrief"
+                    className="gold gold-button"
+                    onClick={() => window.setTimeout(() => {
+                      const metadata = latestBenchState.current.formulaMetadata;
+                      setGeneratedFormulaMetadata({ ...metadata, layerTotals: { ...metadata.layerTotals } });
+                    }, 0)}
+                  >Generate</button> : null}
                 <button id="clearFormula" className="quiet panel-button">Clear All</button>
+                {!isPwaViewport ? <button id="generateBrief" className="gold gold-button">Generate Fragrance Brief</button> : null}
               </div>
             </section>
 
@@ -606,13 +659,22 @@ export default function ArtisanBenchPage() {
             </aside>
 
             <section className={`drydown panel ornate-panel ${mobileInsightsView === "drydown" ? "is-mobile-active" : ""}${isMobileDrydownExpanded ? " is-mobile-expanded" : ""}`}>
-              <div className="panel-title"><p className="step">Complete Drydown Journey</p><h2>Complete Drydown Journey</h2></div>
+              <div className="panel-title">
+                <p className="step mobile-drydown-title">06 Formula Analysis</p>
+                <h2 className="mobile-drydown-title">Drydown Journey</h2>
+                <p className="step desktop-drydown-title">07 Drydown Journey</p>
+                <h2 className="desktop-drydown-title">Drydown Journey</h2>
+                <p className="mobile-drydown-copy">Follow the evolution of your fragrance as it settles from the first spark to a lasting, intimate trail.</p>
+              </div>
               <div id="drydownTimeline" className="timeline" />
-              <button type="button" className="mobile-insight-switch" aria-expanded={isMobileDrydownExpanded} onClick={() => setIsMobileDrydownExpanded(expanded => !expanded)}>
-                {isMobileDrydownExpanded ? "↩ Show Compact Drydown" : "↪ View Complete Drydown"} <span aria-hidden="true">›</span>
-              </button>
             </section>
           </section>
+
+          {mobileWorkspace === "insights" && mobileInsightsView === "drydown" && (
+            <button type="button" className="mobile-insight-switch" aria-expanded={isMobileDrydownExpanded} onClick={() => setIsMobileDrydownExpanded(expanded => !expanded)}>
+              <span><b aria-hidden="true">▣</b> {isMobileDrydownExpanded ? "Show Compact Drydown" : "View Complete Drydown"}</span> <span aria-hidden="true">›</span>
+            </button>
+          )}
 
           <section className="formula-check panel ornate-panel">
             <div className="panel-title"><p className="step">08 Formula Check</p><h2>Formula Check</h2></div>
@@ -634,18 +696,92 @@ export default function ArtisanBenchPage() {
               <div id="briefOutput" hidden />
             </section>
             <section id="story-card" className="story-card-section panel ornate-panel">
-              <div className="panel-title"><p className="step">Review Your Creation</p><h2>{latestBenchState.current.perfumeName || "Untitled Creation"}</h2><small>Check every detail before sending it to an artisan.</small></div>
-              <section className="mobile-review-summary" aria-label="Creation summary">
-                <div><span>Identity</span><strong>{latestBenchState.current.concentration.toUpperCase()} · {latestBenchState.current.formulaMetadata.total}% total</strong></div>
-                <div><span>Formula Structure</span><strong>Top {latestBenchState.current.formulaMetadata.layerTotals.top}% · Heart {latestBenchState.current.formulaMetadata.layerTotals.heart}% · Base {latestBenchState.current.formulaMetadata.layerTotals.base}%</strong></div>
-                <div><span>Perfumer Notes</span><strong>{latestBenchState.current.perfumerNotes || "No notes added yet."}</strong></div>
-              </section>
-              <div id="storyCardPreview" className="story-card-preview inner-panel" aria-live="polite" />
-              <div className="story-card-actions">
-                <button id="downloadStoryCard" className="panel-button">Download Story Card</button>
-                <button id="shareStoryCard" className="panel-button" disabled={!isAuthenticated} aria-label={isAuthenticated ? "Share Story Card" : "Share Story Card — sign in required"}>Share Story Card</button>
-              </div>
-              <p id="storyCardMessage" className="story-card-message" aria-live="polite">Temporary preview mode: download is unlocked for review.</p>
+              {isPwaViewport ? (
+                <>
+                  <header className="mobile-review-heading">
+                    <h2>Review Your Creation</h2>
+                    <span aria-hidden="true" />
+                    <p>Check every detail before sending it to an artisan.</p>
+                  </header>
+                  <div className="mobile-review-dashboard">
+                    <section className="mobile-review-card mobile-review-identity" aria-labelledby="mobile-review-identity-title">
+                      <h3 id="mobile-review-identity-title">01 Identity</h3>
+                      <div className="mobile-review-identity__content">
+                        <div><small>Fragrance Name</small><strong>{reviewState.perfumeName || "Untitled Creation"}</strong><small>Creator</small><b>{reviewCreator}</b></div>
+                        <div><span aria-hidden="true">❧</span><strong>{reviewState.concentration.toUpperCase()}</strong><small>{reviewState.concentration.toLowerCase() === "edp" ? "Eau de Parfum" : reviewState.concentration.toUpperCase()}</small></div>
+                      </div>
+                    </section>
+
+                    <section className="mobile-review-card mobile-review-profile" aria-labelledby="mobile-review-profile-title">
+                      <h3 id="mobile-review-profile-title">02 Scent Profile</h3>
+                      {reviewScentProfile.length ? (
+                        <div className="mobile-review-chips">{reviewScentProfile.map(label => <span key={label}>✦ {label}</span>)}</div>
+                      ) : <p className="mobile-review-empty">Generate your formula to reveal its scent profile.</p>}
+                    </section>
+
+                    <section className="mobile-review-card mobile-review-structure" aria-labelledby="mobile-review-structure-title">
+                      <h3 id="mobile-review-structure-title">03 Formula Structure</h3>
+                      <div>{(["top", "heart", "base"] as FormulaLayer[]).map(layer => (
+                        <span key={layer}><small>{layer}</small><strong>{reviewMetadata.layerTotals[layer]}%</strong></span>
+                      ))}</div>
+                    </section>
+
+                    <section className="mobile-review-card mobile-review-notes" aria-labelledby="mobile-review-notes-title">
+                      <h3 id="mobile-review-notes-title">04 Notes for Perfumer</h3>
+                      {(["top", "heart", "base"] as FormulaLayer[]).map(layer => (
+                        <div key={layer}>
+                          <span aria-hidden="true">{layer === "top" ? "❧" : layer === "heart" ? "✿" : "◆"}</span>
+                          <p><strong>{layer[0].toUpperCase() + layer.slice(1)} Notes</strong><small>{reviewNotes[layer].join(", ") || "No materials selected"}</small></p>
+                        </div>
+                      ))}
+                      {reviewState.perfumerNotes ? <p className="mobile-review-perfumer-copy">“{reviewState.perfumerNotes}”</p> : null}
+                    </section>
+
+                    <section className="mobile-review-card mobile-review-story" aria-label="Fragrance story card">
+                      <div id="storyCardPreview" className="story-card-preview inner-panel" aria-live="polite" />
+                      <div className="mobile-story-card-tools" aria-label="Story card actions">
+                        <button type="button" onClick={() => {
+                          const preview = document.getElementById("storyCardPreview");
+                          if (preview?.requestFullscreen) void preview.requestFullscreen();
+                        }}>
+                          <span aria-hidden="true">⛶</span>
+                          <small>Preview<br />Fullscreen</small>
+                        </button>
+                        <button id="downloadStoryCard" type="button">
+                          <span aria-hidden="true">⇩</span>
+                          <small>Download<br />Card</small>
+                        </button>
+                        <button id="shareStoryCard" type="button" disabled={!isAuthenticated} aria-label={isAuthenticated ? "Share Creation" : "Share Creation — sign in required"}>
+                          <span aria-hidden="true">⌯</span>
+                          <small>Share<br />Creation</small>
+                        </button>
+                      </div>
+                    </section>
+
+                    <section className={`mobile-review-card mobile-review-check${reviewIsBalanced ? " is-balanced" : ""}`} aria-labelledby="mobile-review-check-title">
+                      <span aria-hidden="true">⚖</span>
+                      <div><h3 id="mobile-review-check-title">05 Formula Check</h3><strong>{reviewIsBalanced ? "Formula is Balanced" : "Formula Needs Balancing"}</strong><p>{reviewIsBalanced ? "Your formula totals 100% and is ready to send for review." : `Your formula currently totals ${reviewMetadata.total}%. Complete it before sending.`}</p></div>
+                      <b aria-hidden="true">{reviewIsBalanced ? "✓" : "!"}</b>
+                    </section>
+
+                    <div className="mobile-review-actions">
+                      <button type="button" onClick={() => selectMobileWorkspace("formula")}>✎ Edit Formula</button>
+                      <button type="button" className="mobile-review-send" onClick={previewCreation} disabled={!reviewIsBalanced}>➤ Send for Review</button>
+                    </div>
+                    <p id="storyCardMessage" className="story-card-message" role="status" aria-live="polite">{draftSaveStatus}</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="panel-title"><p className="step">10 Story Card</p><h2>Fragrance Brief Story Card</h2></div>
+                  <div id="storyCardPreview" className="story-card-preview inner-panel" aria-live="polite" />
+                  <div className="story-card-actions">
+                    <button id="downloadStoryCard" className="panel-button">Download Story Card</button>
+                    <button id="shareStoryCard" className="panel-button" disabled={!isAuthenticated} aria-label={isAuthenticated ? "Share Story Card" : "Share Story Card — sign in required"}>Share Story Card</button>
+                  </div>
+                  <p id="storyCardMessage" className="story-card-message" aria-live="polite">Temporary preview mode: download is unlocked for review.</p>
+                </>
+              )}
             </section>
           </section>
 

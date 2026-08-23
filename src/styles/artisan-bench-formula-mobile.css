@@ -451,6 +451,41 @@
   }
 }
 
+@media (max-width: 760px) {
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row {
+    height: calc(100dvh - 280px) !important;
+    min-height: 525px !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row > .drydown.panel.ornate-panel.is-mobile-active {
+    height: calc(100dvh - 335px) !important;
+    min-height: 470px !important;
+    padding: 3px 0 8px !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown > .panel-title {
+    margin-left: 0 !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown #drydownTimeline::before {
+    left: 14px !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown #drydownTimeline .timeline-card {
+    width: 100% !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown #drydownTimeline .timeline-card h3 {
+    position: static !important;
+  }
+
+  html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown #drydownTimeline .timeline-card h3::before {
+    top: 50% !important;
+    left: 10px !important;
+    transform: translateY(-50%) !important;
+  }
+}
+
 /* Keep every mobile panel on the same reference-style 20px viewport inset. */
 @media (max-width: 760px) {
   body.expert-lab-page .mobile-workbench-status {

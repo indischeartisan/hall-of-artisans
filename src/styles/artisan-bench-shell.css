@@ -73,8 +73,7 @@ body.expert-lab-page .global-header > .theme-toggle .theme-toggle-icon {
   }
 
   body.expert-lab-page .mobile-view-insights .analysis > .panel-title {
-    margin: 0 !important;
-    padding: 0 5px !important;
+    display: none !important;
   }
 
   body.expert-lab-page .mobile-view-insights .analysis > .panel-title .step {
@@ -428,6 +427,14 @@ body.expert-lab-page .mobile-review-summary {
 }
 
 body.expert-lab-page .mobile-material-browser {
+  display: none;
+}
+
+body.expert-lab-page :is(.mobile-drydown-title, .mobile-drydown-copy) {
+  display: none;
+}
+
+body.expert-lab-page .mobile-formula-validation {
   display: none;
 }
 
@@ -1511,6 +1518,10 @@ body.expert-lab-page .mobile-material-browser {
     display: none !important;
   }
 
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .formula-check {
+    display: none !important;
+  }
+
   /* Mobile Notes */
   body.expert-lab-page .mobile-workspace.mobile-view-notes {
     overflow-x: hidden !important;
@@ -1599,88 +1610,489 @@ body.expert-lab-page .mobile-material-browser {
 
   /* Mobile Review */
   body.expert-lab-page .mobile-view-review > .brief-story-row {
-    gap: 10px !important;
+    gap: 0 !important;
     height: auto !important;
     min-height: 0 !important;
     overflow: visible !important;
   }
 
   body.expert-lab-page .mobile-view-review .story-card-section {
-    padding: 15px !important;
-    border-radius: 14px !important;
+    padding: 8px 0 98px !important;
+    border-radius: 0 !important;
   }
 
-  body.expert-lab-page .mobile-view-review .story-card-section > .panel-title {
+  body.expert-lab-page .mobile-review-heading {
     display: grid !important;
-    gap: 3px;
+    justify-items: center;
+    gap: 7px;
+    margin: 4px 0 14px;
     text-align: center;
   }
 
-  body.expert-lab-page .mobile-view-review .story-card-section > .panel-title h2 {
-    font-size: 25px !important;
+  body.expert-lab-page .mobile-review-heading h2 {
+    margin: 0;
+    color: #163f2e;
+    font: 600 28px/1.05 "Cormorant Garamond", serif;
   }
 
-  body.expert-lab-page .mobile-review-summary {
+  body.expert-lab-page .mobile-review-heading > span {
+    width: 128px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #bd8b2e 25%, #bd8b2e 75%, transparent);
+  }
+
+  body.expert-lab-page .mobile-review-heading p {
+    margin: 0;
+    color: #4a5149;
+    font: 500 11px/1.35 Inter, sans-serif;
+  }
+
+  body.expert-lab-page .mobile-review-dashboard {
     display: grid;
-    gap: 7px;
-    margin: 12px 0;
+    gap: 10px;
   }
 
-  body.expert-lab-page .mobile-review-summary > div {
-    display: grid;
-    gap: 3px;
-    padding: 9px 11px;
-    background: rgba(255, 251, 239, .76);
-    border: 1px solid rgba(169, 129, 58, .24);
-    border-radius: 8px;
+  body.expert-lab-page .mobile-review-card {
+    padding: 13px;
+    color: #254334;
+    background: rgba(255, 251, 240, .91);
+    border: 1px solid rgba(178, 132, 46, .32);
+    border-radius: 12px;
+    box-shadow: 0 5px 14px rgba(54, 40, 19, .06);
   }
 
-  body.expert-lab-page .mobile-review-summary span {
+  body.expert-lab-page .mobile-review-card h3 {
+    margin: 0 0 9px;
     color: #a37524;
-    font: 700 8px/1 Inter, sans-serif;
-    letter-spacing: .12em;
+    font: 700 9px/1.1 "Cormorant Garamond", serif;
+    letter-spacing: .15em;
     text-transform: uppercase;
   }
 
-  body.expert-lab-page .mobile-review-summary strong {
+  body.expert-lab-page .mobile-review-identity__content {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(94px, .8fr);
+    align-items: center;
+  }
+
+  body.expert-lab-page .mobile-review-identity__content > div {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  body.expert-lab-page .mobile-review-identity__content > div + div {
+    justify-items: center;
+    padding-left: 12px;
+    border-left: 1px solid rgba(178, 132, 46, .3);
+  }
+
+  body.expert-lab-page .mobile-review-identity small,
+  body.expert-lab-page .mobile-review-notes small {
+    font: 500 10px/1.3 Inter, sans-serif;
+  }
+
+  body.expert-lab-page .mobile-review-identity strong {
     overflow: hidden;
-    color: #294535;
-    font: 600 11px/1.35 Inter, sans-serif;
+    font: 600 20px/1.1 "Cormorant Garamond", serif;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  body.expert-lab-page .mobile-view-review #storyCardPreview {
-    max-height: none !important;
-    overflow: visible !important;
+  body.expert-lab-page .mobile-review-identity b {
+    margin-bottom: 8px;
+    font: 600 13px/1.2 "Cormorant Garamond", serif;
   }
 
-  body.expert-lab-page .mobile-view-review .story-card-actions {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 7px !important;
+  body.expert-lab-page .mobile-review-identity__content > div + div span {
+    color: #b58227;
+    font-size: 27px;
   }
 
-  body.expert-lab-page .mobile-view-review > .next {
-    padding: 12px !important;
-    border-radius: 13px !important;
+  body.expert-lab-page .mobile-review-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
   }
 
-  body.expert-lab-page .mobile-view-review > .next > :is(.panel-title, .next-creation) {
+  body.expert-lab-page .mobile-review-chips span {
+    padding: 7px 12px;
+    color: #284637;
+    font: 600 11px/1 Inter, sans-serif;
+    background: #f2f1dd;
+    border: 1px solid rgba(73, 104, 71, .2);
+    border-radius: 999px;
+  }
+
+  body.expert-lab-page .mobile-review-empty {
+    margin: 0;
+    color: #77736a;
+    font: 500 11px/1.4 Inter, sans-serif;
+  }
+
+  body.expert-lab-page .mobile-review-structure > div {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+  }
+
+  body.expert-lab-page .mobile-review-structure span {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    padding: 9px 4px;
+    border: 1px solid rgba(178, 132, 46, .3);
+    border-radius: 9px;
+  }
+
+  body.expert-lab-page .mobile-review-structure small {
+    font: 600 11px/1 "Cormorant Garamond", serif;
+    text-transform: uppercase;
+  }
+
+  body.expert-lab-page .mobile-review-structure strong {
+    color: #a9771f;
+    font: 600 22px/1 "Cormorant Garamond", serif;
+  }
+
+  body.expert-lab-page .mobile-review-notes > div {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(178, 132, 46, .3);
+  }
+
+  body.expert-lab-page .mobile-review-notes > div > span {
+    color: #a9771f;
+    font-size: 22px;
+    text-align: center;
+  }
+
+  body.expert-lab-page .mobile-review-notes p {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+  }
+
+  body.expert-lab-page .mobile-review-notes p strong {
+    font: 600 15px/1.1 "Cormorant Garamond", serif;
+  }
+
+  body.expert-lab-page .mobile-review-perfumer-copy {
+    padding: 10px 0 0 !important;
+    color: #5c5d55;
+    font: italic 12px/1.45 "Cormorant Garamond", serif !important;
+    border: 0 !important;
+  }
+
+  body.expert-lab-page .mobile-review-story {
+    padding: 8px !important;
+  }
+
+  body.expert-lab-page .mobile-review-story #storyCardPreview {
+    width: min(100%, 300px) !important;
+    min-height: 340px;
+    max-height: 430px !important;
+    margin: 0 auto;
+    overflow: hidden !important;
+    border-radius: 8px;
+  }
+
+  body.expert-lab-page .mobile-review-story #storyCardPreview :is(canvas, img) {
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  body.expert-lab-page .mobile-review-check {
+    display: grid;
+    grid-template-columns: 42px 1fr 28px;
+    align-items: center;
+    gap: 10px;
+  }
+
+  body.expert-lab-page .mobile-review-check > span,
+  body.expert-lab-page .mobile-review-check > b {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    color: #a9771f;
+    border: 1px solid #bb9145;
+    border-radius: 50%;
+  }
+
+  body.expert-lab-page .mobile-review-check.is-balanced > span,
+  body.expert-lab-page .mobile-review-check.is-balanced > b {
+    color: #fff4cf;
+    background: #15513b;
+  }
+
+  body.expert-lab-page .mobile-review-check h3 {
+    margin-bottom: 4px;
+  }
+
+  body.expert-lab-page .mobile-review-check strong {
+    font: 600 17px/1.1 "Cormorant Garamond", serif;
+  }
+
+  body.expert-lab-page .mobile-review-check p {
+    margin: 3px 0 0;
+    font: 500 10px/1.35 Inter, sans-serif;
+  }
+
+  body.expert-lab-page .mobile-review-actions {
+    display: grid;
+    grid-template-columns: .9fr 1.3fr;
+    gap: 8px;
+    padding: 8px;
+    background: rgba(255, 251, 240, .91);
+    border: 1px solid rgba(178, 132, 46, .32);
+    border-radius: 12px;
+  }
+
+  body.expert-lab-page .mobile-review-actions button {
+    min-height: 44px;
+    color: #315040;
+    font: 600 14px/1 "Cormorant Garamond", serif;
+    background: transparent;
+    border: 1px solid #b98a34;
+    border-radius: 8px;
+  }
+
+  body.expert-lab-page .mobile-review-actions .mobile-review-send {
+    color: #fff4ce;
+    background: #15513b;
+  }
+
+  body.expert-lab-page .mobile-review-actions .mobile-review-send:disabled {
+    cursor: not-allowed;
+    opacity: .48;
+  }
+
+  body.expert-lab-page .mobile-review-legacy-controls {
     display: none !important;
   }
 
-  body.expert-lab-page .mobile-view-review .next-actions {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 7px !important;
+  /* Reference-style review sheet: summary rail + fragrance card in one view. */
+  body.expert-lab-page .mobile-view-review .story-card-section {
+    padding-top: 3px !important;
   }
 
-  body.expert-lab-page .mobile-view-review .review-creation-cta {
-    grid-column: 1 / -1 !important;
-    min-height: 48px !important;
-    color: #fff6d9 !important;
-    background: #174b38 !important;
+  body.expert-lab-page .mobile-review-heading {
+    gap: 4px;
+    margin: 0 0 8px;
+  }
+
+  body.expert-lab-page .mobile-review-heading h2 {
+    font-size: 23px;
+  }
+
+  body.expert-lab-page .mobile-review-heading p {
+    font-size: 9px;
+  }
+
+  body.expert-lab-page .mobile-review-dashboard {
+    grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr);
+    grid-template-rows: repeat(4, minmax(0, 1fr)) auto auto;
+    grid-template-areas:
+      "identity story"
+      "profile story"
+      "structure story"
+      "notes story"
+      "check actions"
+      "message message";
+    gap: 6px;
+    align-items: stretch;
+    height: calc(100dvh - 327px);
+    min-height: 545px;
+    max-height: 650px;
+  }
+
+  body.expert-lab-page .mobile-review-identity { grid-area: identity; }
+  body.expert-lab-page .mobile-review-profile { grid-area: profile; }
+  body.expert-lab-page .mobile-review-structure { grid-area: structure; }
+  body.expert-lab-page .mobile-review-notes { grid-area: notes; }
+  body.expert-lab-page .mobile-review-story { grid-area: story; }
+  body.expert-lab-page .mobile-review-check { grid-area: check; }
+  body.expert-lab-page .mobile-review-actions { grid-area: actions; }
+  body.expert-lab-page .mobile-review-dashboard > .story-card-message { grid-area: message; }
+
+  body.expert-lab-page .mobile-review-card {
+    min-width: 0;
+    padding: 7px;
+    border-radius: 7px;
+  }
+
+  body.expert-lab-page .mobile-review-card h3 {
+    margin-bottom: 5px;
+    font-size: 8.5px;
+  }
+
+  body.expert-lab-page .mobile-review-identity__content {
+    display: block;
+  }
+
+  body.expert-lab-page .mobile-review-identity__content > div + div {
+    display: none;
+  }
+
+  body.expert-lab-page .mobile-review-identity small,
+  body.expert-lab-page .mobile-review-notes small {
+    font-size: 8px;
+    line-height: 1.25;
+  }
+
+  body.expert-lab-page .mobile-review-identity strong {
+    font-size: 15px;
+  }
+
+  body.expert-lab-page .mobile-review-identity b {
+    margin-bottom: 0;
+    font-size: 10px;
+  }
+
+  body.expert-lab-page .mobile-review-chips {
+    gap: 3px;
+  }
+
+  body.expert-lab-page .mobile-review-chips span {
+    padding: 4px 6px;
+    font-size: 8px;
+  }
+
+  body.expert-lab-page .mobile-review-empty {
+    font-size: 9px;
+    line-height: 1.35;
+  }
+
+  body.expert-lab-page .mobile-review-structure > div {
+    gap: 3px;
+  }
+
+  body.expert-lab-page .mobile-review-structure span {
+    gap: 2px;
+    padding: 4px 2px;
+    border-radius: 5px;
+  }
+
+  body.expert-lab-page .mobile-review-structure small {
+    font-size: 8px;
+  }
+
+  body.expert-lab-page .mobile-review-structure strong {
+    font-size: 16px;
+  }
+
+  body.expert-lab-page .mobile-review-notes > div {
+    grid-template-columns: 15px minmax(0, 1fr);
+    gap: 3px;
+    padding: 4px 0;
+  }
+
+  body.expert-lab-page .mobile-review-notes > div > span {
+    font-size: 13px;
+  }
+
+  body.expert-lab-page .mobile-review-notes p strong {
+    font-size: 11px;
+  }
+
+  body.expert-lab-page .mobile-review-story {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    place-items: center;
+    min-height: 0;
+    padding: 5px !important;
+  }
+
+  body.expert-lab-page .mobile-review-story #storyCardPreview {
+    width: 100% !important;
+    min-height: 0;
+    max-height: 460px !important;
+    border-radius: 5px;
+  }
+
+  body.expert-lab-page .mobile-story-card-tools {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    margin-top: 4px;
+    padding-top: 5px;
+    border-top: 1px solid rgba(178, 132, 46, .3);
+  }
+
+  body.expert-lab-page .mobile-story-card-tools button {
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    min-width: 0;
+    min-height: 40px;
+    padding: 2px;
+    color: #2f3d33;
+    background: transparent;
+    border: 0;
+    border-right: 1px solid rgba(178, 132, 46, .2);
+  }
+
+  body.expert-lab-page .mobile-story-card-tools button:last-child {
+    border-right: 0;
+  }
+
+  body.expert-lab-page .mobile-story-card-tools button:disabled {
+    opacity: .45;
+  }
+
+  body.expert-lab-page .mobile-story-card-tools span {
+    font: 500 16px/1 sans-serif;
+  }
+
+  body.expert-lab-page .mobile-story-card-tools small {
+    font: 500 8px/1.15 Inter, sans-serif;
+  }
+
+  body.expert-lab-page .mobile-review-check {
+    grid-template-columns: 1fr 18px;
+    gap: 4px;
+  }
+
+  body.expert-lab-page .mobile-review-check > span {
+    display: none;
+  }
+
+  body.expert-lab-page .mobile-review-check > b {
+    width: 18px;
+    height: 18px;
+    font-size: 9px;
+  }
+
+  body.expert-lab-page .mobile-review-check strong {
+    font-size: 11px;
+  }
+
+  body.expert-lab-page .mobile-review-check p {
+    display: none;
+  }
+
+  body.expert-lab-page .mobile-review-actions {
+    grid-template-columns: 1fr 1.25fr;
+    gap: 4px;
+    align-content: center;
+    padding: 5px;
+    border-radius: 7px;
+  }
+
+  body.expert-lab-page .mobile-review-actions button {
+    min-height: 31px;
+    padding: 3px;
+    font-size: 10px;
+    border-radius: 5px;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-review > .next.panel.ornate-panel {
+    display: none !important;
   }
 
   /* One shared mobile content rail: match Formula and the fixed footer. */
@@ -1689,6 +2101,222 @@ body.expert-lab-page .mobile-material-browser {
   body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-review > :is(.brief-story-row, .next) {
     width: auto !important;
     margin-inline: 6px !important;
+  }
+
+  /* Editorial Drydown Journey */
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown.is-mobile-active {
+    gap: 7px !important;
+    padding: 3px 0 8px 34px !important;
+    overflow: hidden !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown > .panel-title {
+    display: none !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown > .panel-title .step {
+    margin: 0 0 5px !important;
+    color: #9f7020 !important;
+    font: 600 9px/1.2 "Cormorant Garamond", serif !important;
+    letter-spacing: .19em !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown > .panel-title h2 {
+    display: block !important;
+    margin: 0 !important;
+    color: #123f30 !important;
+    font: 600 27px/.95 "Cormorant Garamond", serif !important;
+    letter-spacing: .055em !important;
+    text-transform: uppercase !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown .mobile-drydown-copy {
+    display: block !important;
+    max-width: 295px !important;
+    margin: 7px 0 0 !important;
+    color: #4e4b43 !important;
+    font: 500 10.5px/1.4 Inter, sans-serif !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown .mobile-drydown-title {
+    display: block !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown .desktop-drydown-title {
+    display: none !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown #drydownTimeline {
+    gap: 7px !important;
+    padding: 0 0 2px !important;
+    overflow-x: visible !important;
+    scrollbar-width: none !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown #drydownTimeline::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown #drydownTimeline > .message.warn:only-child {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: min(100%, 274px) !important;
+    margin: 0 !important;
+    transform: translate(-50%, -50%) !important;
+    text-align: center !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown #drydownTimeline::before {
+    top: 20px !important;
+    bottom: 20px !important;
+    left: -19px !important;
+    width: 2px !important;
+    background: #c99a40 !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown #drydownTimeline:has(> .message.warn:only-child)::before {
+    content: none !important;
+    display: none !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown #drydownTimeline .timeline-card {
+    grid-template-columns: 60px minmax(0, 1fr) !important;
+    grid-template-rows: auto auto auto !important;
+    gap: 2px 8px !important;
+    min-height: 96px !important;
+    padding: 11px 12px 10px !important;
+    background: rgba(255, 251, 241, .94) !important;
+    border: 1px solid rgba(169, 129, 58, .3) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 5px 12px rgba(74, 53, 21, .06) !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown #drydownTimeline .timeline-card::before {
+    grid-column: 1 !important;
+    grid-row: 1 / 4 !important;
+    color: #a87520 !important;
+    font-size: 31px !important;
+    background: radial-gradient(circle, #fffdf4 0 54%, transparent 55%) !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown #drydownTimeline .timeline-card::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown #drydownTimeline .timeline-card h3 {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    font: 600 16px/1 "Cormorant Garamond", serif !important;
+    letter-spacing: .06em !important;
+    text-transform: uppercase !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown #drydownTimeline .timeline-card h3::before {
+    top: 50% !important;
+    left: -45px !important;
+    width: 27px !important;
+    height: 27px !important;
+    color: #fff7da !important;
+    font: 700 13px/1 "Cormorant Garamond", serif !important;
+    background: #174b38 !important;
+    box-shadow: 0 2px 6px rgba(23, 75, 56, .25), 0 0 0 2px #f8efdc !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown #drydownTimeline .timeline-card > strong {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    color: #a66f1d !important;
+    font: 700 10px/1 Inter, sans-serif !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown #drydownTimeline .timeline-card p {
+    grid-column: 2 !important;
+    grid-row: 3 !important;
+    color: #504c43 !important;
+    font: 500 9.5px/1.35 Inter, sans-serif !important;
+    -webkit-line-clamp: 3 !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown.is-mobile-expanded #drydownTimeline .timeline-card p {
+    -webkit-line-clamp: unset !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown .mobile-insight-switch {
+    flex: 0 0 38px !important;
+    width: calc(100% + 34px) !important;
+    margin: 0 0 0 -34px !important;
+    padding: 8px 13px !important;
+    color: #243d31 !important;
+    font: 600 11px/1 "Cormorant Garamond", serif !important;
+    background: rgba(255, 251, 241, .95) !important;
+    border-color: rgba(169, 129, 58, .32) !important;
+    border-radius: 8px !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .drydown .mobile-insight-switch b {
+    margin-right: 6px !important;
+    color: #244332 !important;
+    font-size: 14px !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .mobile-insight-switch {
+    position: fixed !important;
+    z-index: 999 !important;
+    right: 20px !important;
+    bottom: calc(78px + env(safe-area-inset-bottom)) !important;
+    left: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: auto !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 8px 13px !important;
+    color: #243d31 !important;
+    font: 600 11px/1 "Cormorant Garamond", serif !important;
+    background: rgba(255, 251, 241, .97) !important;
+    border: 1px solid rgba(169, 129, 58, .32) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 5px 14px rgba(58, 42, 18, .1) !important;
+  }
+
+  body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .mobile-insight-switch b {
+    margin-right: 6px !important;
+    color: #244332 !important;
+    font-size: 14px !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .mobile-drydown-verdict {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex: 0 0 auto !important;
+    width: calc(100% + 34px) !important;
+    margin-left: -34px !important;
+    padding: 9px 12px !important;
+    background: rgba(247, 247, 231, .94) !important;
+    border: 1px solid rgba(95, 121, 76, .28) !important;
+    border-radius: 9px !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .mobile-drydown-verdict > span {
+    display: grid !important;
+    place-items: center !important;
+    flex: 0 0 42px !important;
+    width: 42px !important;
+    height: 42px !important;
+    color: #e5bd59 !important;
+    font-size: 21px !important;
+    background: #15503a !important;
+    border-radius: 50% !important;
+  }
+
+  body.expert-lab-page .mobile-view-insights .mobile-drydown-verdict p {
+    margin: 0 !important;
+    color: #314237 !important;
+    font: 600 13px/1.25 "Cormorant Garamond", serif !important;
   }
 
   body.expert-lab-page[data-theme="dark"] :is(.mobile-insights-heading, .mobile-review-summary > div) {

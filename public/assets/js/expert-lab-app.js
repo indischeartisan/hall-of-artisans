@@ -411,6 +411,16 @@ function renderFormula() {
     const items = state.formula.filter((item) => formulaLayer(item) === layer);
     $(`${layer}List`).innerHTML = items.map((item) => {
       const material = getMaterial(item.id);
+      if (!window.matchMedia('(max-width: 760px)').matches) {
+        const icon = materialIconMap[material.category] || '✦';
+        return `<div class="selected-material inner-panel compact-material-row">
+          <header>
+            <span class="selected-material-name"><span class="material-note-icon" aria-hidden="true">${icon}</span>${material.name}</span>
+            <span class="selected-material-controls"><span class="material-percent">${item.percent}%</span><button class="remove-btn panel-button" data-remove="${item.id}" aria-label="Remove ${material.name}">×</button></span>
+          </header>
+          <input type="range" min="1" max="60" value="${item.percent}" data-percent="${item.id}" aria-label="${material.name} percentage" />
+        </div>`;
+      }
       const family = Array.isArray(material.family) ? material.family[0] : material.family;
       return `<div class="selected-material inner-panel compact-material-row mobile-formula-material">
         <span class="mobile-formula-material__grip" aria-hidden="true">⠿</span>
@@ -442,6 +452,16 @@ function renderFormula() {
 
 function renderAnalysis() {
   const result = checkFormula(state.formula, state.concentration);
+  if (!window.matchMedia('(max-width: 760px)').matches) {
+    const labels = ['freshness', 'sweetness', 'warmth', 'green', 'floral', 'woody', 'powdery', 'clean', 'darkness', 'strangeness', 'intensity', 'longevity'];
+    $('profileBars').innerHTML = labels.map((key) => `
+      <div class="bar">
+        <div class="bar-label"><span>${key}</span><span>${result.profile[key]}%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${result.profile[key]}%"></div></div>
+      </div>
+    `).join('');
+    return;
+  }
   const icons = {
     freshness: '❧', sweetness: '✾', warmth: '♨', intensity: '☀', longevity: '⌛',
     green: '❧', floral: '✿', woody: '♠', powdery: '⁙', clean: '✦', darkness: '☾', strangeness: '◎'
@@ -661,6 +681,10 @@ function renderBrief() {
 }
 
 function addMaterialToFormula(materialId, targetLayer) {
+  if (!window.matchMedia('(max-width: 760px)').matches && state.formula.some((item) => item.id === materialId)) {
+    $('formulaMessages').innerHTML = '<div class="message warn">This material is already in the formula.</div>';
+    return;
+  }
   const material = getMaterial(materialId);
   if (!material) return;
   const allowedLayers = materialLayers(material);
@@ -949,6 +973,7 @@ window.addEventListener('hoa:artisan-bench-preview-request', () => {
 }, { signal: bridgeController.signal });
 
 window.addEventListener('hoa:artisan-bench-render-analysis', renderAnalysis, { signal: bridgeController.signal });
+window.addEventListener('hoa:artisan-bench-render-drydown', renderBrief, { signal: bridgeController.signal });
 
 updateAll();
 renderMessages();
