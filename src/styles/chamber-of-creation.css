@@ -728,6 +728,7 @@ body.perfume-mode-page[data-theme="bright"] .access-note {
 
   .creation-art-card {
     flex: 0 0 clamp(270px, 78vw, 336px);
+    container-type: inline-size;
     scroll-snap-align: center;
     opacity: 0.66;
     transform: scale(0.94);
@@ -774,6 +775,7 @@ body.perfume-mode-page[data-theme="bright"] .access-note {
     top: 62.5%;
     width: 78%;
     font-size: clamp(15px, 4vw, 19px);
+    font-size: clamp(9px, 6cqi, 19px);
     line-height: 1.02;
   }
 
@@ -781,45 +783,57 @@ body.perfume-mode-page[data-theme="bright"] .access-note {
     top: 76%;
     width: 78%;
     font-size: clamp(9px, 3vw, 12px);
+    font-size: clamp(6px, 3.8cqi, 12px);
     line-height: 1.16;
     white-space: nowrap;
   }
 
   .creation-art-card-primary .creation-art-title {
-    top: 53.5%;
-    font-size: clamp(20px, 5.4vw, 26px);
+    top: 55.5%;
+    font-size: clamp(20px, 5.4vw, 24px);
+    font-size: clamp(11px, 8cqi, 24px);
     line-height: 1.02;
   }
 
   .creation-art-card-primary .creation-art-desc {
     width: 78%;
-    font-size: clamp(9px, 3vw, 13px);
+    font-size: clamp(10px, 3vw, 13px);
+    font-size: clamp(6px, 4cqi, 13px);
     line-height: 1.16;
     white-space: nowrap;
+  }
+
+  .creation-art-card-primary .creation-art-button-text {
+    font-size: clamp(10px, 3vw, 13px);
+    font-size: clamp(7px, 4.2cqi, 13px);
   }
 
   .creation-art-card-describe .creation-art-title {
     top: 51.5%;
     width: 78%;
     font-size: clamp(18px, 4.8vw, 22px);
+    font-size: clamp(10px, 7.2cqi, 22px);
     line-height: 1;
   }
 
   .creation-art-card-describe .creation-art-desc {
     width: 82%;
-    font-size: clamp(9px, 3vw, 13px);
-    line-height: 1.16;
+    font-size: clamp(10px, 3vw, 13px);
+    font-size: clamp(6px, 4cqi, 13px);
+    line-height: 1.12;
     white-space: nowrap;
   }
 
   .creation-art-card-describe .creation-art-button-text {
     width: 62%;
-    font-size: clamp(13px, 3.8vw, 17px);
+    font-size: clamp(12px, 3.5vw, 15px);
+    font-size: clamp(7px, 5cqi, 15px);
   }
 
   .creation-art-button-text {
     bottom: 13.45%;
-    font-size: clamp(13px, 3.8vw, 17px);
+    font-size: clamp(12px, 3.5vw, 15px);
+    font-size: clamp(7px, 5cqi, 15px);
   }
 
   .access-note {
@@ -903,23 +917,23 @@ body.perfume-mode-page[data-theme="bright"] .access-note {
      room; keep its supporting copy below the title instead of overlapping it. */
   body.perfume-mode-page[data-theme="dark"] .creation-art-card-primary .creation-art-desc,
   body.perfume-mode-page[data-theme="bright"] .creation-art-card-primary .creation-art-desc {
-    top: 70.5% !important;
+    top: 67% !important;
   }
 
   body.perfume-mode-page .creation-art-card-describe .creation-art-title {
-    top: 51.5% !important;
+    top: 55% !important;
   }
 
   body.perfume-mode-page .creation-art-card-describe .creation-art-desc {
-    top: 70.5% !important;
+    top: 69% !important;
   }
 
   body.perfume-mode-page .creation-art-right .creation-art-title {
-    top: 62.5% !important;
+    top: 58.5% !important;
   }
 
   body.perfume-mode-page .creation-art-right .creation-art-desc {
-    top: 76% !important;
+    top: 72% !important;
   }
 
   .creation-carousel-dots button.is-active {
