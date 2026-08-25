@@ -16,6 +16,7 @@ type InsightsView = "balance" | "drydown";
 const createEmptyBenchState = (): ArtisanBenchState => ({
   concentration: "edp",
   perfumeName: "",
+  creatorCredit: "",
   perfumerNotes: "",
   nameEdited: false,
   suggestedNames: [],
@@ -86,6 +87,7 @@ export default function ArtisanBenchPage() {
   const [mobileInsightsView, setMobileInsightsView] = useState<InsightsView>("drydown");
   const [isMobileDrydownExpanded, setIsMobileDrydownExpanded] = useState(false);
   const [isMobileNameEditing, setIsMobileNameEditing] = useState(false);
+  const [isMobileCreatorEditing, setIsMobileCreatorEditing] = useState(false);
   const [isMobileOptionsOpen, setIsMobileOptionsOpen] = useState(false);
   const [isPerfumerNotesOpen, setIsPerfumerNotesOpen] = useState(false);
   const [storyCardPopupImage, setStoryCardPopupImage] = useState<string | null>(null);
@@ -395,7 +397,11 @@ export default function ArtisanBenchPage() {
   const reviewState = latestBenchState.current;
   const reviewMetadata = reviewState.formulaMetadata;
   const reviewBrief = reviewState.fragranceBrief;
-  const reviewCreator = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "You";
+  const reviewCreator = reviewState.creatorCredit?.trim()
+    || reviewState.storyCard?.creatorName?.trim()
+    || user?.user_metadata?.display_name
+    || user?.email?.split("@")[0]
+    || "Creator Name";
   const reviewProfileLabels: Record<keyof typeof reviewMetadata.profile, string> = {
     freshness: "Fresh", sweetness: "Sweet", warmth: "Warm", green: "Green",
     floral: "Floral", woody: "Woody", powdery: "Powdery", clean: "Clean",
@@ -698,13 +704,23 @@ export default function ArtisanBenchPage() {
               <div id="briefOutput" hidden />
             </section>
             <section id="story-card" className="story-card-section panel ornate-panel">
+              {!isPwaViewport && <div className="story-card-credit">
+                <label htmlFor="creatorCreditInput">Name on Card</label>
+                <input
+                  id="creatorCreditInput"
+                  type="text"
+                  maxLength={80}
+                  autoComplete="name"
+                  placeholder={String(user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Creator Name")}
+                />
+              </div>}
               {isPwaViewport ? (
                 <>
                   <div className="mobile-review-dashboard">
                     <section className="mobile-review-card mobile-review-identity" aria-labelledby="mobile-review-identity-title">
                       <h3 id="mobile-review-identity-title">01 Identity</h3>
                       <div className="mobile-review-identity__content">
-                        <div><small>Fragrance Name</small><strong>{reviewState.perfumeName || "Untitled Creation"}</strong><small>Creator</small><b>{reviewCreator}</b></div>
+                        <div><small>Fragrance Name</small><strong>{reviewState.perfumeName || "Untitled Creation"}</strong><small>Creator</small><div className={`mobile-review-creator${isMobileCreatorEditing ? " is-editing" : ""}`}><b>{reviewCreator}</b><input id="creatorCreditInput" type="text" maxLength={80} autoComplete="name" defaultValue={reviewState.creatorCredit || ""} placeholder={String(user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Creator Name")} aria-label="Name on card" onBlur={() => setIsMobileCreatorEditing(false)} onKeyDown={(event) => { if (event.key === "Enter") event.currentTarget.blur(); }} /><button type="button" aria-label="Edit creator name" onClick={() => { setIsMobileCreatorEditing(true); window.requestAnimationFrame(() => document.getElementById("creatorCreditInput")?.focus()); }}>✎</button></div></div>
                         <div><span aria-hidden="true">❧</span><strong>{reviewState.concentration.toUpperCase()}</strong><small>{reviewState.concentration.toLowerCase() === "edp" ? "Eau de Parfum" : reviewState.concentration.toUpperCase()}</small></div>
                       </div>
                     </section>

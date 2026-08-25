@@ -70,6 +70,7 @@ export interface StoryCardData {
 export interface ArtisanBenchState {
   concentration: string;
   perfumeName: string;
+  creatorCredit?: string;
   perfumerNotes?: string;
   nameEdited: boolean;
   suggestedNames: string[];

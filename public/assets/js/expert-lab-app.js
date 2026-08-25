@@ -9,6 +9,7 @@ const { autoBalance, calculateLayerTotals, calculateTotal, checkFormula, dominan
 let state = {
   concentration: 'edp',
   perfumeName: '',
+  creatorCredit: '',
   perfumerNotes: '',
   nameEdited: false,
   suggestedNames: [],
@@ -21,6 +22,7 @@ function buildBenchSnapshot() {
   return {
     concentration: state.concentration,
     perfumeName: state.perfumeName,
+    creatorCredit: state.creatorCredit,
     perfumerNotes: state.perfumerNotes,
     nameEdited: state.nameEdited,
     suggestedNames: [...state.suggestedNames],
@@ -54,6 +56,11 @@ window.addEventListener('hoa:artisan-bench-load-state', (event) => {
   state = {
     concentration: event.detail.concentration,
     perfumeName: event.detail.perfumeName,
+    creatorCredit: normalizeCreatorCredit(
+      event.detail.creatorCredit ||
+      (!['Guest Perfumer', 'Creator Name'].includes(event.detail.storyCard?.creatorName) ? event.detail.storyCard?.creatorName : '') ||
+      ''
+    ),
     perfumerNotes: typeof event.detail.perfumerNotes === 'string' ? event.detail.perfumerNotes : '',
     nameEdited: Boolean(event.detail.nameEdited),
     suggestedNames: Array.isArray(event.detail.suggestedNames) ? event.detail.suggestedNames.filter((name) => typeof name === 'string') : [],
@@ -104,6 +111,29 @@ const materialIconMap = {
 
 function selectedConcentration() {
   return concentrations.find((item) => item.id === state.concentration) || concentrations[1];
+}
+
+function normalizeCreatorCredit(value) {
+  return String(value || '')
+    .replace(/[\u0000-\u001f\u007f]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 80);
+}
+
+function resolvedCreatorCredit() {
+  const legacyIdentity = getPerfumerIdentity();
+  return normalizeCreatorCredit(
+    state.creatorCredit ||
+    window.__hoaArtisanBenchCreatorName ||
+    (legacyIdentity.hasPerfumerId ? legacyIdentity.creatorName : '') ||
+    'Creator Name'
+  );
+}
+
+function renderCreatorCredit() {
+  const input = $('creatorCreditInput');
+  if (input && document.activeElement !== input) input.value = state.creatorCredit;
 }
 
 function renderConcentrations() {
@@ -235,7 +265,7 @@ function buildStoryCardData() {
   return {
     isEmpty: !state.formula.length && !state.perfumeName,
     fragranceName: state.perfumeName,
-    creatorName: getPerfumerIdentity().creatorName || window.__hoaArtisanBenchCreatorName || 'Creator Name',
+    creatorName: resolvedCreatorCredit(),
     topNotes: brief.notes.top,
     heartNotes: brief.notes.heart,
     baseNotes: brief.notes.base,
@@ -262,7 +292,12 @@ function updateStoryCardActions() {
   $('storyCardMessage').textContent = isAuthenticated ? 'Story Card sharing is available for your signed-in account.' : previewMessage;
 }
 
-window.addEventListener('hoa:artisan-bench-auth-change', updateStoryCardActions, { signal: bridgeController.signal });
+window.addEventListener('hoa:artisan-bench-auth-change', () => {
+  updateStoryCardActions();
+  renderCreatorCredit();
+  scheduleStoryCardPreview();
+  emitBenchState();
+}, { signal: bridgeController.signal });
 
 async function renderStoryCardPreview() {
   if (!storyCard || !$('storyCardPreview')) return;
@@ -868,6 +903,12 @@ document.addEventListener('input', (event) => {
     renderBrief();
   }
 
+  if (event.target.id === 'creatorCreditInput') {
+    state.creatorCredit = String(event.target.value || '').slice(0, 80);
+    scheduleStoryCardPreview();
+    emitBenchState();
+  }
+
   if (event.target.id === 'perfumerNotesInput') {
     state.perfumerNotes = event.target.value;
     emitBenchState();
@@ -875,11 +916,18 @@ document.addEventListener('input', (event) => {
 }, { signal: bridgeController.signal });
 
 document.addEventListener('blur', (event) => {
-  if (event.target.id !== 'perfumeNameInput') return;
-  state.perfumeName = event.target.value.trim().replace(/\s+/g, ' ');
-  event.target.value = state.perfumeName;
-  $('nextPerfumeName').textContent = state.perfumeName || 'Untitled creation';
-  renderBrief();
+  if (event.target.id === 'perfumeNameInput') {
+    state.perfumeName = event.target.value.trim().replace(/\s+/g, ' ');
+    event.target.value = state.perfumeName;
+    $('nextPerfumeName').textContent = state.perfumeName || 'Untitled creation';
+    renderBrief();
+  }
+  if (event.target.id === 'creatorCreditInput') {
+    state.creatorCredit = normalizeCreatorCredit(event.target.value);
+    event.target.value = state.creatorCredit;
+    scheduleStoryCardPreview();
+    emitBenchState();
+  }
 }, { capture: true, signal: bridgeController.signal });
 
 $('suggestNames').addEventListener('click', () => {
@@ -979,6 +1027,7 @@ updateAll();
 renderMessages();
 renderBrief();
 updateStoryCardActions();
+renderCreatorCredit();
 scheduleStoryCardPreview();
 emitBenchState();
 window.dispatchEvent(new CustomEvent('hoa:artisan-bench-ready'));
