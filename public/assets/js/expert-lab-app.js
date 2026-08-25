@@ -281,15 +281,14 @@ function buildStoryCardData() {
 }
 
 function updateStoryCardActions() {
-  const isAuthenticated = window.__hoaArtisanBenchAuthenticated === true;
   const shareButton = $('shareStoryCard');
-  const previewMessage = 'Sign in or register to share this Story Card.';
   $('downloadStoryCard').disabled = false;
   $('downloadStoryCard').classList.remove('locked');
   if (shareButton) {
-    shareButton.disabled = !isAuthenticated;
+    shareButton.disabled = false;
+    shareButton.classList.remove('locked');
   }
-  $('storyCardMessage').textContent = isAuthenticated ? 'Story Card sharing is available for your signed-in account.' : previewMessage;
+  $('storyCardMessage').textContent = 'Preview, download, and device sharing are available without an account.';
 }
 
 window.addEventListener('hoa:artisan-bench-auth-change', () => {
@@ -981,10 +980,6 @@ $('downloadStoryCard').addEventListener('click', async () => {
 });
 
 $('shareStoryCard').addEventListener('click', async () => {
-  if (window.__hoaArtisanBenchAuthenticated !== true) {
-    $('storyCardMessage').textContent = 'Sign in or register to share this Story Card.';
-    return;
-  }
   try {
     const safeName = state.perfumeName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'fragrance-brief';
     const filename = `fragrance-brief-${safeName}.png`;

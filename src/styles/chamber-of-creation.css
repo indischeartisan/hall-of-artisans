@@ -771,14 +771,22 @@ body.perfume-mode-page[data-theme="bright"] .access-note {
   }
 
   .creation-art-right .creation-art-title {
-    top: 67.4%;
+    top: 62.5%;
+    width: 78%;
+    font-size: clamp(15px, 4vw, 19px);
+    line-height: 1.02;
   }
 
   .creation-art-right .creation-art-desc {
-    top: 76.5%;
+    top: 76%;
+    width: 78%;
+    font-size: clamp(9px, 3vw, 12px);
+    line-height: 1.16;
+    white-space: nowrap;
   }
 
   .creation-art-card-primary .creation-art-title {
+    top: 53.5%;
     font-size: clamp(20px, 5.4vw, 26px);
     line-height: 1.02;
   }
@@ -791,15 +799,17 @@ body.perfume-mode-page[data-theme="bright"] .access-note {
   }
 
   .creation-art-card-describe .creation-art-title {
+    top: 51.5%;
     width: 78%;
-    font-size: clamp(20px, 5.4vw, 25px);
-    line-height: 1.08;
+    font-size: clamp(18px, 4.8vw, 22px);
+    line-height: 1;
   }
 
   .creation-art-card-describe .creation-art-desc {
-    width: 66%;
-    font-size: clamp(13px, 3.6vw, 16px);
-    line-height: 1.28;
+    width: 82%;
+    font-size: clamp(9px, 3vw, 13px);
+    line-height: 1.16;
+    white-space: nowrap;
   }
 
   .creation-art-card-describe .creation-art-button-text {
@@ -893,7 +903,23 @@ body.perfume-mode-page[data-theme="bright"] .access-note {
      room; keep its supporting copy below the title instead of overlapping it. */
   body.perfume-mode-page[data-theme="dark"] .creation-art-card-primary .creation-art-desc,
   body.perfume-mode-page[data-theme="bright"] .creation-art-card-primary .creation-art-desc {
-    top: 69.5% !important;
+    top: 70.5% !important;
+  }
+
+  body.perfume-mode-page .creation-art-card-describe .creation-art-title {
+    top: 51.5% !important;
+  }
+
+  body.perfume-mode-page .creation-art-card-describe .creation-art-desc {
+    top: 70.5% !important;
+  }
+
+  body.perfume-mode-page .creation-art-right .creation-art-title {
+    top: 62.5% !important;
+  }
+
+  body.perfume-mode-page .creation-art-right .creation-art-desc {
+    top: 76% !important;
   }
 
   .creation-carousel-dots button.is-active {

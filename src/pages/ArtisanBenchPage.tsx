@@ -713,6 +713,7 @@ export default function ArtisanBenchPage() {
                   autoComplete="name"
                   placeholder={String(user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Creator Name")}
                 />
+                <small>Display credit only. Preview, download, and device sharing work without an account.</small>
               </div>}
               {isPwaViewport ? (
                 <>
@@ -780,7 +781,7 @@ export default function ArtisanBenchPage() {
                           <span aria-hidden="true">⇩</span>
                           <small>Download<br />Card</small>
                         </button>
-                        <button id="shareStoryCard" type="button" disabled={!isAuthenticated} aria-label={isAuthenticated ? "Share Creation" : "Share Creation — sign in required"}>
+                        <button id="shareStoryCard" type="button" aria-label="Share Creation">
                           <span aria-hidden="true">⌯</span>
                           <small>Share<br />Creation</small>
                         </button>
@@ -816,7 +817,7 @@ export default function ArtisanBenchPage() {
                   <div id="storyCardPreview" className="story-card-preview inner-panel" aria-live="polite" />
                   <div className="story-card-actions">
                     <button id="downloadStoryCard" className="panel-button">Download Story Card</button>
-                    <button id="shareStoryCard" className="panel-button" disabled={!isAuthenticated} aria-label={isAuthenticated ? "Share Story Card" : "Share Story Card — sign in required"}>Share Story Card</button>
+                    <button id="shareStoryCard" className="panel-button" aria-label="Share Story Card">Share Story Card</button>
                   </div>
                   <p id="storyCardMessage" className="story-card-message" aria-live="polite">Temporary preview mode: download is unlocked for review.</p>
                 </>
