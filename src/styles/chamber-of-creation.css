@@ -873,6 +873,13 @@ body.perfume-mode-page[data-theme="bright"] .access-note {
     top: 84% !important;
   }
 
+  /* The night artwork gives the two-line Artisan Bench title more vertical
+     room; keep its supporting copy below the title instead of overlapping it. */
+  body.perfume-mode-page[data-theme="dark"] .creation-art-card-primary .creation-art-desc,
+  body.perfume-mode-page[data-theme="bright"] .creation-art-card-primary .creation-art-desc {
+    top: 69.5% !important;
+  }
+
   .creation-carousel-dots button.is-active {
     transform: scale(1.35);
     border-color: #d9ad58;
@@ -900,6 +907,65 @@ body.perfume-mode-page[data-theme="bright"] .access-note {
     color: #31503b;
     background: rgba(255, 249, 230, 0.84);
   }
+
+  /* Lock the Chamber to one mobile viewport. Card width is calculated from
+     available screen height, so its original artwork ratio stays untouched. */
+  body.perfume-mode-page {
+    height: 100dvh;
+    overflow: hidden !important;
+    overscroll-behavior: none;
+  }
+
+  body.perfume-mode-page .perfume-page {
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    max-height: 100dvh;
+    padding: calc(82px + env(safe-area-inset-top)) 0 max(4px, env(safe-area-inset-bottom));
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  body.perfume-mode-page .perfume-heading {
+    flex: 0 0 auto;
+    padding-top: 2px;
+  }
+
+  body.perfume-mode-page .perfume-heading h1 {
+    font-size: clamp(24px, min(8vw, 5dvh), 39px);
+  }
+
+  body.perfume-mode-page .perfume-heading p:last-child {
+    margin-top: clamp(4px, 1dvh, 10px);
+    font-size: clamp(12px, min(4vw, 2.2dvh), 18px);
+    line-height: 1.16;
+  }
+
+  body.perfume-mode-page .creation-carousel-shell {
+    flex: 0 0 auto;
+    margin-top: clamp(3px, 1dvh, 9px);
+  }
+
+  body.perfume-mode-page .creation-grid.creation-art-grid {
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+
+  body.perfume-mode-page .creation-art-card {
+    flex-basis: min(78vw, clamp(120px, calc((100dvh - 312px) * .6), 336px));
+  }
+
+  body.perfume-mode-page .access-note {
+    flex: 0 0 auto;
+    margin-top: clamp(3px, .7dvh, 7px);
+    font-size: clamp(11px, 1.6dvh, 14px);
+    line-height: 1.12;
+  }
+
+  body.perfume-mode-page .access-note strong {
+    font-size: clamp(13px, 1.8dvh, 16px);
+  }
+
 }
 
 @media (prefers-reduced-motion: reduce) {

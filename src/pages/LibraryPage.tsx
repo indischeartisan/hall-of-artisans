@@ -5,7 +5,8 @@ import { loadLibraryCatalog, type LibraryMaterial } from "../features/library/li
 const libraryStyles = [
   "/assets/css/styles.css?v=17",
   "/assets/css/library.css?v=9",
-  "/assets/css/header-consistency.css?v=1"
+  "/assets/css/header-consistency.css?v=1",
+  "/assets/css/library-mobile.css?v=1"
 ];
 
 const libraryDataScripts = [

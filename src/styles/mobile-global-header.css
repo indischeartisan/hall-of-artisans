@@ -414,6 +414,7 @@
 
   .mobile-nav-notification-list > footer {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     gap: 10px;
     padding: 8px 9px;
@@ -422,12 +423,43 @@
 
   .mobile-nav-notification-list > footer button,
   .mobile-nav-notification-list > footer a {
+    display: inline-flex !important;
+    align-items: center !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
     padding: 0;
     border: 0;
     color: #e6c77f !important;
     background: transparent;
     font: 600 9px/1.2 Arial, sans-serif;
     text-decoration: underline;
+    white-space: nowrap;
     cursor: pointer;
+  }
+
+  /* The opened PWA navigation keeps the Hall's green identity in both themes.
+     These selectors intentionally outrank page-level bright-theme button rules. */
+  html body .site-header.global-header.global-header .main-nav,
+  html body[data-theme="bright"] .site-header.global-header.global-header .main-nav,
+  html body[data-theme="dark"] .site-header.global-header.global-header .main-nav {
+    color: #f4e6c8 !important;
+    background: rgba(18, 48, 36, 0.985) !important;
+  }
+
+  html body .site-header.global-header.global-header .main-nav :is(.mobile-nav-tool-row, .mobile-nav-artisan-id, .mobile-nav-account-item, .mobile-nav-notifications),
+  html body[data-theme="bright"] .site-header.global-header.global-header .main-nav :is(.mobile-nav-tool-row, .mobile-nav-artisan-id, .mobile-nav-account-item, .mobile-nav-notifications),
+  html body[data-theme="dark"] .site-header.global-header.global-header .main-nav :is(.mobile-nav-tool-row, .mobile-nav-artisan-id, .mobile-nav-account-item, .mobile-nav-notifications) {
+    color: #f4e6c8 !important;
+    background: rgba(255, 250, 235, 0.06) !important;
+    border-color: rgba(222, 189, 120, 0.3) !important;
+  }
+
+  html body .site-header.global-header.global-header .main-nav .mobile-nav-artisan-id small,
+  html body[data-theme="bright"] .site-header.global-header.global-header .main-nav .mobile-nav-artisan-id small,
+  html body[data-theme="dark"] .site-header.global-header.global-header .main-nav .mobile-nav-artisan-id small {
+    color: rgba(244, 230, 200, 0.72) !important;
   }
 }

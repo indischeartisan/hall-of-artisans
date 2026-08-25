@@ -94,7 +94,15 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
   }, [loadNotifications, user]);
 
   const isNotificationUnread = useCallback((item: CustomerNotification) => new Date(item.createdAt).getTime() > (notificationSeenByRequest[item.requestId] ?? 0), [notificationSeenByRequest]);
-  const unreadNotifications = useMemo(() => notifications.filter(isNotificationUnread), [notifications, isNotificationUnread]);
+  const unreadNotifications = useMemo(() => {
+    const latestByCreationAndKind = new Set<string>();
+    return notifications.filter(isNotificationUnread).filter(item => {
+      const groupKey = `${item.kind}:${item.requestId}`;
+      if (latestByCreationAndKind.has(groupKey)) return false;
+      latestByCreationAndKind.add(groupKey);
+      return true;
+    });
+  }, [notifications, isNotificationUnread]);
   const unreadChats = unreadNotifications.filter(item => item.kind === "chat").length;
   const unreadUpdates = unreadNotifications.filter(item => item.kind === "update").length;
   const saveNotificationSeenState = useCallback((next: Record<string, number>) => {
@@ -239,8 +247,8 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
                     <button type="button" className={notificationFilter === "update" ? "is-active" : ""} onClick={() => setNotificationFilter("update")}>Updates <b>{unreadUpdates}</b></button>
                   </header>
                   <div>
-                    {notifications.filter(item => item.kind === notificationFilter).slice(0, 5).map(item => <button type="button" className={isNotificationUnread(item) ? "is-unread" : ""} onClick={() => openNotification(item.requestId)} key={item.id}><i aria-hidden="true">{item.kind === "chat" ? "✉" : "↻"}</i><span><strong>{item.title}</strong><small>{item.detail}</small></span></button>)}
-                    {!notifications.some(item => item.kind === notificationFilter) && <p>No {notificationFilter === "chat" ? "messages" : "project updates"} yet.</p>}
+                    {unreadNotifications.filter(item => item.kind === notificationFilter).slice(0, 5).map(item => <button type="button" className="is-unread" onClick={() => openNotification(item.requestId)} key={item.id}><i aria-hidden="true">{item.kind === "chat" ? "✉" : "↻"}</i><span><strong>{item.title}</strong><small>{item.detail}</small></span></button>)}
+                    {!unreadNotifications.some(item => item.kind === notificationFilter) && <p>No unread {notificationFilter === "chat" ? "messages" : "project updates"}.</p>}
                   </div>
                   <footer><button type="button" onClick={markNotificationsSeen}>Mark all as read</button><a href="/my-creations/latest" onClick={(event) => navigateWithTransition(event, "/my-creations/latest")}>View creations</a></footer>
                 </div>
@@ -301,7 +309,7 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
             <>
               <span className="account-dropdown-identity" title={accountEmail}>{accountEmail}</span>
               <button className="account-dropdown-action account-notification-toggle" type="button" role="menuitem" aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen(open => !open)}><i aria-hidden="true">✉</i><span><strong>Messages &amp; Updates</strong><small>{unreadNotifications.length ? `${unreadNotifications.length} unread notifications` : "You're all caught up"}</small></span>{unreadNotifications.length > 0 && <b>{unreadNotifications.length}</b>}</button>
-              {notificationsOpen && <section className="account-notification-panel" aria-label="Messages and project updates"><header><button type="button" className={notificationFilter === "chat" ? "is-active" : ""} onClick={() => setNotificationFilter("chat")}>Chat <b>{unreadChats}</b></button><button type="button" className={notificationFilter === "update" ? "is-active" : ""} onClick={() => setNotificationFilter("update")}>Updates <b>{unreadUpdates}</b></button></header><div>{notifications.filter(item => item.kind === notificationFilter).slice(0, 5).map(item => <button type="button" className={isNotificationUnread(item) ? "is-unread" : ""} onClick={() => openNotification(item.requestId)} key={item.id}><i aria-hidden="true">{item.kind === "chat" ? "✉" : "↻"}</i><span><strong>{item.title}</strong><small>{item.detail}</small></span></button>)}{!notifications.some(item => item.kind === notificationFilter) && <p>No {notificationFilter === "chat" ? "messages" : "project updates"} yet.</p>}</div><footer><button type="button" onClick={markNotificationsSeen}>Mark all as read</button><a href="/my-creations/latest" onClick={(event) => navigateWithTransition(event, "/my-creations/latest")}>View creations</a></footer></section>}
+              {notificationsOpen && <section className="account-notification-panel" aria-label="Messages and project updates"><header><button type="button" className={notificationFilter === "chat" ? "is-active" : ""} onClick={() => setNotificationFilter("chat")}>Chat <b>{unreadChats}</b></button><button type="button" className={notificationFilter === "update" ? "is-active" : ""} onClick={() => setNotificationFilter("update")}>Updates <b>{unreadUpdates}</b></button></header><div>{unreadNotifications.filter(item => item.kind === notificationFilter).slice(0, 5).map(item => <button type="button" className="is-unread" onClick={() => openNotification(item.requestId)} key={item.id}><i aria-hidden="true">{item.kind === "chat" ? "✉" : "↻"}</i><span><strong>{item.title}</strong><small>{item.detail}</small></span></button>)}{!unreadNotifications.some(item => item.kind === notificationFilter) && <p>No unread {notificationFilter === "chat" ? "messages" : "project updates"}.</p>}</div><footer><button type="button" onClick={markNotificationsSeen}>Mark all as read</button><a href="/my-creations/latest" onClick={(event) => navigateWithTransition(event, "/my-creations/latest")}>View creations</a></footer></section>}
               <a href="/my-artisan-id" role="menuitem" onClick={(event) => navigateWithTransition(event, "/my-artisan-id")}><i aria-hidden="true">ID</i><span><strong>My Artisan ID</strong><small>View your identity card</small></span></a>
               <a href="/my-creations/latest" role="menuitem" onClick={(event) => navigateWithTransition(event, "/my-creations/latest")}><i aria-hidden="true">C</i><span><strong>My Creations</strong><small>Follow your bespoke journeys</small></span></a>
               <button className="account-dropdown-action" type="button" role="menuitem" disabled={signingOut} onClick={() => void signOut()}><i aria-hidden="true">→</i><span><strong>{signingOut ? "Signing Out..." : "Sign Out"}</strong><small>End this device session</small></span></button>
