@@ -45,6 +45,8 @@ import "./styles/describe-creation-overrides.css";
 import "./styles/bright-title-clarity.css";
 import "./styles/beta-environment.css";
 import "./styles/accessibility.css";
+// Keep the shared phone/PWA header contract after page-specific header overrides.
+import "./styles/mobile-global-header.css";
 // Keep this last: it is the sole owner of the mobile Formula presentation.
 // Shared Artisan Bench chrome and the other mobile tabs live in the shell file.
 import "./styles/artisan-bench-formula-mobile.css";

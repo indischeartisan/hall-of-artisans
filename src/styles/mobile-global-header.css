@@ -1,0 +1,201 @@
+/* Final mobile/PWA header contract shared by every customer-facing page. */
+.mobile-nav-tools {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  body .site-header.global-header.global-header {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 38px !important;
+    gap: 8px !important;
+    height: calc(64px + env(safe-area-inset-top)) !important;
+    min-height: calc(64px + env(safe-area-inset-top)) !important;
+    padding: env(safe-area-inset-top) 10px 0 12px !important;
+    align-items: center !important;
+  }
+
+  body .site-header.global-header.global-header .brand {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    min-width: 0;
+    height: 64px !important;
+    gap: 8px !important;
+  }
+
+  body .site-header.global-header.global-header .brand-mark {
+    width: 46px !important;
+    height: 46px !important;
+    flex: 0 0 46px !important;
+  }
+
+  body .site-header.global-header.global-header .brand-mark img {
+    transform: none !important;
+  }
+
+  body .site-header.global-header.global-header .brand-text {
+    max-width: 145px;
+    font-size: 12px !important;
+    line-height: 1.02 !important;
+    white-space: normal;
+  }
+
+  body .site-header.global-header.global-header .brand-world {
+    font-size: 8px !important;
+    letter-spacing: 0.17em !important;
+  }
+
+  body .site-header.global-header.global-header .menu-toggle {
+    position: relative !important;
+    inset: auto !important;
+    z-index: 2;
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    display: block !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    margin: 0 !important;
+    padding: 7px !important;
+    justify-self: end !important;
+    align-self: center !important;
+    border-radius: 9px !important;
+  }
+
+  body .site-header.global-header.global-header > .account-menu,
+  body .site-header.global-header.global-header > .theme-toggle,
+  body .site-header.global-header.global-header > [class*="theme-toggle"] {
+    display: none !important;
+  }
+
+  body .site-header.global-header.global-header .main-nav {
+    position: fixed !important;
+    inset: calc(64px + env(safe-area-inset-top)) 10px auto !important;
+    z-index: 1001 !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+    max-height: calc(100svh - 76px - env(safe-area-inset-top));
+    margin: 0 !important;
+    padding: 9px !important;
+    overflow-y: auto;
+    border: 1px solid rgba(184, 139, 67, 0.48) !important;
+    border-radius: 0 0 12px 12px;
+    background: rgba(18, 48, 36, 0.985) !important;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34) !important;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-7px);
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+
+  body .site-header.global-header.global-header .main-nav.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  body .site-header.global-header.global-header .main-nav > a {
+    width: 100%;
+    padding: 12px !important;
+    border-bottom: 1px solid rgba(222, 189, 120, 0.16) !important;
+    color: #f3e5c5 !important;
+    font-size: 12px !important;
+    line-height: 1.15 !important;
+    text-align: left !important;
+    text-shadow: none !important;
+  }
+
+  body .site-header.global-header.global-header .main-nav > a::after {
+    display: none !important;
+  }
+
+  .mobile-nav-tools {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 9px;
+    border-top: 1px solid rgba(222, 189, 120, 0.3);
+  }
+
+  .mobile-nav-tool-row,
+  .mobile-nav-artisan-id {
+    min-height: 50px;
+    display: flex !important;
+    align-items: center;
+    gap: 11px;
+    padding: 7px 10px !important;
+    border: 1px solid rgba(222, 189, 120, 0.22) !important;
+    border-radius: 9px;
+    color: #f4e6c8 !important;
+    background: rgba(255, 250, 235, 0.06) !important;
+    text-align: left !important;
+    text-decoration: none;
+  }
+
+  .mobile-nav-tool-row > span {
+    flex: 1;
+    font: 600 11px/1.2 "Cormorant Garamond", Georgia, serif;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .mobile-nav-tool-row .mobile-nav-theme-action {
+    position: static !important;
+    display: inline-flex !important;
+    width: auto !important;
+    min-width: 54px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    margin: 0 !important;
+    padding: 5px 8px !important;
+    transform: none !important;
+  }
+
+  .mobile-nav-artisan-id > svg {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    fill: none;
+    stroke: #e6c77f;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .mobile-nav-artisan-id > span {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .mobile-nav-artisan-id strong,
+  .mobile-nav-artisan-id small {
+    display: block;
+  }
+
+  .mobile-nav-artisan-id strong {
+    font: 600 13px/1.15 "Cormorant Garamond", Georgia, serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .mobile-nav-artisan-id small {
+    margin-top: 3px;
+    color: rgba(244, 230, 200, 0.72);
+    font: 400 10px/1.2 Arial, sans-serif;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .mobile-nav-artisan-id > b {
+    min-width: 20px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+    padding: 0 5px;
+    border-radius: 999px;
+    color: #fff;
+    background: #b43b32;
+    font: 700 9px/1 Arial, sans-serif;
+  }
+}
+

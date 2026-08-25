@@ -845,6 +845,18 @@ body.expert-lab-page .mobile-formula-validation {
     color: #fff4d5 !important;
   }
 
+  body.expert-lab-page[data-theme="bright"] .global-header .main-nav {
+    background: rgba(255, 250, 238, .99) !important;
+    border-color: rgba(139, 91, 24, .42) !important;
+  }
+
+  body.expert-lab-page[data-theme="bright"] .global-header .main-nav > a {
+    color: #173f2d !important;
+    font-weight: 700 !important;
+    text-shadow: none !important;
+    border-bottom-color: rgba(139, 91, 24, .24) !important;
+  }
+
   body.expert-lab-page[data-theme="bright"] .global-header .brand-world {
     color: #d8b665 !important;
   }
@@ -1896,29 +1908,28 @@ body.expert-lab-page .mobile-formula-validation {
 
   body.expert-lab-page .mobile-review-dashboard {
     grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr);
-    grid-template-rows: repeat(4, minmax(0, 1fr)) auto auto;
+    grid-template-rows: 112px 78px 112px 60px minmax(180px, 1fr) 42px;
     grid-template-areas:
       "identity story"
       "profile story"
       "structure story"
       "notes story"
-      "check actions"
-      "message message";
+      "notes perfumer"
+      "actions actions";
     gap: 6px;
     align-items: stretch;
-    height: calc(100dvh - 327px);
-    min-height: 545px;
-    max-height: 650px;
+    height: calc(100dvh - 264px);
+    min-height: 614px;
+    max-height: 700px;
   }
 
   body.expert-lab-page .mobile-review-identity { grid-area: identity; }
   body.expert-lab-page .mobile-review-profile { grid-area: profile; }
   body.expert-lab-page .mobile-review-structure { grid-area: structure; }
   body.expert-lab-page .mobile-review-notes { grid-area: notes; }
+  body.expert-lab-page .mobile-review-perfumer { grid-area: perfumer; }
   body.expert-lab-page .mobile-review-story { grid-area: story; }
-  body.expert-lab-page .mobile-review-check { grid-area: check; }
   body.expert-lab-page .mobile-review-actions { grid-area: actions; }
-  body.expert-lab-page .mobile-review-dashboard > .story-card-message { grid-area: message; }
 
   body.expert-lab-page .mobile-review-card {
     min-width: 0;
@@ -1946,12 +1957,16 @@ body.expert-lab-page .mobile-formula-validation {
   }
 
   body.expert-lab-page .mobile-review-identity strong {
-    font-size: 15px;
+    font-size: 17px;
   }
 
   body.expert-lab-page .mobile-review-identity b {
     margin-bottom: 0;
-    font-size: 10px;
+    font-size: 12px;
+  }
+
+  body.expert-lab-page .mobile-review-identity small {
+    font-size: 9px;
   }
 
   body.expert-lab-page .mobile-review-chips {
@@ -1986,10 +2001,51 @@ body.expert-lab-page .mobile-formula-validation {
     font-size: 16px;
   }
 
+  body.expert-lab-page .mobile-review-structure-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    margin: 6px 0 0;
+    padding-top: 5px;
+    color: #76531d;
+    font: 600 8px/1.15 Inter, sans-serif;
+    border-top: 1px dashed rgba(178, 132, 46, .3);
+  }
+
+  body.expert-lab-page .mobile-review-structure-status b {
+    display: grid;
+    place-items: center;
+    flex: 0 0 17px;
+    width: 17px;
+    height: 17px;
+    color: #fff7da;
+    background: #a9771f;
+    border-radius: 50%;
+  }
+
+  body.expert-lab-page .mobile-review-structure-status.is-balanced {
+    color: #174b38;
+  }
+
+  body.expert-lab-page .mobile-review-structure-status.is-balanced b {
+    background: #174b38;
+  }
+
   body.expert-lab-page .mobile-review-notes > div {
     grid-template-columns: 15px minmax(0, 1fr);
     gap: 3px;
     padding: 4px 0;
+  }
+
+  body.expert-lab-page .mobile-review-notes {
+    display: flex;
+    flex-direction: column;
+  }
+
+  body.expert-lab-page .mobile-review-notes > div:nth-of-type(2),
+  body.expert-lab-page .mobile-review-notes > div:nth-of-type(3) {
+    margin-top: auto;
   }
 
   body.expert-lab-page .mobile-review-notes > div > span {
@@ -2000,10 +2056,44 @@ body.expert-lab-page .mobile-formula-validation {
     font-size: 11px;
   }
 
+  body.expert-lab-page .mobile-review-perfumer p {
+    margin: 0;
+    color: #4f514b;
+    font: italic 9px/1.35 "Cormorant Garamond", serif;
+    white-space: normal;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+  }
+
+  body.expert-lab-page .mobile-review-perfumer {
+    display: block;
+    padding: 9px;
+  }
+
+  body.expert-lab-page .mobile-review-perfumer h3 {
+    margin: 0 0 2px;
+    white-space: nowrap;
+  }
+
+  body.expert-lab-page .mobile-review-perfumer p {
+    max-height: 52px;
+  }
+
+  body.expert-lab-page .mobile-review-perfumer p button {
+    display: inline;
+    margin-left: 4px;
+    padding: 0;
+    color: #8b621e;
+    font: 700 8px/1.2 Inter, sans-serif;
+    text-decoration: underline;
+    background: transparent;
+    border: 0;
+  }
+
   body.expert-lab-page .mobile-review-story {
     display: grid;
     grid-template-rows: minmax(0, 1fr) auto;
-    place-items: center;
+    place-items: stretch center;
     min-height: 0;
     padding: 5px !important;
   }
@@ -2013,6 +2103,7 @@ body.expert-lab-page .mobile-formula-validation {
     min-height: 0;
     max-height: 460px !important;
     border-radius: 5px;
+    align-self: center;
   }
 
   body.expert-lab-page .mobile-story-card-tools {
@@ -2082,6 +2173,107 @@ body.expert-lab-page .mobile-formula-validation {
     align-content: center;
     padding: 5px;
     border-radius: 7px;
+  }
+
+  body.expert-lab-page .mobile-perfumer-notes-modal {
+    display: grid;
+    place-items: center;
+    position: fixed;
+    z-index: 1200;
+    inset: 0;
+    padding: 24px;
+    background: rgba(12, 34, 25, .58);
+    backdrop-filter: blur(4px);
+  }
+
+  body.expert-lab-page .mobile-perfumer-notes-modal > section {
+    width: min(100%, 360px);
+    max-height: min(70dvh, 560px);
+    padding: 18px;
+    overflow-y: auto;
+    color: #294535;
+    background: #fffaf0;
+    border: 1px solid #b98a34;
+    border-radius: 14px;
+    box-shadow: 0 18px 50px rgba(14, 32, 24, .28);
+  }
+
+  body.expert-lab-page .mobile-perfumer-notes-modal header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(178, 132, 46, .3);
+  }
+
+  body.expert-lab-page .mobile-perfumer-notes-modal h2 {
+    margin: 0;
+    font: 600 22px/1 "Cormorant Garamond", serif;
+  }
+
+  body.expert-lab-page .mobile-perfumer-notes-modal header button {
+    width: 32px;
+    height: 32px;
+    color: #294535;
+    font-size: 23px;
+    background: transparent;
+    border: 1px solid rgba(178, 132, 46, .45);
+    border-radius: 50%;
+  }
+
+  body.expert-lab-page .mobile-perfumer-notes-modal > section > p {
+    margin: 14px 0 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font: 500 14px/1.6 Inter, sans-serif;
+  }
+
+  body.expert-lab-page .mobile-story-preview-modal {
+    display: grid;
+    place-items: center;
+    position: fixed;
+    z-index: 1200;
+    inset: 0;
+    padding: 22px;
+    background: rgba(12, 34, 25, .64);
+    backdrop-filter: blur(5px);
+  }
+
+  body.expert-lab-page .mobile-story-preview-modal > section {
+    position: relative;
+    width: min(100%, 360px);
+    max-height: calc(100dvh - 44px);
+    padding: 9px;
+    overflow: auto;
+    background: #fff9ed;
+    border: 1px solid #b98a34;
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(8, 26, 18, .35);
+  }
+
+  body.expert-lab-page .mobile-story-preview-modal img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  body.expert-lab-page .mobile-story-preview-modal button {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    z-index: 1;
+    top: 15px;
+    right: 15px;
+    width: 34px;
+    height: 34px;
+    color: #294535;
+    font-size: 24px;
+    background: rgba(255, 250, 240, .94);
+    border: 1px solid #b98a34;
+    border-radius: 50%;
+    box-shadow: 0 3px 10px rgba(30, 36, 26, .15);
   }
 
   body.expert-lab-page .mobile-review-actions button {

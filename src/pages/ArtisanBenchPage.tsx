@@ -87,6 +87,8 @@ export default function ArtisanBenchPage() {
   const [isMobileDrydownExpanded, setIsMobileDrydownExpanded] = useState(false);
   const [isMobileNameEditing, setIsMobileNameEditing] = useState(false);
   const [isMobileOptionsOpen, setIsMobileOptionsOpen] = useState(false);
+  const [isPerfumerNotesOpen, setIsPerfumerNotesOpen] = useState(false);
+  const [storyCardPopupImage, setStoryCardPopupImage] = useState<string | null>(null);
   const [, setBenchRevision] = useState(0);
   const workspaceRef = useRef<HTMLElement>(null);
   const savedSignature = useRef(activeDraft ? JSON.stringify(activeDraft.benchState) : "");
@@ -698,11 +700,6 @@ export default function ArtisanBenchPage() {
             <section id="story-card" className="story-card-section panel ornate-panel">
               {isPwaViewport ? (
                 <>
-                  <header className="mobile-review-heading">
-                    <h2>Review Your Creation</h2>
-                    <span aria-hidden="true" />
-                    <p>Check every detail before sending it to an artisan.</p>
-                  </header>
                   <div className="mobile-review-dashboard">
                     <section className="mobile-review-card mobile-review-identity" aria-labelledby="mobile-review-identity-title">
                       <h3 id="mobile-review-identity-title">01 Identity</h3>
@@ -724,17 +721,30 @@ export default function ArtisanBenchPage() {
                       <div>{(["top", "heart", "base"] as FormulaLayer[]).map(layer => (
                         <span key={layer}><small>{layer}</small><strong>{reviewMetadata.layerTotals[layer]}%</strong></span>
                       ))}</div>
+                      <p className={`mobile-review-structure-status${reviewIsBalanced ? " is-balanced" : ""}`}>
+                        <span>{reviewIsBalanced ? "Formula is Balanced" : "Formula Needs Balancing"}</span>
+                        <b aria-hidden="true">{reviewIsBalanced ? "✓" : "!"}</b>
+                      </p>
                     </section>
 
                     <section className="mobile-review-card mobile-review-notes" aria-labelledby="mobile-review-notes-title">
-                      <h3 id="mobile-review-notes-title">04 Notes for Perfumer</h3>
+                      <h3 id="mobile-review-notes-title">04 Notes</h3>
                       {(["top", "heart", "base"] as FormulaLayer[]).map(layer => (
                         <div key={layer}>
                           <span aria-hidden="true">{layer === "top" ? "❧" : layer === "heart" ? "✿" : "◆"}</span>
-                          <p><strong>{layer[0].toUpperCase() + layer.slice(1)} Notes</strong><small>{reviewNotes[layer].join(", ") || "No materials selected"}</small></p>
+                          <p><strong>{layer[0].toUpperCase() + layer.slice(1)} Notes</strong><small>{reviewNotes[layer].map(note => note.replace(/\s+\d+(?:\.\d+)?%$/u, "")).join(", ") || "No materials selected"}</small></p>
                         </div>
                       ))}
-                      {reviewState.perfumerNotes ? <p className="mobile-review-perfumer-copy">“{reviewState.perfumerNotes}”</p> : null}
+                    </section>
+
+                    <section className="mobile-review-card mobile-review-perfumer" aria-labelledby="mobile-review-perfumer-title">
+                      <h3 id="mobile-review-perfumer-title">05 Notes for Perfumer</h3>
+                      {reviewState.perfumerNotes ? (
+                        <p>
+                          {reviewState.perfumerNotes.length > 105 ? `${reviewState.perfumerNotes.slice(0, 105).trimEnd()}…` : reviewState.perfumerNotes}
+                          <button type="button" onClick={() => setIsPerfumerNotesOpen(true)}>Selengkapnya</button>
+                        </p>
+                      ) : <p className="mobile-review-empty">No notes written yet.</p>}
                     </section>
 
                     <section className="mobile-review-card mobile-review-story" aria-label="Fragrance story card">
@@ -742,10 +752,13 @@ export default function ArtisanBenchPage() {
                       <div className="mobile-story-card-tools" aria-label="Story card actions">
                         <button type="button" onClick={() => {
                           const preview = document.getElementById("storyCardPreview");
-                          if (preview?.requestFullscreen) void preview.requestFullscreen();
+                          const canvas = preview?.querySelector("canvas");
+                          const image = preview?.querySelector("img");
+                          if (canvas) setStoryCardPopupImage(canvas.toDataURL("image/png"));
+                          else if (image) setStoryCardPopupImage(image.currentSrc || image.src);
                         }}>
                           <span aria-hidden="true">⛶</span>
-                          <small>Preview<br />Fullscreen</small>
+                          <small>Preview<br />Card</small>
                         </button>
                         <button id="downloadStoryCard" type="button">
                           <span aria-hidden="true">⇩</span>
@@ -758,18 +771,28 @@ export default function ArtisanBenchPage() {
                       </div>
                     </section>
 
-                    <section className={`mobile-review-card mobile-review-check${reviewIsBalanced ? " is-balanced" : ""}`} aria-labelledby="mobile-review-check-title">
-                      <span aria-hidden="true">⚖</span>
-                      <div><h3 id="mobile-review-check-title">05 Formula Check</h3><strong>{reviewIsBalanced ? "Formula is Balanced" : "Formula Needs Balancing"}</strong><p>{reviewIsBalanced ? "Your formula totals 100% and is ready to send for review." : `Your formula currently totals ${reviewMetadata.total}%. Complete it before sending.`}</p></div>
-                      <b aria-hidden="true">{reviewIsBalanced ? "✓" : "!"}</b>
-                    </section>
-
                     <div className="mobile-review-actions">
                       <button type="button" onClick={() => selectMobileWorkspace("formula")}>✎ Edit Formula</button>
                       <button type="button" className="mobile-review-send" onClick={previewCreation} disabled={!reviewIsBalanced}>➤ Send for Review</button>
                     </div>
-                    <p id="storyCardMessage" className="story-card-message" role="status" aria-live="polite">{draftSaveStatus}</p>
                   </div>
+                  <p id="storyCardMessage" hidden aria-live="polite">{draftSaveStatus}</p>
+                  {isPerfumerNotesOpen ? (
+                    <div className="mobile-perfumer-notes-modal" role="presentation" onClick={() => setIsPerfumerNotesOpen(false)}>
+                      <section role="dialog" aria-modal="true" aria-labelledby="complete-perfumer-notes-title" onClick={event => event.stopPropagation()}>
+                        <header><h2 id="complete-perfumer-notes-title">Notes for Perfumer</h2><button type="button" aria-label="Close notes" onClick={() => setIsPerfumerNotesOpen(false)}>×</button></header>
+                        <p>{reviewState.perfumerNotes}</p>
+                      </section>
+                    </div>
+                  ) : null}
+                  {storyCardPopupImage ? (
+                    <div className="mobile-story-preview-modal" role="presentation" onClick={() => setStoryCardPopupImage(null)}>
+                      <section role="dialog" aria-modal="true" aria-label="Story card preview" onClick={event => event.stopPropagation()}>
+                        <button type="button" aria-label="Close preview" onClick={() => setStoryCardPopupImage(null)}>×</button>
+                        <img src={storyCardPopupImage} alt="Fragrance story card preview" />
+                      </section>
+                    </div>
+                  ) : null}
                 </>
               ) : (
                 <>

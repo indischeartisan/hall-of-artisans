@@ -1,4 +1,4 @@
-import { type MouseEvent, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { cloneElement, isValidElement, type MouseEvent, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { navigationItems } from "../data/navigation";
 import { authService } from "../features/auth/authService";
@@ -141,6 +141,13 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
     menuOpen ? "menu-active" : ""
   ].filter(Boolean).join(" ");
 
+  const mobileAction = isValidElement<{ className?: string; id?: string }>(action)
+    ? cloneElement(action, {
+        id: undefined,
+        className: `${action.props.className ?? ""} mobile-nav-theme-action`.trim()
+      })
+    : action;
+
   const navigateWithTransition = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
     setMenuOpen(false);
     if (href.startsWith("#") || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -207,6 +214,22 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
             </a>
           );
         })}
+        <div className="mobile-nav-tools" aria-label="Account and appearance">
+          {mobileAction && (
+            <div className="mobile-nav-tool-row">
+              <span>Appearance</span>
+              {mobileAction}
+            </div>
+          )}
+          <a className="mobile-nav-artisan-id" href="/my-artisan-id" onClick={(event) => navigateWithTransition(event, "/my-artisan-id")}>
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <circle cx="16" cy="10.5" r="5.4" />
+              <path d="M6.5 27c.8-6 4.3-9.1 9.5-9.1S24.7 21 25.5 27" />
+            </svg>
+            <span><strong>Artisan ID</strong><small>{accountEmail ? "Open your Hall identity" : "Sign in or create your identity"}</small></span>
+            {unreadNotifications.length > 0 && <b>{unreadNotifications.length > 99 ? "99+" : unreadNotifications.length}</b>}
+          </a>
+        </div>
       </nav>
       <div className={`account-menu${accountOpen ? " open" : ""}`} ref={accountRef}>
         <button

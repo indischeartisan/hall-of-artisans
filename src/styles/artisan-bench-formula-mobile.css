@@ -453,13 +453,22 @@
 
 @media (max-width: 760px) {
   html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row {
+    position: relative !important;
     height: calc(100dvh - 280px) !important;
     min-height: 525px !important;
   }
 
   html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row > .drydown.panel.ornate-panel.is-mobile-active {
-    height: calc(100dvh - 335px) !important;
+    position: absolute !important;
+    top: 50px !important;
+    right: 0 !important;
+    bottom: -26px !important;
+    left: 0 !important;
+    grid-row: 1 / -1 !important;
+    grid-column: 1 !important;
+    height: calc(100dvh - 347px) !important;
     min-height: 470px !important;
+    max-height: none !important;
     padding: 3px 0 8px !important;
   }
 
@@ -468,7 +477,8 @@
   }
 
   html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown #drydownTimeline::before {
-    left: 14px !important;
+    content: none !important;
+    display: none !important;
   }
 
   html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .drydown #drydownTimeline .timeline-card {
