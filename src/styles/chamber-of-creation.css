@@ -779,7 +779,15 @@ body.perfume-mode-page[data-theme="bright"] .access-note {
   }
 
   .creation-art-card-primary .creation-art-title {
-    font-size: clamp(21px, 6.2vw, 30px);
+    font-size: clamp(20px, 5.4vw, 26px);
+    line-height: 1.02;
+  }
+
+  .creation-art-card-primary .creation-art-desc {
+    width: 78%;
+    font-size: clamp(9px, 3vw, 13px);
+    line-height: 1.16;
+    white-space: nowrap;
   }
 
   .creation-art-card-describe .creation-art-title {
