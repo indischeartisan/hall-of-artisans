@@ -3,6 +3,24 @@
   "buildCommand": "pnpm build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "git": {
+    "deploymentEnabled": false
+  },
+  "github": {
+    "autoAlias": false
+  },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "https://cloudflare-migration.hall-of-artisans.pages.dev/",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "destination": "https://cloudflare-migration.hall-of-artisans.pages.dev/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
