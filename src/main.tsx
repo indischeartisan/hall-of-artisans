@@ -47,11 +47,25 @@ import "./styles/beta-environment.css";
 import "./styles/accessibility.css";
 // Keep the shared phone/PWA header contract after page-specific header overrides.
 import "./styles/mobile-global-header.css";
-// Keep this last: it is the sole owner of the mobile Formula presentation.
+// Keep this after shared mobile styles: it is the sole owner of the phone Formula presentation.
 // Shared Artisan Bench chrome and the other mobile tabs live in the shell file.
 import "./styles/artisan-bench-formula-mobile.css";
+// Installed tablet PWA overrides are isolated from both phone and desktop CSS.
+import "./styles/artisan-bench-tablet-pwa.css";
 import { DraftProvider } from "./contexts/DraftContext";
 import { AuthProvider } from "./contexts/AuthContext";
+
+const standaloneMedia = window.matchMedia("(display-mode: standalone)");
+const syncPwaDisplayMode = () => {
+  const isIosStandalone = "standalone" in navigator
+    && (navigator as Navigator & { standalone?: boolean }).standalone === true;
+  document.documentElement.dataset.pwaMode = standaloneMedia.matches || isIosStandalone
+    ? "standalone"
+    : "browser";
+};
+
+syncPwaDisplayMode();
+standaloneMedia.addEventListener("change", syncPwaDisplayMode);
 
 if (import.meta.env.PROD && "serviceWorker" in navigator) {
   window.addEventListener("load", () => {

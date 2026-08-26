@@ -5,7 +5,7 @@
   "start_url": "/artisan-bench",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait-primary",
+  "orientation": "any",
   "background_color": "#f5eedc",
   "theme_color": "#123f31",
   "icons": [
