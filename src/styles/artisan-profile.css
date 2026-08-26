@@ -512,3 +512,50 @@
     linear-gradient(90deg, rgba(13, 8, 3, 0.38), rgba(13, 8, 3, 0.1) 44%, rgba(32, 22, 9, 0.08) 100%),
     linear-gradient(180deg, rgba(255, 243, 207, 0.03), rgba(15, 9, 4, 0.14)) !important;
 }
+
+/* Keep every register state in the document flow. The legacy stylesheet makes
+   specialty menus float and the desktop panel a fixed height, which caused the
+   menu, verification copy, and footer actions to overlap at tablet widths. */
+.artisan-register-body .register-page-shell .bright-register-panel {
+  height: auto;
+  overflow: visible;
+  align-content: start;
+  grid-auto-rows: max-content;
+}
+
+.artisan-register-body .register-page-shell .form-message {
+  min-height: 22px;
+  max-width: 100%;
+  margin: 0;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.artisan-register-body .register-page-shell .verification-message {
+  padding: 10px 12px;
+  border: 1px solid rgba(151, 103, 37, 0.22);
+  border-radius: 6px;
+  background: rgba(255, 250, 237, 0.46);
+}
+
+.artisan-register-body .register-page-shell .verification-resend {
+  position: relative;
+  z-index: 1;
+  margin-top: 2px;
+}
+
+@media (max-width: 1180px) {
+  .artisan-register-body .specialty-select.open {
+    z-index: 2;
+  }
+
+  .artisan-register-body .specialty-select.open .specialty-select-menu {
+    position: static;
+    max-height: none;
+    margin-top: 4px;
+  }
+
+  .artisan-register-body .register-page-shell .bright-register-panel {
+    padding-bottom: 34px;
+  }
+}
