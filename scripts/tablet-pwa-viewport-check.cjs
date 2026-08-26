@@ -50,7 +50,8 @@ const { chromium } = require("@playwright/test");
     isMobile: true,
     hasTouch: true,
     deviceScaleFactor: 1,
-    userAgent: "Mozilla/5.0 (Linux; Android 14; Tablet) AppleWebKit/537.36 Chrome/140 Safari/537.36"
+    // Chrome's "Desktop site" mode can expose a Linux desktop-like UA on Android tablets.
+    userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36"
   });
   const tabletPage = await tabletContext.newPage();
   await tabletPage.goto("http://127.0.0.1:4173/chamber-of-creation", { waitUntil: "networkidle" });

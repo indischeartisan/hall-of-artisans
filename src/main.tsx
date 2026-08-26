@@ -63,7 +63,10 @@ const syncPwaDisplayMode = () => {
     && (navigator as Navigator & { standalone?: boolean }).standalone === true;
   const isStandalone = standaloneMedia.matches || isIosStandalone;
   const shortestScreenSide = Math.min(window.screen.width, window.screen.height);
+  const isDesktopOperatingSystem = /Windows NT/i.test(navigator.userAgent)
+    || (/Macintosh/i.test(navigator.userAgent) && navigator.platform !== "MacIntel");
   const isTabletPlatform = /Android|iPad/i.test(navigator.userAgent)
+    || (/Linux/i.test(navigator.userAgent) && !isDesktopOperatingSystem)
     || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   const isTouchTablet = isTabletPlatform && navigator.maxTouchPoints > 0 && shortestScreenSide >= 600;
 
