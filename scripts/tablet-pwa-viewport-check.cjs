@@ -61,6 +61,8 @@ const { chromium } = require("@playwright/test");
     viewportWidth: window.innerWidth,
     menuToggle: getComputedStyle(document.querySelector(".menu-toggle")).display,
     carouselControls: getComputedStyle(document.querySelector(".creation-carousel-controls")).display,
+    cardWidth: document.querySelector(".creation-art-card-primary").getBoundingClientRect().width,
+    headerHeight: document.querySelector(".global-header").getBoundingClientRect().height,
     bodyHasContent: document.body.innerText.trim().length > 0,
     errorOverlay: Boolean(document.querySelector(".vite-error-overlay")),
     horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
@@ -92,6 +94,8 @@ const { chromium } = require("@playwright/test");
     || chamberTablet.viewportWidth > 700
     || chamberTablet.menuToggle === "none"
     || chamberTablet.carouselControls === "none"
+    || chamberTablet.cardWidth < 420
+    || chamberTablet.headerHeight < 80
     || benchTablet.mobileStatus === "none"
     || benchTablet.hero !== "none";
   const failed = tabletLayoutFailed

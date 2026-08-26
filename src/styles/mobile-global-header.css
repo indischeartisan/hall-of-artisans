@@ -463,3 +463,43 @@
     color: rgba(244, 230, 200, 0.72) !important;
   }
 }
+
+@media (hover: none) and (pointer: coarse) and (min-width: 761px) and (max-width: 1366px) {
+  body .site-header.global-header.global-header {
+    grid-template-columns: minmax(0, 1fr) 52px !important;
+    height: calc(84px + env(safe-area-inset-top)) !important;
+    min-height: calc(84px + env(safe-area-inset-top)) !important;
+    padding-inline: 24px 20px !important;
+  }
+
+  body .site-header.global-header.global-header .brand {
+    height: 84px !important;
+    gap: 12px !important;
+  }
+
+  body .site-header.global-header.global-header .brand-mark {
+    width: 60px !important;
+    height: 60px !important;
+    flex-basis: 60px !important;
+  }
+
+  body .site-header.global-header.global-header .brand-text {
+    max-width: 260px;
+    font-size: 17px !important;
+  }
+
+  body .site-header.global-header.global-header .brand-world {
+    font-size: 11px !important;
+  }
+
+  body .site-header.global-header.global-header .menu-toggle {
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    padding: 11px !important;
+  }
+
+  body .site-header.global-header.global-header .main-nav {
+    inset: calc(84px + env(safe-area-inset-top)) 20px auto !important;
+  }
+}
