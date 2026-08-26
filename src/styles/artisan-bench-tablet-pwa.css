@@ -1,4 +1,94 @@
 /* Installed tablet PWA only: phone (<=760px) and desktop/browser stay unchanged. */
+.tablet-formula-bottom-stack {
+  display: none;
+}
+
+/*
+ * Tablet Formula dock. It is a sibling of the bottom navigation, so fixed
+ * positioning cannot be captured by the transformed/scrolled formula panel.
+ */
+@media (hover: none) and (pointer: coarse) and (min-width: 761px) and (max-width: 1366px) {
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder .layer-card > .add-btn,
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula .formula-builder > .actions.inner-panel {
+    display: none !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula > .tablet-formula-bottom-stack {
+    position: fixed !important;
+    z-index: 1001 !important;
+    right: 20px !important;
+    bottom: calc(max(8px, env(safe-area-inset-bottom)) + 76px) !important;
+    left: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: auto !important;
+  }
+
+  html body.expert-lab-page .tablet-formula-add {
+    width: 100% !important;
+    min-height: 48px !important;
+    margin: 0 !important;
+    padding: 8px 16px !important;
+    color: #fff4d7 !important;
+    font: 600 18px/1 "Cormorant Garamond", serif !important;
+    background: #174b38 !important;
+    border: 1px solid rgba(202, 157, 72, .5) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 5px 15px rgba(14, 33, 23, .2) !important;
+  }
+
+  html body.expert-lab-page .tablet-formula-actions {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr) !important;
+    gap: 0 !important;
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 3px !important;
+    overflow: hidden !important;
+    background: rgba(255, 250, 239, .97) !important;
+    border: 1px solid rgba(169, 129, 58, .42) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 5px 15px rgba(38, 25, 9, .16) !important;
+  }
+
+  html body.expert-lab-page .tablet-formula-actions > button {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 6px 4px !important;
+    color: #3e463c !important;
+    font: 600 11px/1 "Cormorant Garamond", serif !important;
+    letter-spacing: .04em !important;
+    text-transform: uppercase !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-right: 1px solid rgba(169, 129, 58, .25) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  html body.expert-lab-page .tablet-formula-actions > button:last-child {
+    border-right: 0 !important;
+  }
+
+  html body.expert-lab-page .tablet-formula-actions > .is-primary {
+    color: #fffdf5 !important;
+    background: linear-gradient(135deg, #174c34, #103d2a) !important;
+    border-right-color: transparent !important;
+    border-radius: 7px !important;
+    box-shadow: 0 3px 8px rgba(18, 57, 39, .24) !important;
+  }
+
+  html body.expert-lab-page .mobile-workspace.mobile-view-formula > .build-review-row {
+    padding-bottom: 206px !important;
+  }
+}
+
 @media (min-width: 761px) and (max-width: 1366px) {
   html[data-tablet-pwa="true"] body.expert-lab-page {
     min-height: 100dvh;

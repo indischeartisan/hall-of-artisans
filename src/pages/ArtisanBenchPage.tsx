@@ -850,6 +850,19 @@ export default function ArtisanBenchPage() {
             <p className="story-card-message" role="status" aria-live="polite">{draftSaveStatus}</p>
           </section>
 
+          <div className="tablet-formula-bottom-stack" aria-label="Tablet formula actions">
+            <button
+              type="button"
+              className="tablet-formula-add"
+              onClick={() => document.querySelector<HTMLButtonElement>(`#mobileFormulaBuilder [data-add="${mobileFormulaLayer}"]`)?.click()}
+            >+ Add Material</button>
+            <div className="tablet-formula-actions">
+              <button type="button" onClick={() => document.getElementById("autoBalance")?.click()}>Auto 100%</button>
+              <button type="button" className="is-primary" onClick={() => document.getElementById("generateBrief")?.click()}>Generate</button>
+              <button type="button" onClick={() => document.getElementById("clearFormula")?.click()}>Clear All</button>
+            </div>
+          </div>
+
           <nav className="mobile-workbench-nav" aria-label="Artisan Bench workspace">
             {([
               ["materials", "Materials", "✦"],

@@ -79,6 +79,13 @@ const { chromium } = require("@playwright/test");
     mobileStatus: getComputedStyle(document.querySelector(".mobile-workbench-status")).display,
     hero: getComputedStyle(document.querySelector(".hero-lab")).display,
     layerColumns: getComputedStyle(document.querySelector(".layer-grid")).gridTemplateColumns,
+    dock: getComputedStyle(document.querySelector(".tablet-formula-bottom-stack")).display,
+    addBottom: document.querySelector(".tablet-formula-add").getBoundingClientRect().bottom,
+    actionsTop: document.querySelector(".tablet-formula-actions").getBoundingClientRect().top,
+    actionsBottom: document.querySelector(".tablet-formula-actions").getBoundingClientRect().bottom,
+    footerTop: document.querySelector(".mobile-workbench-nav").getBoundingClientRect().top,
+    originalAdd: getComputedStyle(document.querySelector("#mobileFormulaBuilder .layer-card[data-layer='top'] > .add-btn")).display,
+    originalActions: getComputedStyle(document.querySelector("#mobileFormulaBuilder > .actions")).display,
     bodyHasContent: document.body.innerText.trim().length > 0,
     errorOverlay: Boolean(document.querySelector(".vite-error-overlay")),
     horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
@@ -97,7 +104,12 @@ const { chromium } = require("@playwright/test");
     || chamberTablet.cardWidth < 420
     || chamberTablet.headerHeight < 80
     || benchTablet.mobileStatus === "none"
-    || benchTablet.hero !== "none";
+    || benchTablet.hero !== "none"
+    || benchTablet.dock === "none"
+    || benchTablet.originalAdd !== "none"
+    || benchTablet.originalActions !== "none"
+    || benchTablet.actionsTop - benchTablet.addBottom < 8
+    || benchTablet.footerTop - benchTablet.actionsBottom < 6;
   const failed = tabletLayoutFailed
     || results.some(result => !result.bodyHasContent || result.errorOverlay || result.horizontalOverflow || result.errors.length);
   process.exitCode = failed ? 1 : 0;

@@ -1,4 +1,4 @@
-const CACHE = "hoa-artisan-bench-v28";
+const CACHE = "hoa-artisan-bench-v29";
 const SHELL = ["/", "/artisan-bench", "/manifest.webmanifest", "/pwa-icon-192.svg", "/pwa-icon-512.svg"];
 
 self.addEventListener("install", (event) => {
