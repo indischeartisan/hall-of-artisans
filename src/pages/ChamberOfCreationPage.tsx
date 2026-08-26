@@ -2,6 +2,10 @@ import { type MouseEvent, type UIEvent, useLayoutEffect, useRef, useState } from
 import { useNavigate } from "react-router";
 import GlobalHeader from "../components/GlobalHeader";
 
+const usesCompactTouchLayout = () => window.matchMedia("(max-width: 700px)").matches
+  || window.matchMedia("(hover: none) and (pointer: coarse) and (max-width: 1366px)").matches
+  || document.documentElement.dataset.tabletDevice === "true";
+
 export default function ChamberOfCreationPage() {
   const navigate = useNavigate();
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
@@ -36,8 +40,7 @@ export default function ChamberOfCreationPage() {
   }, [theme]);
 
   useLayoutEffect(() => {
-    const media = window.matchMedia("(max-width: 700px)");
-    if (!media.matches) return;
+    if (!usesCompactTouchLayout()) return;
 
     const centerDefaultMode = () => cardRefs.current[1]?.scrollIntoView({ block: "nearest", inline: "center" });
     const frame = window.requestAnimationFrame(centerDefaultMode);
@@ -117,7 +120,7 @@ export default function ChamberOfCreationPage() {
           <div className="creation-carousel-shell">
           <div className="creation-grid creation-art-grid" aria-label="Creation modes" onScroll={updateActiveMode}>
             <a ref={(node) => { cardRefs.current[0] = node; }} className={`creation-art-card creation-art-left creation-art-card-describe${activeMode === 0 ? " is-active" : ""}`} href="/describe-your-creation" aria-label="Describe Your Creation" onClick={(event) => {
-              if (window.matchMedia("(max-width: 700px)").matches && activeMode !== 0) { event.preventDefault(); centerMode(0); return; }
+              if (usesCompactTouchLayout() && activeMode !== 0) { event.preventDefault(); centerMode(0); return; }
               openDescribeCreation(event);
             }}>
               <img className="panel-art panel-art-dark" src="/assets/images/describe-your-creation-panel.webp" alt="An ornate writing desk with a botanical journal, quill, ink bottle, flowers, and a golden frame." />
@@ -128,7 +131,7 @@ export default function ChamberOfCreationPage() {
             </a>
 
             <a ref={(node) => { cardRefs.current[1] = node; }} className={`creation-art-card creation-art-card-primary${activeMode === 1 ? " is-active" : ""}`} href="/artisan-bench" aria-label="Make Your Perfume" onClick={(event) => {
-              if (window.matchMedia("(max-width: 700px)").matches && activeMode !== 1) { event.preventDefault(); centerMode(1); return; }
+              if (usesCompactTouchLayout() && activeMode !== 1) { event.preventDefault(); centerMode(1); return; }
               openArtisanBench(event);
             }}>
               <img className="panel-art panel-art-dark" src="/assets/images/make-card-chamber-of-creation.webp" alt="Make Your Perfume" />

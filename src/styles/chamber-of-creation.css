@@ -574,7 +574,7 @@ body.perfume-mode-page[data-theme="bright"] .access-note {
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (hover: none) and (pointer: coarse) and (min-width: 761px) and (max-width: 1366px) {
   body.perfume-mode-page .global-header {
     grid-template-columns: minmax(0, 1fr) 56px 42px 42px !important;
     gap: 4px !important;
@@ -623,7 +623,7 @@ body.perfume-mode-page[data-theme="bright"] .access-note {
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 700px), (hover: none) and (pointer: coarse) and (min-width: 701px) and (max-width: 1366px) {
   body.perfume-mode-page {
     overflow-x: hidden;
     background: #173c2d;

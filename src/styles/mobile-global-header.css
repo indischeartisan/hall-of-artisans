@@ -3,7 +3,7 @@
   display: none;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (hover: none) and (pointer: coarse) and (min-width: 761px) and (max-width: 1366px) {
   body .site-header.global-header.global-header {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) 38px !important;

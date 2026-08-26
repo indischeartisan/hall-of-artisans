@@ -75,6 +75,8 @@ const { chromium } = require("@playwright/test");
     viewportWidth: window.innerWidth,
     menuToggle: getComputedStyle(document.querySelector(".menu-toggle")).display,
     mobileStatus: getComputedStyle(document.querySelector(".mobile-workbench-status")).display,
+    hero: getComputedStyle(document.querySelector(".hero-lab")).display,
+    layerColumns: getComputedStyle(document.querySelector(".layer-grid")).gridTemplateColumns,
     bodyHasContent: document.body.innerText.trim().length > 0,
     errorOverlay: Boolean(document.querySelector(".vite-error-overlay")),
     horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
@@ -90,7 +92,8 @@ const { chromium } = require("@playwright/test");
     || chamberTablet.viewportWidth > 700
     || chamberTablet.menuToggle === "none"
     || chamberTablet.carouselControls === "none"
-    || benchTablet.mobileStatus === "none";
+    || benchTablet.mobileStatus === "none"
+    || benchTablet.hero !== "none";
   const failed = tabletLayoutFailed
     || results.some(result => !result.bodyHasContent || result.errorOverlay || result.horizontalOverflow || result.errors.length);
   process.exitCode = failed ? 1 : 0;

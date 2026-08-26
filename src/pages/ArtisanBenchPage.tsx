@@ -13,6 +13,10 @@ type MobileWorkspace = "materials" | "formula" | "insights" | "notes" | "review"
 type FormulaLayer = "top" | "heart" | "base";
 type InsightsView = "balance" | "drydown";
 
+const usesCompactTouchLayout = () => window.matchMedia("(max-width: 760px)").matches
+  || window.matchMedia("(hover: none) and (pointer: coarse) and (max-width: 1366px)").matches
+  || document.documentElement.dataset.tabletDevice === "true";
+
 const createEmptyBenchState = (): ArtisanBenchState => ({
   concentration: "edp",
   perfumeName: "",
@@ -82,7 +86,7 @@ export default function ArtisanBenchPage() {
   const [draftSaveStatus, setDraftSaveStatus] = useState("");
   const [draftsOpen, setDraftsOpen] = useState(false);
   const [mobileWorkspace, setMobileWorkspace] = useState<MobileWorkspace>("formula");
-  const [isPwaViewport, setIsPwaViewport] = useState(() => window.matchMedia("(max-width: 760px)").matches);
+  const [isPwaViewport, setIsPwaViewport] = useState(usesCompactTouchLayout);
   const [mobileFormulaLayer, setMobileFormulaLayer] = useState<FormulaLayer>("top");
   const [mobileInsightsView, setMobileInsightsView] = useState<InsightsView>("drydown");
   const [isMobileDrydownExpanded, setIsMobileDrydownExpanded] = useState(false);
@@ -187,10 +191,17 @@ export default function ArtisanBenchPage() {
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 760px)");
-    const syncViewport = () => setIsPwaViewport(media.matches);
+    const tabletMedia = window.matchMedia("(hover: none) and (pointer: coarse) and (max-width: 1366px)");
+    const syncViewport = () => setIsPwaViewport(usesCompactTouchLayout());
     syncViewport();
     media.addEventListener("change", syncViewport);
-    return () => media.removeEventListener("change", syncViewport);
+    tabletMedia.addEventListener("change", syncViewport);
+    window.addEventListener("resize", syncViewport, { passive: true });
+    return () => {
+      media.removeEventListener("change", syncViewport);
+      tabletMedia.removeEventListener("change", syncViewport);
+      window.removeEventListener("resize", syncViewport);
+    };
   }, []);
 
   useEffect(() => {

@@ -60,7 +60,7 @@ body.expert-lab-page .global-header > .theme-toggle .theme-toggle-icon {
   line-height: 1;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (hover: none) and (pointer: coarse) and (min-width: 761px) and (max-width: 1366px) {
   body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .analysis.is-mobile-active {
     display: flex !important;
     flex-direction: column !important;
@@ -227,7 +227,7 @@ body.expert-lab-page .global-header > .theme-toggle .theme-toggle-icon {
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (hover: none) and (pointer: coarse) and (min-width: 761px) and (max-width: 1366px) {
   body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights .mobile-insights-heading {
     display: block !important;
     padding: 0 !important;
@@ -446,7 +446,7 @@ body.expert-lab-page .mobile-formula-validation {
  * artisan-bench-formula-mobile.css, which is imported after this stylesheet.
  * Keep only cross-tab visibility/layout rules for Formula in this file.
  */
-@media (max-width: 760px) {
+@media (max-width: 760px), (hover: none) and (pointer: coarse) and (min-width: 761px) and (max-width: 1366px) {
   body.expert-lab-page {
     height: 100dvh;
     padding-bottom: calc(76px + env(safe-area-inset-bottom));

@@ -3,7 +3,7 @@
  * Shared workbench chrome and the other mobile tabs belong in
  * artisan-bench-shell.css; do not duplicate Formula styling there.
  */
-@media (max-width: 760px) {
+@media (max-width: 760px), (hover: none) and (pointer: coarse) and (min-width: 761px) and (max-width: 1366px) {
   body.expert-lab-page .mobile-workspace.mobile-view-formula {
     overflow: hidden !important;
   }
@@ -451,7 +451,7 @@
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (hover: none) and (pointer: coarse) and (min-width: 761px) and (max-width: 1366px) {
   html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row {
     position: relative !important;
     height: calc(100dvh - 280px) !important;
@@ -497,7 +497,7 @@
 }
 
 /* Keep every mobile panel on the same reference-style 20px viewport inset. */
-@media (max-width: 760px) {
+@media (max-width: 760px), (hover: none) and (pointer: coarse) and (min-width: 761px) and (max-width: 1366px) {
   body.expert-lab-page .mobile-workbench-status {
     position: relative !important;
     left: 6px !important;
@@ -539,7 +539,7 @@
 
 /* Mobile workbench tabs share the same open-canvas treatment as Materials.
    Only the page-level wrapper is removed; all functional inner cards remain. */
-@media (max-width: 760px) {
+@media (max-width: 760px), (hover: none) and (pointer: coarse) and (min-width: 761px) and (max-width: 1366px) {
   html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-formula > .build-review-row > .formula-builder.panel.ornate-panel,
   html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row > .analysis.panel.ornate-panel,
   html body.expert-lab-page .expert-workshop.mobile-workspace.mobile-view-insights > .build-review-row > .drydown.panel.ornate-panel,
