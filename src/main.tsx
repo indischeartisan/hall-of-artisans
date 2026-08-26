@@ -54,6 +54,7 @@ import "./styles/artisan-bench-formula-mobile.css";
 import "./styles/artisan-bench-tablet-pwa.css";
 import { DraftProvider } from "./contexts/DraftContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { enforceCurrentAppVersion } from "./lib/appVersionGuard";
 
 const standaloneMedia = window.matchMedia("(display-mode: standalone)");
 const viewportMeta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]');
@@ -90,10 +91,13 @@ if (import.meta.env.PROD && "serviceWorker" in navigator) {
   });
 }
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <AuthProvider><DraftProvider><App /></DraftProvider></AuthProvider>
-    </BrowserRouter>
-  </StrictMode>
-);
+void enforceCurrentAppVersion().then(current => {
+  if (!current) return;
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <BrowserRouter>
+        <AuthProvider><DraftProvider><App /></DraftProvider></AuthProvider>
+      </BrowserRouter>
+    </StrictMode>
+  );
+});

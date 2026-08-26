@@ -33,7 +33,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [drafts, setDrafts] = useState<CreationDraft[]>([]);
   const [activeDraft, setActiveDraft] = useState<CreationDraft | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [source, setSource] = useState<DraftStorageSource>("local");
 
@@ -52,9 +52,13 @@ export function DraftProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Clear in-memory data on account changes without downloading every draft.
   useEffect(() => {
-    void refresh();
-  }, [refresh, user?.id]);
+    setDrafts([]);
+    setActiveDraft(null);
+    setError("");
+    setSource("local");
+  }, [user?.id]);
 
   const createDraft = useCallback(async (data: NewDraftData) => {
     setError("");

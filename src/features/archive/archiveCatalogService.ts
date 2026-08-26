@@ -20,7 +20,7 @@ export const toArchiveRecord = (row: ArchiveCatalogRow): ArchiveRecord => ({
 export const archiveCatalogService = {
   async listPublic() {
     try {
-      const response = await getSupabaseClient().from("archive_records").select("*").eq("status", "active").order("display_order").order("archive_number");
+      const response = await getSupabaseClient().from("archive_records").select("id,archive_number,title,creator,moods,story,image_path,image_alt,owner_id,status,display_order").eq("status", "active").order("display_order").order("archive_number").limit(100);
       if (response.error) throw response.error;
       return (response.data ?? []).map(toArchiveRecord);
     } catch (error) {

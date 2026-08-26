@@ -1,4 +1,4 @@
-const CACHE = "hoa-artisan-bench-v29";
+const CACHE = "hoa-artisan-bench-v30";
 const SHELL = ["/", "/artisan-bench", "/manifest.webmanifest", "/pwa-icon-192.svg", "/pwa-icon-512.svg"];
 
 self.addEventListener("install", (event) => {
@@ -18,6 +18,7 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  if (url.pathname === "/app-version.json") return;
 
   if (request.mode === "navigate") {
     event.respondWith(

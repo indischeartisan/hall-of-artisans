@@ -27,7 +27,8 @@ export default function PerfumerWorkspaceLayout() {
     finally { setLoading(false); }
   };
   useEffect(() => { void staffService.getAccess().then(result => { setAccess(result); if (result.role === "reviewer") return refresh(result.userId); setLoading(false); }).catch(cause => { setError(cause instanceof Error ? cause.message : "Access could not be checked."); setLoading(false); }); }, []);
-  useEffect(() => access?.role === "reviewer" ? subscribeToStaffMessageUpdates(() => void refresh(access.userId)) : undefined, [access?.role, access?.userId]);
+  const requestIds = (data?.projects ?? []).map(item => item.id);
+  useEffect(() => access?.role === "reviewer" ? subscribeToStaffMessageUpdates(requestIds, () => void refresh(access.userId)) : undefined, [access?.role, access?.userId, requestIds.join(",")]);
   useEffect(() => {
     const markRead = (event: Event) => {
       const { requestId, seenAt } = (event as CustomEvent<{ requestId: string; seenAt: number }>).detail;

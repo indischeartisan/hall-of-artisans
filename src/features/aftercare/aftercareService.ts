@@ -21,7 +21,7 @@ const mapCase = (row: any, messages: AftercareMessage[] = []): AftercareCase => 
 const client = () => getSupabaseClient() as any;
 async function hydrate(rows: any[]): Promise<AftercareCase[]> {
   if (!rows.length) return [];
-  const response = await client().from("aftercare_messages").select("*").in("case_id", rows.map(row => row.id)).order("created_at");
+  const response = await client().from("aftercare_messages").select("id,case_id,sender_role,sender_name,message,created_at").in("case_id", rows.map(row => row.id)).order("created_at").limit(200);
   if (response.error) throw response.error;
   const messages = (response.data ?? []).map(mapMessage);
   return rows.map(row => mapCase(row, messages));
@@ -29,12 +29,12 @@ async function hydrate(rows: any[]): Promise<AftercareCase[]> {
 
 export const aftercareService = {
   async getForRequest(requestId: string) {
-    const response = await client().from("aftercare_cases").select("*").eq("review_request_id", requestId).order("updated_at", { ascending: false });
+    const response = await client().from("aftercare_cases").select("id,review_request_id,user_id,assigned_reviewer_id,kind,status,subject,body,rating,linked_review_request_id,resolved_at,created_at,updated_at").eq("review_request_id", requestId).order("updated_at", { ascending: false }).limit(50);
     if (response.error) throw response.error;
     return hydrate(response.data ?? []);
   },
   async getAssigned() {
-    const response = await client().from("aftercare_cases").select("*").order("updated_at", { ascending: false });
+    const response = await client().from("aftercare_cases").select("id,review_request_id,user_id,assigned_reviewer_id,kind,status,subject,body,rating,linked_review_request_id,resolved_at,created_at,updated_at").order("updated_at", { ascending: false }).limit(100);
     if (response.error) throw response.error;
     return hydrate(response.data ?? []);
   },

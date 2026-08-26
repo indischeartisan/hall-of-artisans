@@ -15,7 +15,7 @@ export const archiveCatalogAdminService = {
     return bucket.getPublicUrl(path).data.publicUrl;
   },
   async list() {
-    const response = await getSupabaseClient().from("archive_records").select("*").order("display_order").order("archive_number");
+    const response = await getSupabaseClient().from("archive_records").select("id,archive_number,created_at,creator,display_order,image_alt,image_path,is_featured,moods,owner_id,slug,status,story,title,updated_at").order("display_order").order("archive_number").limit(200);
     if (response.error) throw response.error;
     return response.data ?? [];
   },

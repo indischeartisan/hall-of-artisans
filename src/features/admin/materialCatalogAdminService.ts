@@ -22,8 +22,8 @@ export const materialCatalogAdminService = {
   async list() {
     const client = getSupabaseClient();
     const [categories, materials] = await Promise.all([
-      client.from("material_categories").select("*").order("display_order").order("name"),
-      client.from("materials").select("*").order("display_order").order("name"),
+      client.from("material_categories").select("id,slug,name,description,status,display_order,created_at,updated_at,created_by,updated_by").order("display_order").order("name").limit(100),
+      client.from("materials").select("id,slug,name,category_id,description,status,display_order,is_featured,family,material_type,layers,moods,tags,best_used_for,pairs_well_with,avoid_if,image_path,image_alt,media_id,legacy_bench_id,legacy_library_id,intensity,longevity,sweetness,freshness,warmth,clean,darkness,floral,woody,green,powdery,strangeness,created_at,updated_at,created_by,updated_by").order("display_order").order("name").limit(500),
     ]);
     if (categories.error || materials.error) throw categories.error ?? materials.error;
     return { categories: categories.data ?? [], materials: materials.data ?? [] };

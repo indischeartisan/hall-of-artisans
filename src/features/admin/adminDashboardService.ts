@@ -134,8 +134,8 @@ export const adminDashboardService = {
     const [requests, reviewers, orderRows, orderItemRows, activityRows, messageRows, aftercareRows] = await Promise.all([
       staffService.getQueue(),
       staffService.getReviewers().catch(() => []),
-      client.from("customer_orders").select("*").order("updated_at", { ascending: false }),
-      client.from("order_items").select("*").order("created_at", { ascending: false }),
+      client.from("customer_orders").select("id,user_id,order_number,amount,currency,payment_status,production_status,shipping_status,shipping_preference,tracking_number,checkout_details,created_at,updated_at").order("updated_at", { ascending: false }).limit(100),
+      client.from("order_items").select("id,order_id,review_request_id,submission_id,creation_name,amount,currency,production_status,shipping_status,tracking_number,created_at").order("created_at", { ascending: false }).limit(300),
       client.from("request_activity").select("id,request_id,label,created_at").order("created_at", { ascending: false }).limit(20),
       client.from("request_messages").select("id,request_id,message,sender_name,created_at").eq("sender_role", "customer").order("created_at", { ascending: false }).limit(20),
       aftercareService.getAssigned()

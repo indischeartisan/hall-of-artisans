@@ -20,7 +20,8 @@ export default function AdminDashboardLayout() {
   const [error, setError] = useState("");
   const refresh = async () => { setLoading(true); try { setSnapshot(await adminDashboardService.getSnapshot()); setError(""); } catch (cause) { setError(cause instanceof Error ? cause.message : "Admin data could not be loaded."); } finally { setLoading(false); } };
   useEffect(() => { void staffService.getAccess().then(result => { setAccess(result); if (result.role) return refresh(); setLoading(false); }).catch(cause => { setError(cause instanceof Error ? cause.message : "Admin access could not be checked."); setLoading(false); }); }, []);
-  useEffect(() => access?.role === "admin" || access?.role === "super_admin" ? subscribeToStaffMessageUpdates(() => void refresh()) : undefined, [access?.role]);
+  const requestIds = (snapshot?.creations ?? []).map(item => item.request.id);
+  useEffect(() => access?.role === "admin" || access?.role === "super_admin" ? subscribeToStaffMessageUpdates(requestIds, () => void refresh()) : undefined, [access?.role, requestIds.join(",")]);
   if (error && !access) return <main className="hoa-admin-gate"><h1>Admin Workspace unavailable</h1><p>{error}</p><button onClick={() => window.location.reload()}>Try Again</button></main>;
   if (!access) return <div className="hoa-admin-loading">Opening the Admin Workspace…</div>;
   if (access.role !== "admin" && access.role !== "super_admin") return <AccessGate access={access}/>;

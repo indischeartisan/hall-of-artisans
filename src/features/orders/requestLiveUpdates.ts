@@ -42,7 +42,7 @@ export function subscribeToRequestUpdates(requestId: string, onChange: () => voi
   };
 }
 
-export function subscribeToStaffMessageUpdates(onChange: () => void) {
+export function subscribeToStaffMessageUpdates(requestIds: string[], onChange: () => void) {
   let debounceId: number | undefined;
   let realtimeConnected = false;
   const notify = () => {
@@ -56,11 +56,13 @@ export function subscribeToStaffMessageUpdates(onChange: () => void) {
   if (!isSupabaseConfigured) return () => { window.clearInterval(pollId); window.clearTimeout(debounceId); removeForegroundRefresh(); };
 
   const client = getSupabaseClient();
-  const channel = client
-    .channel(`staff-messages:${crypto.randomUUID()}`)
-    .on("postgres_changes", { event: "*", schema: "public", table: "request_messages" }, notify)
-    .on("postgres_changes", { event: "*", schema: "public", table: "request_activity" }, notify)
-    .subscribe(status => { realtimeConnected = status === "SUBSCRIBED"; });
+  let channel = client.channel(`staff-messages:${crypto.randomUUID()}`);
+  for (const requestId of [...new Set(requestIds)].slice(0, 100)) {
+    channel = channel
+      .on("postgres_changes", { event: "*", schema: "public", table: "request_messages", filter: `request_id=eq.${requestId}` }, notify)
+      .on("postgres_changes", { event: "*", schema: "public", table: "request_activity", filter: `request_id=eq.${requestId}` }, notify);
+  }
+  channel.subscribe(status => { realtimeConnected = status === "SUBSCRIBED"; });
   return () => {
     window.clearInterval(pollId);
     window.clearTimeout(debounceId);

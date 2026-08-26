@@ -28,6 +28,8 @@ type OrderRow = Tables<"customer_orders">;
 type OrderItemRow = Tables<"order_items">;
 type PackageRow = Tables<"commission_packages">;
 
+const REVIEW_LIST_COLUMNS = "id,user_id,creation_id,request_number,assigned_reviewer_id,assigned_at,status,creation_mode,submission_id,perfume_name,concentration,bottle_size,fragrance_direction,top_notes,heart_notes,base_notes,fragrance_brief,customer_notes,country_code,pricing_region,currency,estimated_price_min,estimated_price_max,final_price,selected_package_id,recommended_adjustments,included_items,estimated_production,revisions_included,submitted_at,reviewed_at,approved_at,consultation_started_at,consultation_completed_at,ready_for_payment_at,paid_at,shipped_at,completed_at,updated_at";
+
 class OrderServiceError extends Error {
   constructor(message: string, readonly cause?: unknown) { super(message); this.name = "OrderServiceError"; }
 }
@@ -70,6 +72,26 @@ function reviewFromRow(row: ReviewRow): ReviewRequest {
     consultationStartedAt: row.consultation_started_at, consultationCompletedAt: row.consultation_completed_at,
     readyForPaymentAt: row.ready_for_payment_at,
     paidAt: row.paid_at, shippedAt: row.shipped_at, completedAt: row.completed_at, lastUpdatedAt: row.updated_at
+  };
+}
+
+function reviewSummaryFromRow(row: Partial<ReviewRow> & Pick<ReviewRow, "id" | "user_id" | "creation_id" | "request_number" | "status" | "perfume_name" | "updated_at">): ReviewRequest {
+  return {
+    id: row.id, userId: row.user_id, creationId: row.creation_id, requestNumber: row.request_number,
+    assignedReviewerId: row.assigned_reviewer_id ?? null, assignedAt: row.assigned_at ?? null,
+    status: row.status as ReviewRequest["status"], creationMode: row.creation_mode ?? undefined,
+    submissionId: row.submission_id ?? null, perfumeName: row.perfume_name,
+    concentration: row.concentration ?? "", bottleSize: row.bottle_size ?? "",
+    fragranceDirection: row.fragrance_direction ?? [], topNotes: row.top_notes ?? [], heartNotes: row.heart_notes ?? [], baseNotes: row.base_notes ?? [],
+    fragranceBrief: row.fragrance_brief ?? "", storyCardData: { title: row.perfume_name, subtitle: "" }, customerNotes: row.customer_notes ?? "",
+    countryCode: row.country_code ?? "", pricingRegion: row.pricing_region ?? "", currency: row.currency ?? "IDR",
+    estimatedPriceMin: row.estimated_price_min ?? 0, estimatedPriceMax: row.estimated_price_max ?? 0, finalPrice: row.final_price ?? null,
+    selectedPackageId: row.selected_package_id ?? null, packageSnapshot: null, artisanReview: null,
+    recommendedAdjustments: row.recommended_adjustments ?? [], includedItems: row.included_items ?? [], estimatedProduction: row.estimated_production ?? null,
+    revisionsIncluded: row.revisions_included ?? null, submittedAt: row.submitted_at ?? null, reviewedAt: row.reviewed_at ?? null,
+    approvedAt: row.approved_at ?? null, consultationStartedAt: row.consultation_started_at ?? null,
+    consultationCompletedAt: row.consultation_completed_at ?? null, readyForPaymentAt: row.ready_for_payment_at ?? null,
+    paidAt: row.paid_at ?? null, shippedAt: row.shipped_at ?? null, completedAt: row.completed_at ?? null, lastUpdatedAt: row.updated_at
   };
 }
 
@@ -132,12 +154,19 @@ async function importLegacyRequests(userId: string, existingIds: Set<string>): P
 
 async function loadRequests(includeDemo = false, allowMigration = true): Promise<ReviewRequest[]> {
   const userId = await verifiedUserId();
-  const query = await getSupabaseClient().from("review_requests").select("*").eq("user_id", userId).order("updated_at", { ascending: false });
+  const query = await getSupabaseClient().from("review_requests").select(REVIEW_LIST_COLUMNS).eq("user_id", userId).order("updated_at", { ascending: false }).limit(100);
   if (query.error) throw new OrderServiceError("Unable to load My Creations.", query.error);
   const rows = query.data ?? [];
   if (allowMigration && await importLegacyRequests(userId, new Set(rows.map(row => row.id)))) return loadRequests(includeDemo, false);
-  const requests = rows.map(reviewFromRow);
+  const requests = rows.map(row => reviewSummaryFromRow(row as unknown as ReviewRow));
   return includeDemo && import.meta.env.DEV ? [clone(demoRequest), ...requests] : requests;
+}
+
+async function loadFullRequests(): Promise<ReviewRequest[]> {
+  const userId = await verifiedUserId();
+  const query = await getSupabaseClient().from("review_requests").select("*").eq("user_id", userId).order("updated_at", { ascending: false }).limit(100);
+  if (query.error) throw new OrderServiceError("Unable to load checkout details.", query.error);
+  return (query.data ?? []).map(reviewFromRow);
 }
 
 async function rpcReview(name: "submit_review_request" | "customer_transition_review_request", args: Record<string, unknown>): Promise<ServiceResult<ReviewRequest>> {
@@ -236,7 +265,7 @@ export const orderService = {
       const detail = response.error?.message?.trim();
       const alreadyLinked = response.error?.code === "23505" || detail?.toLowerCase().includes("already has a project");
       if (alreadyLinked) {
-        const existing = (await loadRequests(false, false)).find(request => request.previewSnapshot?.sourceDraftId === sourceDraftId);
+    const existing = (await loadFullRequests()).find(request => request.previewSnapshot?.sourceDraftId === sourceDraftId);
         if (existing) return existing;
       }
       throw new OrderServiceError(detail || "Unable to create your Describe Your Creation preview.", response.error);
@@ -340,12 +369,12 @@ export const orderService = {
   getCheckoutSelection() { return readLocal<string[]>(ORDER_STORAGE_KEYS.checkout, []); },
   setCheckoutSelection(requestIds: string[]) { localStorage.setItem(ORDER_STORAGE_KEYS.checkout, JSON.stringify([...new Set(requestIds)])); },
   async getCheckoutEligibleRequests() {
-    return (await loadRequests()).filter(item => isCheckoutAvailable(item.status) && item.status === "READY_FOR_PAYMENT" && item.finalPrice !== null && item.finalPrice > 0 && validCurrency(item.currency) && Boolean(item.selectedPackageId && item.submissionId && item.submissionSnapshot));
+    return (await loadFullRequests()).filter(item => isCheckoutAvailable(item.status) && item.status === "READY_FOR_PAYMENT" && item.finalPrice !== null && item.finalPrice > 0 && validCurrency(item.currency) && Boolean(item.selectedPackageId && item.submissionId && item.submissionSnapshot));
   },
 
   async createCheckout(requestIds: string[], details: CheckoutDetails): Promise<ServiceResult<Order>> {
     await verifiedUserId();
-    const selected = (await loadRequests()).filter(item => requestIds.includes(item.id));
+    const selected = (await loadFullRequests()).filter(item => requestIds.includes(item.id));
     const validationError = validateCheckoutCandidates(selected);
     if (validationError) return { ok: false, error: validationError };
     const response = await getSupabaseClient().rpc("create_order_checkout", { request_ids: [...new Set(requestIds)], checkout_payload: clone(details) as unknown as Json });

@@ -30,7 +30,7 @@ const payload = (input: CmsEntryInput): TablesInsert<"cms_entries"> => ({
 
 export const cmsService = {
   async list(): Promise<CmsEntry[]> {
-    const response = await getSupabaseClient().from("cms_entries").select("*").order("updated_at", { ascending: false });
+    const response = await getSupabaseClient().from("cms_entries").select("id,content_type,slug,locale,title,summary,content,seo,status,published_at,created_at,updated_at,created_by,updated_by").order("updated_at", { ascending: false }).limit(200);
     if (response.error) throw response.error;
     return response.data ?? [];
   },
