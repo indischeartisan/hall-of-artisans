@@ -1,78 +1,78 @@
 /* Installed tablet PWA only: phone (<=760px) and desktop/browser stay unchanged. */
-@media (min-width: 761px) and (max-width: 1180px) {
-  html[data-pwa-mode="standalone"] body.expert-lab-page {
+@media (min-width: 761px) and (max-width: 1366px) {
+  html[data-tablet-pwa="true"] body.expert-lab-page {
     min-height: 100dvh;
     padding-bottom: env(safe-area-inset-bottom);
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page .global-header {
+  html[data-tablet-pwa="true"] body.expert-lab-page .global-header {
     padding-left: max(24px, env(safe-area-inset-left));
     padding-right: max(24px, env(safe-area-inset-right));
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page .hero-lab {
+  html[data-tablet-pwa="true"] body.expert-lab-page .hero-lab {
     min-height: clamp(280px, 34vh, 390px) !important;
     padding-top: clamp(92px, 10vh, 120px) !important;
     padding-bottom: clamp(42px, 5vh, 62px) !important;
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page .expert-workshop {
+  html[data-tablet-pwa="true"] body.expert-lab-page .expert-workshop {
     width: auto;
     margin: 20px max(20px, env(safe-area-inset-right)) 0 max(20px, env(safe-area-inset-left));
     gap: 18px;
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page :is(button, input, select, summary, [role="button"]) {
+  html[data-tablet-pwa="true"] body.expert-lab-page :is(button, input, select, summary, [role="button"]) {
     min-height: 44px;
     touch-action: manipulation;
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page :is(.ornate-panel, .inner-panel) {
+  html[data-tablet-pwa="true"] body.expert-lab-page :is(.ornate-panel, .inner-panel) {
     scroll-margin-top: 88px;
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page .top-controls {
+  html[data-tablet-pwa="true"] body.expert-lab-page .top-controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page .top-controls .perfume-name {
+  html[data-tablet-pwa="true"] body.expert-lab-page .top-controls .perfume-name {
     grid-column: 1 / -1;
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page .top-controls .name-row {
+  html[data-tablet-pwa="true"] body.expert-lab-page .top-controls .name-row {
     grid-template-columns: minmax(0, 1fr) auto auto;
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page .formula-builder .layer-grid {
+  html[data-tablet-pwa="true"] body.expert-lab-page .formula-builder .layer-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page .formula-builder .layer-card {
+  html[data-tablet-pwa="true"] body.expert-lab-page .formula-builder .layer-card {
     min-width: 0;
     min-height: 460px;
     padding: 24px 14px 18px;
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page .formula-builder .actions {
+  html[data-tablet-pwa="true"] body.expert-lab-page .formula-builder .actions {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page .category-list {
+  html[data-tablet-pwa="true"] body.expert-lab-page .category-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page .brief-story-row {
+  html[data-tablet-pwa="true"] body.expert-lab-page .brief-story-row {
     grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr);
     align-items: start;
   }
 }
 
 /* Landscape tablets keep materials beside setup; portrait remains a single flow. */
-@media (min-width: 960px) and (max-width: 1180px) and (orientation: landscape) {
-  html[data-pwa-mode="standalone"] body.expert-lab-page .expert-workshop {
+@media (min-width: 960px) and (max-width: 1366px) and (orientation: landscape) {
+  html[data-tablet-pwa="true"] body.expert-lab-page .expert-workshop {
     grid-template-columns: minmax(260px, .36fr) minmax(0, 1fr);
     grid-template-areas:
       "library controls"
@@ -84,25 +84,25 @@
     align-items: start;
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page .expert-workshop > .material-library { grid-area: library !important; height: 100%; }
-  html[data-pwa-mode="standalone"] body.expert-lab-page .top-controls { grid-area: controls !important; }
-  html[data-pwa-mode="standalone"] body.expert-lab-page .build-review-row { display: contents !important; }
-  html[data-pwa-mode="standalone"] body.expert-lab-page .build-review-row .formula-builder { grid-area: build !important; }
-  html[data-pwa-mode="standalone"] body.expert-lab-page .build-review-row .analysis { grid-area: analysis !important; }
-  html[data-pwa-mode="standalone"] body.expert-lab-page .build-review-row .drydown { grid-area: drydown !important; }
+  html[data-tablet-pwa="true"] body.expert-lab-page .expert-workshop > .material-library { grid-area: library !important; height: 100%; }
+  html[data-tablet-pwa="true"] body.expert-lab-page .top-controls { grid-area: controls !important; }
+  html[data-tablet-pwa="true"] body.expert-lab-page .build-review-row { display: contents !important; }
+  html[data-tablet-pwa="true"] body.expert-lab-page .build-review-row .formula-builder { grid-area: build !important; }
+  html[data-tablet-pwa="true"] body.expert-lab-page .build-review-row .analysis { grid-area: analysis !important; }
+  html[data-tablet-pwa="true"] body.expert-lab-page .build-review-row .drydown { grid-area: drydown !important; }
 }
 
 @media (min-width: 761px) and (max-width: 860px) {
-  html[data-pwa-mode="standalone"] body.expert-lab-page .top-controls,
-  html[data-pwa-mode="standalone"] body.expert-lab-page .brief-story-row {
+  html[data-tablet-pwa="true"] body.expert-lab-page .top-controls,
+  html[data-tablet-pwa="true"] body.expert-lab-page .brief-story-row {
     grid-template-columns: 1fr;
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page .top-controls .perfume-name { grid-column: auto; }
+  html[data-tablet-pwa="true"] body.expert-lab-page .top-controls .perfume-name { grid-column: auto; }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page .top-controls .name-row {
+  html[data-tablet-pwa="true"] body.expert-lab-page .top-controls .name-row {
     grid-template-columns: minmax(0, 1fr) auto;
   }
 
-  html[data-pwa-mode="standalone"] body.expert-lab-page .top-controls .name-row input { grid-column: 1 / -1; }
+  html[data-tablet-pwa="true"] body.expert-lab-page .top-controls .name-row input { grid-column: 1 / -1; }
 }

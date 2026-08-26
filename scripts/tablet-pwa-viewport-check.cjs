@@ -6,7 +6,8 @@ const { chromium } = require("@playwright/test");
     { name: "desktop", width: 1366, height: 900, pwa: false },
     { name: "mobile", width: 390, height: 844, pwa: true },
     { name: "tablet-portrait", width: 820, height: 1180, pwa: true },
-    { name: "tablet-landscape", width: 1180, height: 820, pwa: true }
+    { name: "tablet-landscape", width: 1180, height: 820, pwa: true },
+    { name: "large-tablet-landscape", width: 1366, height: 1024, pwa: true }
   ];
   const results = [];
 
@@ -18,7 +19,10 @@ const { chromium } = require("@playwright/test");
     });
     await page.goto("http://127.0.0.1:4173/artisan-bench", { waitUntil: "networkidle" });
     if (testCase.pwa) {
-      await page.evaluate(() => { document.documentElement.dataset.pwaMode = "standalone"; });
+      await page.evaluate(() => {
+        document.documentElement.dataset.pwaMode = "standalone";
+        document.documentElement.dataset.tabletPwa = window.innerWidth > 760 ? "true" : "false";
+      });
     }
     const metrics = await page.evaluate(() => {
       const style = selector => {

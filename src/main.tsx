@@ -59,13 +59,19 @@ const standaloneMedia = window.matchMedia("(display-mode: standalone)");
 const syncPwaDisplayMode = () => {
   const isIosStandalone = "standalone" in navigator
     && (navigator as Navigator & { standalone?: boolean }).standalone === true;
-  document.documentElement.dataset.pwaMode = standaloneMedia.matches || isIosStandalone
-    ? "standalone"
-    : "browser";
+  const isStandalone = standaloneMedia.matches || isIosStandalone;
+  const shortestScreenSide = Math.min(window.screen.width, window.screen.height);
+  const isTabletPlatform = /Android|iPad/i.test(navigator.userAgent)
+    || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const isTouchTablet = isTabletPlatform && navigator.maxTouchPoints > 0 && shortestScreenSide >= 600;
+
+  document.documentElement.dataset.pwaMode = isStandalone ? "standalone" : "browser";
+  document.documentElement.dataset.tabletPwa = isStandalone && isTouchTablet ? "true" : "false";
 };
 
 syncPwaDisplayMode();
 standaloneMedia.addEventListener("change", syncPwaDisplayMode);
+window.addEventListener("resize", syncPwaDisplayMode, { passive: true });
 
 if (import.meta.env.PROD && "serviceWorker" in navigator) {
   window.addEventListener("load", () => {
