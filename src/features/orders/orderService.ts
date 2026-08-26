@@ -11,6 +11,7 @@ import { signedChatAttachment, uploadCustomerChatImage } from "./chatAttachments
 
 export type BespokeSubmissionInput = DescribedCreationInput;
 export interface ServiceResult<T = undefined> { ok: boolean; data?: T; error?: string }
+export type CustomerNotification = { id: string; requestId: string; kind: "chat" | "update"; title: string; detail: string; createdAt: string; readAt: string | null };
 
 export const ORDER_STORAGE_KEYS = {
   requests: "hallOfArtisans.reviewRequests.v1",
@@ -152,6 +153,35 @@ export const orderService = {
   ensureDemoData() { return import.meta.env.DEV ? DEMO_REQUEST_ID : undefined; },
   getRequests(includeDemo = false) { return loadRequests(includeDemo); },
 
+  async getNotificationFeed(userId: string): Promise<CustomerNotification[]> {
+    if (!isSupabaseConfigured || !userId) return [];
+    const client = getSupabaseClient();
+    const response = await (client as any).from("notifications")
+      .select("id,request_id,kind,title,detail,created_at,read_at")
+      .eq("recipient_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(40);
+    if (response.error) throw new OrderServiceError("Unable to load notifications.", response.error);
+    return (response.data ?? []).map((row: any) => ({ id: row.id, requestId: row.request_id, kind: row.kind, title: row.title, detail: row.detail, createdAt: row.created_at, readAt: row.read_at }));
+  },
+
+  async markNotificationsRead(requestId?: string): Promise<void> {
+    const response = await (getSupabaseClient() as any).rpc("mark_notifications_read", { target_request_id: requestId ?? null });
+    if (response.error) throw new OrderServiceError("Unable to mark notifications as read.", response.error);
+  },
+
+  async loadOlderMessages(requestId: string, before: string): Promise<{ messages: RequestMessage[]; hasMore: boolean }> {
+    await verifiedUserId();
+    const response = await getSupabaseClient().from("request_messages")
+      .select("id,request_id,user_id,sender_role,sender_name,message,attachment_url,created_at,read_at")
+      .eq("request_id", requestId).lt("created_at", before)
+      .order("created_at", { ascending: false }).limit(30);
+    if (response.error) throw new OrderServiceError("Unable to load older messages.", response.error);
+    const rows = response.data ?? [];
+    const messages = await Promise.all(rows.slice().reverse().map(async row => ({ ...messageFromRow(row), attachmentUrl: await signedChatAttachment(row.attachment_url) })));
+    return { messages, hasMore: rows.length === 30 };
+  },
+
   async getDetail(requestId: string): Promise<OrderDetailSnapshot | null> {
     if (requestId === DEMO_REQUEST_ID && import.meta.env.DEV) return { request: clone(demoRequest), messages: clone(demoMessages), activity: clone(demoActivity), order: null };
     const userId = await verifiedUserId();
@@ -159,8 +189,8 @@ export const orderService = {
     if (requestResult.error) throw new OrderServiceError("Unable to open this request.", requestResult.error);
     if (!requestResult.data) return null;
     const [messages, activity, item] = await Promise.all([
-      getSupabaseClient().from("request_messages").select("*").eq("request_id", requestId).order("created_at"),
-      getSupabaseClient().from("request_activity").select("*").eq("request_id", requestId).order("created_at"),
+      getSupabaseClient().from("request_messages").select("id,request_id,user_id,sender_role,sender_name,message,attachment_url,created_at,read_at").eq("request_id", requestId).order("created_at", { ascending: false }).limit(30),
+      getSupabaseClient().from("request_activity").select("*").eq("request_id", requestId).order("created_at", { ascending: false }).limit(50),
       getSupabaseClient().from("order_items").select("*").eq("review_request_id", requestId).maybeSingle()
     ]);
     if (messages.error || activity.error || item.error) throw new OrderServiceError("Unable to load all order details.", messages.error ?? activity.error ?? item.error);
@@ -179,8 +209,8 @@ export const orderService = {
       request.paidAt = request.paidAt ?? new Date().toISOString();
     }
     if (order?.productionStatus === "in_production" && ["PAYMENT_PENDING", "PAID"].includes(request.status)) request.status = "IN_PRODUCTION";
-    const resolvedMessages=await Promise.all((messages.data??[]).map(async row=>({...messageFromRow(row),attachmentUrl:await signedChatAttachment(row.attachment_url)})));
-    return { request, messages: resolvedMessages, activity: (activity.data ?? []).map(activityFromRow), order };
+    const resolvedMessages=await Promise.all((messages.data??[]).slice().reverse().map(async row=>({...messageFromRow(row),attachmentUrl:await signedChatAttachment(row.attachment_url)})));
+    return { request, messages: resolvedMessages, activity: (activity.data ?? []).slice().reverse().map(activityFromRow), order, hasOlderMessages: (messages.data?.length ?? 0) === 30 };
   },
 
   async createDescribedCreationPreview(input: BespokeSubmissionInput, sourceDraftId: string, existingPreviewId?: string): Promise<ReviewRequest> {

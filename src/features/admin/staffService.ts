@@ -90,13 +90,13 @@ export const staffService = {
     const client = getSupabaseClient();
     const [request, messages, activity] = await Promise.all([
       client.from("review_requests").select("*").eq("id", requestId).maybeSingle(),
-      client.from("request_messages").select("*").eq("request_id", requestId).order("created_at"),
-      client.from("request_activity").select("*").eq("request_id", requestId).order("created_at")
+      client.from("request_messages").select("id,request_id,user_id,sender_role,sender_name,message,attachment_url,created_at,read_at").eq("request_id", requestId).order("created_at", { ascending: false }).limit(30),
+      client.from("request_activity").select("*").eq("request_id", requestId).order("created_at", { ascending: false }).limit(50)
     ]);
     if (request.error || messages.error || activity.error) throw request.error ?? messages.error ?? activity.error;
     if (!request.data) return null;
-    const resolvedMessages=await Promise.all((messages.data??[]).map(async row=>({...messageFromRow(row),attachmentUrl:await signedChatAttachment(row.attachment_url)})));
-    return { request: reviewFromRow(request.data), messages: resolvedMessages, activity: (activity.data ?? []).map(activityFromRow) };
+    const resolvedMessages=await Promise.all((messages.data??[]).slice().reverse().map(async row=>({...messageFromRow(row),attachmentUrl:await signedChatAttachment(row.attachment_url)})));
+    return { request: reviewFromRow(request.data), messages: resolvedMessages, activity: (activity.data ?? []).slice().reverse().map(activityFromRow) };
   },
 
   async transition(requestId: string, nextStatus: string, label: string, proposal?: ArtisanProposalInput) {

@@ -15,12 +15,14 @@ const [live, orderDetail, customerChat, customerHeader, customerHeaderCss, perfu
   read("supabase/migrations/20260810170000_enable_request_chat_realtime.sql"),
 ]);
 
-for (const table of ["request_messages", "request_activity", "review_requests"]) {
+for (const table of ["request_messages", "request_activity"]) {
   assert.match(live, new RegExp(`table: \"${table}\"`), `${table} must trigger a live refresh`);
   assert.match(migration, new RegExp(`add table public\\.${table}`), `${table} must be published to Supabase Realtime`);
 }
 
-assert.match(live, /setInterval\([\s\S]*POLL_INTERVAL_MS\)/, "live updates need a polling fallback");
+assert.doesNotMatch(live, /table: "review_requests"/, "large creation snapshots must not be delivered through Realtime subscriptions");
+assert.match(live, /setInterval\([\s\S]*DISCONNECTED_POLL_INTERVAL_MS\)/, "live updates need a disconnected-only polling fallback");
+assert.match(live, /!realtimeConnected/, "healthy Realtime channels must suppress polling");
 assert.match(live, /document\.visibilityState === "visible"/, "background tabs must not keep polling");
 assert.match(live, /visibilitychange/, "returning to a tab must refresh immediately");
 assert.match(live, /window\.addEventListener\("focus"/, "refocusing a workspace must refresh immediately");
@@ -53,7 +55,9 @@ assert.match(customerHeader, /hoa:customer-notifications-seen:v2/, "customer rea
 assert.match(customerHeader, /notificationSeenByRequest\[item\.requestId\]/, "customer unread counts must be calculated per project");
 assert.match(customerHeader, /markRequestNotificationsSeen\(requestId\)/, "opening a project must clear only that project's notifications");
 assert.doesNotMatch(customerHeader, /const openNotification = \(requestId: string\) => \{ markNotificationsSeen\(\)/, "opening one project must not mark every project read");
-assert.match(customerHeader, /setInterval\([\s\S]*5000\)/, "customer notifications need automatic refresh");
+assert.match(customerHeader, /subscribeToCustomerNotificationUpdates/, "customer notifications need Realtime updates with a bounded polling fallback");
+assert.doesNotMatch(customerHeader, /getDetail\(request\.id\)/, "customer notifications must not load every request detail");
+assert.match(live, /NOTIFICATION_DISCONNECTED_POLL_INTERVAL_MS = 900_000/, "customer notification fallback must avoid high-frequency polling");
 assert.match(customerHeaderCss, /\.account-notification-panel/, "notification center needs a visible panel layout");
 
 console.log("Request chat live-update contract passed.");

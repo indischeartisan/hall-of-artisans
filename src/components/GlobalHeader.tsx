@@ -3,20 +3,9 @@ import { useLocation, useNavigate } from "react-router";
 import { navigationItems } from "../data/navigation";
 import { authService } from "../features/auth/authService";
 import { useAuth } from "../contexts/AuthContext";
-import { orderService } from "../features/orders/orderService";
+import { orderService, type CustomerNotification } from "../features/orders/orderService";
+import { subscribeToCustomerNotificationUpdates } from "../features/orders/requestLiveUpdates";
 import DraftsModal from "./DraftsModal";
-
-type CustomerNotification = { id: string; requestId: string; kind: "chat" | "update"; title: string; detail: string; createdAt: string };
-const CUSTOMER_NOTIFICATIONS_SEEN_KEY = "hoa:customer-notifications-seen:v2";
-
-const loadNotificationSeenByRequest = (): Record<string, number> => {
-  try {
-    const stored = window.localStorage.getItem(CUSTOMER_NOTIFICATIONS_SEEN_KEY);
-    return stored ? JSON.parse(stored) as Record<string, number> : {};
-  } catch {
-    return {};
-  }
-};
 
 export type GlobalHeaderVariant = "default" | "transparent" | "light";
 
@@ -42,7 +31,6 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
   const [notifications, setNotifications] = useState<CustomerNotification[]>([]);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notificationFilter, setNotificationFilter] = useState<"chat" | "update">("chat");
-  const [notificationSeenByRequest, setNotificationSeenByRequest] = useState(loadNotificationSeenByRequest);
   const [scrolled, setScrolled] = useState(false);
   const [draftsOpen, setDraftsOpen] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
@@ -72,28 +60,22 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
   ).trim();
 
   const loadNotifications = useCallback(async () => {
-    if (!user) { setNotifications([]); return; }
+    if (!user?.id) { setNotifications([]); return; }
     try {
-      const requests = await orderService.getRequests(false);
-      const details = await Promise.all(requests.map(request => orderService.getDetail(request.id)));
-      const next = details.flatMap(detail => detail ? [
-        ...detail.messages.filter(message => message.senderRole === "artisan").map(message => ({ id: `chat:${message.id}`, requestId: detail.request.id, kind: "chat" as const, title: detail.request.perfumeName, detail: message.message, createdAt: message.createdAt })),
-        ...detail.activity.map(item => ({ id: `update:${item.id}`, requestId: detail.request.id, kind: "update" as const, title: detail.request.perfumeName, detail: item.label, createdAt: item.createdAt }))
-      ] : []).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 40);
-      setNotifications(next);
+      setNotifications(await orderService.getNotificationFeed(user.id));
     } catch { setNotifications([]); }
-  }, [user]);
+  }, [user?.id]);
 
   useEffect(() => {
     void loadNotifications();
     if (!user) return;
-    const pollId = window.setInterval(() => { if (document.visibilityState === "visible") void loadNotifications(); }, 5000);
     const refresh = () => void loadNotifications();
+    const unsubscribe = subscribeToCustomerNotificationUpdates(user.id, refresh);
     window.addEventListener("hoa:orders-change", refresh);
-    return () => { window.clearInterval(pollId); window.removeEventListener("hoa:orders-change", refresh); };
+    return () => { unsubscribe(); window.removeEventListener("hoa:orders-change", refresh); };
   }, [loadNotifications, user]);
 
-  const isNotificationUnread = useCallback((item: CustomerNotification) => new Date(item.createdAt).getTime() > (notificationSeenByRequest[item.requestId] ?? 0), [notificationSeenByRequest]);
+  const isNotificationUnread = useCallback((item: CustomerNotification) => item.readAt === null, []);
   const unreadNotifications = useMemo(() => {
     const latestByCreationAndKind = new Set<string>();
     return notifications.filter(isNotificationUnread).filter(item => {
@@ -105,16 +87,13 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
   }, [notifications, isNotificationUnread]);
   const unreadChats = unreadNotifications.filter(item => item.kind === "chat").length;
   const unreadUpdates = unreadNotifications.filter(item => item.kind === "update").length;
-  const saveNotificationSeenState = useCallback((next: Record<string, number>) => {
-    window.localStorage.setItem(CUSTOMER_NOTIFICATIONS_SEEN_KEY, JSON.stringify(next));
-    return next;
-  }, []);
   const markRequestNotificationsSeen = useCallback((requestId: string) => {
-    setNotificationSeenByRequest(current => saveNotificationSeenState({ ...current, [requestId]: Date.now() }));
-  }, [saveNotificationSeenState]);
+    setNotifications(current => current.map(item => item.requestId === requestId ? { ...item, readAt: item.readAt ?? new Date().toISOString() } : item));
+    void orderService.markNotificationsRead(requestId).catch(() => void loadNotifications());
+  }, [loadNotifications]);
   const markNotificationsSeen = () => {
-    const seenAt = Date.now();
-    setNotificationSeenByRequest(current => saveNotificationSeenState(notifications.reduce((next, item) => ({ ...next, [item.requestId]: seenAt }), current)));
+    setNotifications(current => current.map(item => ({ ...item, readAt: item.readAt ?? new Date().toISOString() })));
+    void orderService.markNotificationsRead().catch(() => void loadNotifications());
   };
   const openNotification = (requestId: string) => { markRequestNotificationsSeen(requestId); setAccountOpen(false); navigate(`/my-creations/${requestId}`); };
 

@@ -24,7 +24,7 @@ export const perfumerService = {
     const customers = (customerResponse.data ?? []).map(item => ({ userId: item.user_id, displayName: item.display_name, artisanId: item.artisan_id }));
     const ids = projects.map(item => item.id);
     if (!ids.length) return { projects, recentMessages: [], customers, aftercareCases };
-    const response = await getSupabaseClient().from("request_messages").select("*").in("request_id", ids).order("created_at", { ascending: false }).limit(200);
+    const response = await getSupabaseClient().from("request_messages").select("id,request_id,sender_role,sender_name,message,created_at,read_at,attachment_url").in("request_id", ids).order("created_at", { ascending: false }).limit(100);
     if (response.error) throw response.error;
     const recentMessages: RequestMessage[] = (response.data ?? []).map(row => {
       const project = projects.find(item => item.id === row.request_id);

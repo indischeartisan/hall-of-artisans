@@ -60,4 +60,4 @@ export interface Order {
 }
 export interface CheckoutDetails { recipient: string; address: string; phone: string; deliveryMethod: string; paymentMethod: string; shippingPreference?: "together" | "separately" }
 
-export interface OrderDetailSnapshot { request: ReviewRequest; messages: RequestMessage[]; activity: RequestActivity[]; order: Order | null }
+export interface OrderDetailSnapshot { request: ReviewRequest; messages: RequestMessage[]; activity: RequestActivity[]; order: Order | null; hasOlderMessages?: boolean }
