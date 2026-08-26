@@ -44,10 +44,54 @@ const { chromium } = require("@playwright/test");
     await page.close();
   }
 
+  const tabletContext = await browser.newContext({
+    viewport: { width: 1280, height: 800 },
+    screen: { width: 1280, height: 800 },
+    isMobile: true,
+    hasTouch: true,
+    deviceScaleFactor: 1,
+    userAgent: "Mozilla/5.0 (Linux; Android 14; Tablet) AppleWebKit/537.36 Chrome/140 Safari/537.36"
+  });
+  const tabletPage = await tabletContext.newPage();
+  await tabletPage.goto("http://127.0.0.1:4173/chamber-of-creation", { waitUntil: "networkidle" });
+  const chamberTablet = await tabletPage.evaluate(() => ({
+    name: "tablet-browser-chamber",
+    tabletDevice: document.documentElement.dataset.tabletDevice,
+    viewportWidth: window.innerWidth,
+    menuToggle: getComputedStyle(document.querySelector(".menu-toggle")).display,
+    carouselControls: getComputedStyle(document.querySelector(".creation-carousel-controls")).display,
+    bodyHasContent: document.body.innerText.trim().length > 0,
+    errorOverlay: Boolean(document.querySelector(".vite-error-overlay")),
+    horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    errors: []
+  }));
+  results.push(chamberTablet);
+
+  await tabletPage.goto("http://127.0.0.1:4173/artisan-bench", { waitUntil: "networkidle" });
+  const benchTablet = await tabletPage.evaluate(() => ({
+    name: "tablet-browser-bench",
+    tabletDevice: document.documentElement.dataset.tabletDevice,
+    viewportWidth: window.innerWidth,
+    menuToggle: getComputedStyle(document.querySelector(".menu-toggle")).display,
+    mobileStatus: getComputedStyle(document.querySelector(".mobile-workbench-status")).display,
+    bodyHasContent: document.body.innerText.trim().length > 0,
+    errorOverlay: Boolean(document.querySelector(".vite-error-overlay")),
+    horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    errors: []
+  }));
+  results.push(benchTablet);
+  await tabletContext.close();
+
   await browser.close();
   console.log(JSON.stringify(results, null, 2));
 
-  const failed = results.some(result => !result.bodyHasContent || result.errorOverlay || result.horizontalOverflow || result.errors.length);
+  const tabletLayoutFailed = chamberTablet.tabletDevice !== "true"
+    || chamberTablet.viewportWidth > 700
+    || chamberTablet.menuToggle === "none"
+    || chamberTablet.carouselControls === "none"
+    || benchTablet.mobileStatus === "none";
+  const failed = tabletLayoutFailed
+    || results.some(result => !result.bodyHasContent || result.errorOverlay || result.horizontalOverflow || result.errors.length);
   process.exitCode = failed ? 1 : 0;
 })().catch(error => {
   console.error(error);

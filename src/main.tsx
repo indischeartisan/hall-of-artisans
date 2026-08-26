@@ -56,6 +56,8 @@ import { DraftProvider } from "./contexts/DraftContext";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const standaloneMedia = window.matchMedia("(display-mode: standalone)");
+const viewportMeta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]');
+const defaultViewportContent = viewportMeta?.content ?? "width=device-width, initial-scale=1.0";
 const syncPwaDisplayMode = () => {
   const isIosStandalone = "standalone" in navigator
     && (navigator as Navigator & { standalone?: boolean }).standalone === true;
@@ -66,7 +68,13 @@ const syncPwaDisplayMode = () => {
   const isTouchTablet = isTabletPlatform && navigator.maxTouchPoints > 0 && shortestScreenSide >= 600;
 
   document.documentElement.dataset.pwaMode = isStandalone ? "standalone" : "browser";
+  document.documentElement.dataset.tabletDevice = isTouchTablet ? "true" : "false";
   document.documentElement.dataset.tabletPwa = isStandalone && isTouchTablet ? "true" : "false";
+  if (viewportMeta) {
+    viewportMeta.content = isTouchTablet
+      ? "width=700, initial-scale=1.0, viewport-fit=cover"
+      : defaultViewportContent;
+  }
 };
 
 syncPwaDisplayMode();
