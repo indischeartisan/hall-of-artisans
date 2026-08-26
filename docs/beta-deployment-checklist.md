@@ -11,7 +11,11 @@ The beta environment is intentionally separate from production. It uses mock che
 - [ ] Create dedicated beta admin and perfumer accounts; assign roles through the trusted admin process.
 - [ ] In Supabase Auth URL Configuration, set the beta domain as Site URL.
 - [ ] Add exact beta callbacks for `/artisan-login`, `/artisan-reset-password`, `/admin/login`, and `/perfumer/login` as allowed redirect URLs.
-- [ ] Create a Vercel project and add the values from `.env.beta.example` to its Beta/Preview environment.
+- [ ] Create a Cloudflare Pages project from the `indischeartisan/hall-of-artisans` GitHub repository.
+- [ ] Use production branch `main`, build command `pnpm build`, and output directory `dist`.
+- [ ] Use Pages Build System v3 and set `PNPM_VERSION=11.9.0`; Node is pinned by `.node-version`.
+- [ ] Add the values from `.env.beta.example` to the Cloudflare Pages Preview environment.
+- [ ] Add the final `*.pages.dev` preview URL to the Supabase Auth redirect allow list before testing email confirmation or password reset.
 - [ ] Keep service-role/secret keys out of all `VITE_*` variables.
 
 ## Before every beta release
