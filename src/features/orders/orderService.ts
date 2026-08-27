@@ -29,6 +29,16 @@ type OrderItemRow = Tables<"order_items">;
 type PackageRow = Tables<"commission_packages">;
 
 const REVIEW_LIST_COLUMNS = "id,user_id,creation_id,request_number,assigned_reviewer_id,assigned_at,status,creation_mode,submission_id,perfume_name,concentration,bottle_size,fragrance_direction,top_notes,heart_notes,base_notes,fragrance_brief,customer_notes,country_code,pricing_region,currency,estimated_price_min,estimated_price_max,final_price,selected_package_id,recommended_adjustments,included_items,estimated_production,revisions_included,submitted_at,reviewed_at,approved_at,consultation_started_at,consultation_completed_at,ready_for_payment_at,paid_at,shipped_at,completed_at,updated_at";
+const REVIEW_DETAIL_COLUMNS = `${REVIEW_LIST_COLUMNS},preview_snapshot,submission_snapshot,story_card_data,package_snapshot,artisan_review`;
+const ACTIVITY_COLUMNS = "id,request_id,event_type,label,created_at,metadata";
+const ORDER_ITEM_COLUMNS = "id,order_id,review_request_id,submission_id,submission_snapshot,creation_name,amount,currency,production_status,shipping_status,tracking_number,created_at";
+const ORDER_COLUMNS = "id,user_id,order_number,amount,currency,payment_status,production_status,shipping_status,shipping_preference,tracking_number,checkout_details,created_at,updated_at";
+const detailRequestCache = new Map<string, ReviewRequest>();
+const cacheDetailRequest = (key: string, request: ReviewRequest) => {
+  detailRequestCache.delete(key);
+  detailRequestCache.set(key, request);
+  while (detailRequestCache.size > 3) detailRequestCache.delete(detailRequestCache.keys().next().value!);
+};
 
 class OrderServiceError extends Error {
   constructor(message: string, readonly cause?: unknown) { super(message); this.name = "OrderServiceError"; }
@@ -162,11 +172,13 @@ async function loadRequests(includeDemo = false, allowMigration = true): Promise
   return includeDemo && import.meta.env.DEV ? [clone(demoRequest), ...requests] : requests;
 }
 
-async function loadFullRequests(): Promise<ReviewRequest[]> {
+async function loadCheckoutRequests(): Promise<ReviewRequest[]> {
   const userId = await verifiedUserId();
-  const query = await getSupabaseClient().from("review_requests").select("*").eq("user_id", userId).order("updated_at", { ascending: false }).limit(100);
+  const query = await getSupabaseClient().from("review_requests").select(REVIEW_LIST_COLUMNS)
+    .eq("user_id", userId).eq("status", "READY_FOR_PAYMENT").not("submission_snapshot", "is", null)
+    .order("updated_at", { ascending: false }).limit(100);
   if (query.error) throw new OrderServiceError("Unable to load checkout details.", query.error);
-  return (query.data ?? []).map(reviewFromRow);
+  return (query.data ?? []).map(row => reviewSummaryFromRow(row as unknown as ReviewRow));
 }
 
 async function rpcReview(name: "submit_review_request" | "customer_transition_review_request", args: Record<string, unknown>): Promise<ServiceResult<ReviewRequest>> {
@@ -214,25 +226,32 @@ export const orderService = {
   async getDetail(requestId: string): Promise<OrderDetailSnapshot | null> {
     if (requestId === DEMO_REQUEST_ID && import.meta.env.DEV) return { request: clone(demoRequest), messages: clone(demoMessages), activity: clone(demoActivity), order: null };
     const userId = await verifiedUserId();
-    const requestResult = await getSupabaseClient().from("review_requests").select("*").eq("id", requestId).eq("user_id", userId).maybeSingle();
+    const cacheKey = `${userId}:${requestId}`;
+    const cachedRequest = detailRequestCache.get(cacheKey);
+    const requestResult = await getSupabaseClient().from("review_requests")
+      .select(cachedRequest ? REVIEW_LIST_COLUMNS : REVIEW_DETAIL_COLUMNS)
+      .eq("id", requestId).eq("user_id", userId).maybeSingle();
     if (requestResult.error) throw new OrderServiceError("Unable to open this request.", requestResult.error);
     if (!requestResult.data) return null;
     const [messages, activity, item] = await Promise.all([
       getSupabaseClient().from("request_messages").select("id,request_id,user_id,sender_role,sender_name,message,attachment_url,created_at,read_at").eq("request_id", requestId).order("created_at", { ascending: false }).limit(30),
-      getSupabaseClient().from("request_activity").select("*").eq("request_id", requestId).order("created_at", { ascending: false }).limit(50),
-      getSupabaseClient().from("order_items").select("*").eq("review_request_id", requestId).maybeSingle()
+      getSupabaseClient().from("request_activity").select(ACTIVITY_COLUMNS).eq("request_id", requestId).order("created_at", { ascending: false }).limit(50),
+      getSupabaseClient().from("order_items").select(ORDER_ITEM_COLUMNS).eq("review_request_id", requestId).maybeSingle()
     ]);
     if (messages.error || activity.error || item.error) throw new OrderServiceError("Unable to load all order details.", messages.error ?? activity.error ?? item.error);
     let order: Order | null = null;
     if (item.data) {
       const [header, items] = await Promise.all([
-        getSupabaseClient().from("customer_orders").select("*").eq("id", item.data.order_id).single(),
-        getSupabaseClient().from("order_items").select("*").eq("order_id", item.data.order_id).order("created_at")
+        getSupabaseClient().from("customer_orders").select(ORDER_COLUMNS).eq("id", item.data.order_id).single(),
+        getSupabaseClient().from("order_items").select(ORDER_ITEM_COLUMNS).eq("order_id", item.data.order_id).order("created_at")
       ]);
       if (header.error || items.error) throw new OrderServiceError("Unable to load this order.", header.error ?? items.error);
       order = orderFromRows(header.data, items.data ?? []);
     }
-    const request = reviewFromRow(requestResult.data);
+    const request = cachedRequest
+      ? { ...cachedRequest, ...reviewSummaryFromRow(requestResult.data as unknown as ReviewRow), previewSnapshot: cachedRequest.previewSnapshot, submissionSnapshot: cachedRequest.submissionSnapshot, storyCardData: cachedRequest.storyCardData, packageSnapshot: cachedRequest.packageSnapshot, artisanReview: cachedRequest.artisanReview }
+      : reviewFromRow(requestResult.data as ReviewRow);
+    cacheDetailRequest(cacheKey, request);
     if (order?.paymentStatus === "paid" && request.status === "PAYMENT_PENDING") {
       request.status = "PAID";
       request.paidAt = request.paidAt ?? new Date().toISOString();
@@ -369,17 +388,17 @@ export const orderService = {
   getCheckoutSelection() { return readLocal<string[]>(ORDER_STORAGE_KEYS.checkout, []); },
   setCheckoutSelection(requestIds: string[]) { localStorage.setItem(ORDER_STORAGE_KEYS.checkout, JSON.stringify([...new Set(requestIds)])); },
   async getCheckoutEligibleRequests() {
-    return (await loadFullRequests()).filter(item => isCheckoutAvailable(item.status) && item.status === "READY_FOR_PAYMENT" && item.finalPrice !== null && item.finalPrice > 0 && validCurrency(item.currency) && Boolean(item.selectedPackageId && item.submissionId && item.submissionSnapshot));
+    return (await loadCheckoutRequests()).filter(item => isCheckoutAvailable(item.status) && item.finalPrice !== null && item.finalPrice > 0 && validCurrency(item.currency) && Boolean(item.selectedPackageId && item.submissionId));
   },
 
   async createCheckout(requestIds: string[], details: CheckoutDetails): Promise<ServiceResult<Order>> {
     await verifiedUserId();
-    const selected = (await loadFullRequests()).filter(item => requestIds.includes(item.id));
-    const validationError = validateCheckoutCandidates(selected);
+    const selected = (await loadCheckoutRequests()).filter(item => requestIds.includes(item.id));
+    const validationError = validateCheckoutCandidates(selected.map(item => ({ ...item, hasSubmissionSnapshot: true })));
     if (validationError) return { ok: false, error: validationError };
     const response = await getSupabaseClient().rpc("create_order_checkout", { request_ids: [...new Set(requestIds)], checkout_payload: clone(details) as unknown as Json });
     if (response.error || !response.data) return { ok: false, error: response.error?.message ?? "Checkout could not be created." };
-    const items = await getSupabaseClient().from("order_items").select("*").eq("order_id", response.data.id).order("created_at");
+    const items = await getSupabaseClient().from("order_items").select(ORDER_ITEM_COLUMNS).eq("order_id", response.data.id).order("created_at");
     if (items.error) return { ok: false, error: items.error.message };
     this.setCheckoutSelection([]); emitChange();
     return { ok: true, data: orderFromRows(response.data, items.data ?? []) };

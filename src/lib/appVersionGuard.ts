@@ -1,5 +1,5 @@
 export const APP_VERSION = "2026-08-26.2";
-const CANONICAL_ORIGIN = "https://cloudflare-migration.hall-of-artisans.pages.dev";
+const CANONICAL_ORIGIN = "https://hall-of-artisans.pages.dev";
 
 type VersionManifest = { minimumVersion?: string; canonicalOrigin?: string };
 
