@@ -105,7 +105,9 @@ async function customerMap(userIds: string[]) {
   return result;
 }
 
-const mapOrderItem = (row: OrderItemRow): AdminOrderItem => ({
+type AdminOrderItemRow = Pick<OrderItemRow, "id" | "review_request_id" | "creation_name" | "amount" | "currency" | "production_status" | "shipping_status" | "tracking_number">;
+
+const mapOrderItem = (row: AdminOrderItemRow): AdminOrderItem => ({
   id: row.id,
   reviewRequestId: row.review_request_id,
   creationName: row.creation_name,

@@ -58,7 +58,8 @@ const queueReviewFromRow = (row: Partial<ReviewRow> & Pick<ReviewRow, "id" | "us
   readyForPaymentAt: row.ready_for_payment_at ?? null, paidAt: row.paid_at ?? null, shippedAt: row.shipped_at ?? null, completedAt: row.completed_at ?? null, lastUpdatedAt: row.updated_at
 });
 const messageFromRow = (row: MessageRow): RequestMessage => ({ id: row.id, requestId: row.request_id, senderRole: row.sender_role as RequestMessage["senderRole"], senderName: row.sender_name, message: row.message, createdAt: row.created_at, readAt: row.read_at, attachmentUrl: row.attachment_url ?? undefined });
-const activityFromRow = (row: ActivityRow): RequestActivity => ({ id: row.id, requestId: row.request_id, eventType: row.event_type, label: row.label, createdAt: row.created_at, metadata: clone(row.metadata) as RequestActivity["metadata"] });
+type ActivityListRow = Pick<ActivityRow, "id" | "request_id" | "event_type" | "label" | "created_at" | "metadata">;
+const activityFromRow = (row: ActivityListRow): RequestActivity => ({ id: row.id, requestId: row.request_id, eventType: row.event_type, label: row.label, createdAt: row.created_at, metadata: clone(row.metadata) as RequestActivity["metadata"] });
 
 const staffRoles: StaffRole[] = ["reviewer", "admin", "super_admin"];
 

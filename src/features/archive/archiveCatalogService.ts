@@ -3,8 +3,9 @@ import type { Tables } from "../../types/database.types";
 import { archiveRecords as developmentRecords, type ArchiveRecord } from "../../data/archiveRecords";
 
 export type ArchiveCatalogRow = Tables<"archive_records">;
+type PublicArchiveCatalogRow = Pick<ArchiveCatalogRow, "id" | "archive_number" | "title" | "creator" | "moods" | "story" | "image_path" | "image_alt" | "owner_id" | "status" | "display_order">;
 
-export const toArchiveRecord = (row: ArchiveCatalogRow): ArchiveRecord => ({
+export const toArchiveRecord = (row: PublicArchiveCatalogRow): ArchiveRecord => ({
   id: row.id,
   archiveNumber: row.archive_number,
   title: row.title,
