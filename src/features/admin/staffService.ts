@@ -7,7 +7,7 @@ import { debugSupabaseFetch } from "../../lib/supabaseFetchDebug";
 type ReviewRow = Tables<"review_requests">;
 type MessageRow = Tables<"request_messages">;
 type ActivityRow = Tables<"request_activity">;
-const STAFF_QUEUE_COLUMNS = "id,user_id,creation_id,request_number,assigned_reviewer_id,assigned_at,status,creation_mode,submission_id,perfume_name,concentration,bottle_size,fragrance_direction,top_notes,heart_notes,base_notes,fragrance_brief,customer_notes,country_code,pricing_region,currency,estimated_price_min,estimated_price_max,final_price,selected_package_id,recommended_adjustments,included_items,estimated_production,revisions_included,submitted_at,reviewed_at,approved_at,consultation_started_at,consultation_completed_at,ready_for_payment_at,paid_at,shipped_at,completed_at,updated_at";
+const STAFF_QUEUE_COLUMNS = "id,user_id,creation_id,request_number,assigned_reviewer_id,assigned_at,status,creation_mode,submission_id,perfume_name,concentration,bottle_size,fragrance_direction,top_notes,heart_notes,base_notes,fragrance_brief,customer_notes,country_code,pricing_region,currency,estimated_price_min,estimated_price_max,final_price,selected_package_id,recommended_adjustments,included_items,estimated_production,revisions_included,submitted_at,reviewed_at,approved_at,consultation_started_at,consultation_completed_at,ready_for_payment_at,paid_at,shipped_at,completed_at,created_at,follow_up_kind,parent_request_id,updated_at";
 const STAFF_DETAIL_COLUMNS = `${STAFF_QUEUE_COLUMNS},preview_snapshot,submission_snapshot,story_card_data,package_snapshot,artisan_review`;
 
 export type StaffRole = Extract<AppRole, "reviewer" | "admin" | "super_admin">;

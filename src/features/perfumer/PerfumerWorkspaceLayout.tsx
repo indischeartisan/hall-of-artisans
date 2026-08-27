@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate } from "react-router";
 import { staffService, type StaffAccess } from "../admin/staffService";
 import { isRequestLocallyRead, perfumerService, type PerfumerWorkspaceData } from "./perfumerService";
 import { subscribeToStaffMessageUpdates, type StaffRealtimeEvent } from "../orders/requestLiveUpdates";
+import type { RequestMessage } from "../orders/types";
 
 export interface PerfumerOutletContext {
   access: StaffAccess;
@@ -46,7 +47,7 @@ export default function PerfumerWorkspaceLayout() {
           const project = current.projects.find(item => item.id === requestId);
           if (!project) return current;
           const customer = current.customers.find(item => item.userId === project.userId);
-          const senderRole = row.sender_role === "customer" ? "customer" : row.sender_role as "artisan" | "system";
+          const senderRole: RequestMessage["senderRole"] = row.sender_role === "customer" ? "customer" : row.sender_role as "artisan" | "system";
           const message = { id: String(row.id), requestId, senderRole, senderName: senderRole === "customer" ? customer?.displayName ?? "Customer" : String(row.sender_name ?? "Artisan"), message: String(row.message ?? ""), createdAt: String(row.created_at ?? new Date().toISOString()), readAt: row.read_at ? String(row.read_at) : null, attachmentUrl: row.attachment_url ? String(row.attachment_url) : undefined };
           return { ...current, recentMessages: [message, ...current.recentMessages.filter(item => item.id !== message.id)].slice(0, 100) };
         }

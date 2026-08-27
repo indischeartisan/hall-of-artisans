@@ -30,8 +30,8 @@ type PackageRow = Tables<"commission_packages">;
 
 const REVIEW_LIST_COLUMNS = "id,user_id,creation_id,request_number,assigned_reviewer_id,assigned_at,status,creation_mode,submission_id,perfume_name,concentration,bottle_size,fragrance_direction,top_notes,heart_notes,base_notes,fragrance_brief,customer_notes,country_code,pricing_region,currency,estimated_price_min,estimated_price_max,final_price,selected_package_id,recommended_adjustments,included_items,estimated_production,revisions_included,submitted_at,reviewed_at,approved_at,consultation_started_at,consultation_completed_at,ready_for_payment_at,paid_at,shipped_at,completed_at,updated_at";
 const REVIEW_DETAIL_COLUMNS = `${REVIEW_LIST_COLUMNS},preview_snapshot,submission_snapshot,story_card_data,package_snapshot,artisan_review`;
-const ACTIVITY_COLUMNS = "id,request_id,event_type,label,created_at,metadata";
-const ORDER_ITEM_COLUMNS = "id,order_id,review_request_id,submission_id,submission_snapshot,creation_name,amount,currency,production_status,shipping_status,tracking_number,created_at";
+const ACTIVITY_COLUMNS = "id,request_id,user_id,event_type,label,created_at,metadata";
+const ORDER_ITEM_COLUMNS = "id,order_id,user_id,review_request_id,submission_id,submission_snapshot,creation_name,amount,currency,production_status,shipping_status,tracking_number,created_at";
 const ORDER_COLUMNS = "id,user_id,order_number,amount,currency,payment_status,production_status,shipping_status,shipping_preference,tracking_number,checkout_details,created_at,updated_at";
 const detailRequestCache = new Map<string, ReviewRequest>();
 const cacheDetailRequest = (key: string, request: ReviewRequest) => {
@@ -181,6 +181,14 @@ async function loadCheckoutRequests(): Promise<ReviewRequest[]> {
   return (query.data ?? []).map(row => reviewSummaryFromRow(row as unknown as ReviewRow));
 }
 
+async function loadFullRequestsForLegacyRecovery(): Promise<ReviewRequest[]> {
+  const userId = await verifiedUserId();
+  const query = await getSupabaseClient().from("review_requests").select(REVIEW_DETAIL_COLUMNS)
+    .eq("user_id", userId).order("updated_at", { ascending: false }).limit(100);
+  if (query.error) throw new OrderServiceError("Unable to recover an existing creation preview.", query.error);
+  return (query.data ?? []).map(row => reviewFromRow(row as unknown as ReviewRow));
+}
+
 async function rpcReview(name: "submit_review_request" | "customer_transition_review_request", args: Record<string, unknown>): Promise<ServiceResult<ReviewRequest>> {
   const response = name === "submit_review_request"
     ? await getSupabaseClient().rpc(name, args as { target_request_id: string })
@@ -228,9 +236,9 @@ export const orderService = {
     const userId = await verifiedUserId();
     const cacheKey = `${userId}:${requestId}`;
     const cachedRequest = detailRequestCache.get(cacheKey);
-    const requestResult = await getSupabaseClient().from("review_requests")
-      .select(cachedRequest ? REVIEW_LIST_COLUMNS : REVIEW_DETAIL_COLUMNS)
-      .eq("id", requestId).eq("user_id", userId).maybeSingle();
+    const requestResult = cachedRequest
+      ? await getSupabaseClient().from("review_requests").select(REVIEW_LIST_COLUMNS).eq("id", requestId).eq("user_id", userId).maybeSingle()
+      : await getSupabaseClient().from("review_requests").select(REVIEW_DETAIL_COLUMNS).eq("id", requestId).eq("user_id", userId).maybeSingle();
     if (requestResult.error) throw new OrderServiceError("Unable to open this request.", requestResult.error);
     if (!requestResult.data) return null;
     const [messages, activity, item] = await Promise.all([
@@ -250,7 +258,7 @@ export const orderService = {
     }
     const request = cachedRequest
       ? { ...cachedRequest, ...reviewSummaryFromRow(requestResult.data as unknown as ReviewRow), previewSnapshot: cachedRequest.previewSnapshot, submissionSnapshot: cachedRequest.submissionSnapshot, storyCardData: cachedRequest.storyCardData, packageSnapshot: cachedRequest.packageSnapshot, artisanReview: cachedRequest.artisanReview }
-      : reviewFromRow(requestResult.data as ReviewRow);
+      : reviewFromRow(requestResult.data as unknown as ReviewRow);
     cacheDetailRequest(cacheKey, request);
     if (order?.paymentStatus === "paid" && request.status === "PAYMENT_PENDING") {
       request.status = "PAID";
@@ -284,7 +292,7 @@ export const orderService = {
       const detail = response.error?.message?.trim();
       const alreadyLinked = response.error?.code === "23505" || detail?.toLowerCase().includes("already has a project");
       if (alreadyLinked) {
-    const existing = (await loadFullRequests()).find(request => request.previewSnapshot?.sourceDraftId === sourceDraftId);
+        const existing = (await loadFullRequestsForLegacyRecovery()).find(request => request.previewSnapshot?.sourceDraftId === sourceDraftId);
         if (existing) return existing;
       }
       throw new OrderServiceError(detail || "Unable to create your Describe Your Creation preview.", response.error);

@@ -182,7 +182,7 @@ export const adminDashboardService = {
       reviewers,
       activity: (activityRows.data ?? []).map(item => ({ ...item, requestId: item.request_id, creationName: requestNames.get(item.request_id) ?? "Creation", createdAt: item.created_at })),
       customerMessages: (messageRows.data ?? []).map(item => ({ ...item, requestId: item.request_id, creationName: requestNames.get(item.request_id) ?? "Creation", senderName: item.sender_name, createdAt: item.created_at })),
-      aftercare: aftercareRows.map(item => ({ ...item, creationName: requestNames.get(item.reviewRequestId) ?? "Completed creation", requestNumber: requestNumbers.get(item.reviewRequestId) ?? "—", customer: customers.get(item.userId)! }))
+      aftercare: aftercareRows.map((item: AftercareCase) => ({ ...item, creationName: requestNames.get(item.reviewRequestId) ?? "Completed creation", requestNumber: requestNumbers.get(item.reviewRequestId) ?? "—", customer: customers.get(item.userId)! }))
     };
   }
 };
