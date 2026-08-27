@@ -20,14 +20,16 @@ for (const table of ["request_messages", "request_activity"]) {
   assert.match(migration, new RegExp(`add table public\\.${table}`), `${table} must be published to Supabase Realtime`);
 }
 
-assert.doesNotMatch(live, /table: "review_requests"/, "large creation snapshots must not be delivered through Realtime subscriptions");
+assert.doesNotMatch(live, /table: "review_requests"/, "large review request rows must not be delivered through Realtime");
+assert.match(live, /const allowedIds = new Set\(requestIds\)/, "table-level message events must be filtered to visible staff projects in the client");
 assert.match(live, /setInterval\([\s\S]*DISCONNECTED_POLL_INTERVAL_MS\)/, "live updates need a disconnected-only polling fallback");
 assert.match(live, /!realtimeConnected/, "healthy Realtime channels must suppress polling");
 assert.match(live, /document\.visibilityState === "visible"/, "background tabs must not keep polling");
-assert.match(live, /visibilitychange/, "returning to a tab must refresh immediately");
-assert.match(live, /window\.addEventListener\("focus"/, "refocusing a workspace must refresh immediately");
+assert.match(live, /STALE_AFTER_MS = 5 \* 60 \* 1000/, "foreground recovery must use the five-minute stale threshold");
+assert.match(live, /Date\.now\(\) - getLastSuccessfulFetch\(\) < STALE_AFTER_MS/, "fresh workspaces must not refresh on focus");
 assert.match(orderDetail, /subscribeToRequestUpdates\(requestId/, "customer order room must subscribe");
-assert.match(perfumer, /subscribeToRequestUpdates\(project\.id/, "perfumer project room must subscribe");
+assert.doesNotMatch(perfumer, /subscribeToRequestUpdates\(project\.id/, "perfumer detail must not duplicate the layout subscription");
+assert.match(perfumer, /hoa:staff-realtime/, "perfumer detail must patch from the layout event source");
 assert.match(perfumer, /role === "customer" \? customerName \|\| "Customer"/, "perfumer must see Customer, not You");
 assert.match(customerChat, /message\.senderRole==="customer"\?"You":message\.senderName/, "customer must see their own message as You");
 assert.match(migration, /'customer','Customer'/, "new customer messages must store a neutral label");
@@ -40,6 +42,11 @@ assert.match(migration, /mark_staff_request_messages_read/, "unread state must b
 assert.match(migration, /sender_role='customer' and read_at is null/, "only unread customer messages may be marked read");
 assert.match(perfumerLayout, /perfumer-nav-badge/, "Customer Projects menu needs a total unread-chat badge");
 assert.match(adminLayout, /subscribeToStaffMessageUpdates/, "admin metrics and orders must refresh when workflow data changes");
+assert.doesNotMatch(adminLayout, /subscribeToStaffMessageUpdates\(requestIds, \(\) => void refresh\(\)\)/, "admin message events must not reload the workspace");
+assert.match(adminLayout, /customerMessages: \[message,/, "admin message events must patch the local message list");
+assert.match(adminLayout, /activity: \[activity,/, "admin activity events must patch the local activity list");
+assert.doesNotMatch(perfumerLayout, /subscribeToStaffMessageUpdates\(requestIds, \(\) => void refresh/, "perfumer message events must not reload the workspace");
+assert.match(perfumerLayout, /recentMessages: \[message,/, "perfumer message events must patch the local conversation summary");
 assert.match(perfumerService, /hoa:perfumer-chat-seen:v2:/, "legacy read_at values need a versioned local last-opened fallback");
 assert.match(perfumerService, /row\.sender_name === "You"/, "legacy customer messages must still count as inbound chat");
 assert.match(perfumerService, /hoa:perfumer-chat-read/, "opening a chat must publish an immediate local read event");

@@ -8,7 +8,7 @@ import type { PerfumerOutletContext } from "./PerfumerWorkspaceLayout";
 import { isRequestLocallyRead, perfumerService } from "./perfumerService";
 import { aftercareService, type AftercareCase } from "../aftercare/aftercareService";
 import "../../styles/chat-attachments.css";
-import { subscribeToRequestUpdates } from "../orders/requestLiveUpdates";
+import type { StaffRealtimeEvent } from "../orders/requestLiveUpdates";
 import CreationPreparation from "../orders/components/CreationPreparation";
 import StaffProposalForm from "../admin/StaffProposalForm";
 import type { ArtisanProposalInput } from "../admin/staffService";
@@ -37,9 +37,35 @@ function ProjectWorkspace({ project, customerName, mode = "drawer", onClose, onC
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [aftercare, setAftercare] = useState<AftercareCase[]>([]);
-  const load = async () => { const [projectDetail, cases] = await Promise.all([perfumerService.getDetail(project.id), aftercareService.getForRequest(project.id)]); setDetail(projectDetail); setAftercare(cases); };
+  const loadAftercare = async () => setAftercare(await aftercareService.getForRequest(project.id));
+  const load = async () => {
+    const projectDetail = await perfumerService.getDetail(project.id);
+    setDetail(projectDetail);
+    if ((projectDetail?.request.status ?? project.status) === "COMPLETED") await loadAftercare();
+  };
   useEffect(() => { void load().catch(cause => setError(cause instanceof Error ? cause.message : "Project could not be opened.")); }, [project.id]);
-  useEffect(() => subscribeToRequestUpdates(project.id, () => void load().catch(cause => setError(cause instanceof Error ? cause.message : "Live updates could not be loaded."))), [project.id]);
+  useEffect(() => {
+    const patch = (rawEvent: Event) => {
+      const event = (rawEvent as CustomEvent<StaffRealtimeEvent>).detail;
+      const row = event.eventType === "DELETE" ? event.old : event.new;
+      if (String(row.request_id ?? row.id ?? "") !== project.id) return;
+      setDetail(current => {
+        if (!current) return current;
+        if (event.table === "request_messages") {
+          if (event.eventType === "DELETE") return { ...current, messages: current.messages.filter(item => item.id !== row.id) };
+          const next = { id: String(row.id), requestId: project.id, senderRole: row.sender_role as RequestMessage["senderRole"], senderName: String(row.sender_name ?? "Customer"), message: String(row.message ?? ""), createdAt: String(row.created_at ?? new Date().toISOString()), readAt: row.read_at ? String(row.read_at) : null, attachmentUrl: row.attachment_url ? String(row.attachment_url) : undefined };
+          return { ...current, messages: [...current.messages.filter(item => item.id !== next.id), next].sort((a, b) => a.createdAt.localeCompare(b.createdAt)) };
+        }
+        if (event.table === "request_activity" && event.eventType !== "DELETE") {
+          const next = { id: String(row.id), requestId: project.id, eventType: String(row.event_type ?? "updated"), label: String(row.label ?? "Project updated"), createdAt: String(row.created_at ?? new Date().toISOString()), metadata: row.metadata as Record<string, string | number | boolean | null> };
+          return { ...current, activity: [...current.activity.filter(item => item.id !== next.id), next].sort((a, b) => a.createdAt.localeCompare(b.createdAt)) };
+        }
+        return current;
+      });
+    };
+    window.addEventListener("hoa:staff-realtime", patch);
+    return () => window.removeEventListener("hoa:staff-realtime", patch);
+  }, [project.id]);
   const request = detail?.request ?? project;
   const consultationOpen = isOperationalStageStatus("consultation", request.status);
   const proposalEditable = ["CONSULTATION", "REVISION_REQUESTED"].includes(request.status);
@@ -65,7 +91,7 @@ function ProjectWorkspace({ project, customerName, mode = "drawer", onClose, onC
     {proposalApproved && <section className="perfumer-proposal-sent is-approved"><span>Approved Proposal</span><h3>Customer-approved fragrance direction</h3><p>This proposal is locked as the production reference.</p><dl><div><dt>Summary</dt><dd>{request.artisanReview?.summary || "Recorded in the project"}</dd></div><div><dt>Olfactive direction</dt><dd>{request.artisanReview?.olfactiveDirection || "Recorded in the project"}</dd></div><div><dt>Drydown</dt><dd>{request.artisanReview?.drydown || "Recorded in the project"}</dd></div></dl></section>}
     {["SUBMITTED", "UNDER_REVIEW"].includes(request.status) && <section className="perfumer-proposal-sent is-locked"><span>Perfumer Proposal</span><h3>Proposal editor opens after Consultation begins</h3><p>Complete the internal review and open Consultation first. The editable proposal will then appear here below the chat.</p></section>}
     <section className="perfumer-timeline"><h3>Project Activity</h3>{detail?.activity.slice().reverse().map(item => <article key={item.id}><i>✓</i><span><strong>{item.label}</strong><small>{formatDate(item.createdAt)}</small></span></article>)}</section>
-    {request.status === "COMPLETED" && <PerfumerAftercare cases={aftercare} reload={load}/>} 
+    {request.status === "COMPLETED" && <PerfumerAftercare cases={aftercare} reload={loadAftercare}/>}
     {action && <button className="perfumer-primary" disabled={busy} onClick={() => void run(() => perfumerService.transition(request.id, action[0], action[1]))}>{busy ? "Updating…" : action[1]}<b>→</b></button>}
   </section>;
   return mode === "drawer" ? <div className="perfumer-drawer-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) onClose?.(); }}>{content}</div> : content;

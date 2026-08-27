@@ -1,4 +1,5 @@
 import { getSupabaseClient } from "../../lib/supabase";
+import { debugSupabaseFetch } from "../../lib/supabaseFetchDebug";
 
 export type AftercareKind = "GRATITUDE" | "REVIEW" | "ISSUE" | "ADJUSTMENT" | "REORDER";
 export type AftercareStatus = "OPEN" | "DISCUSSING" | "RESOLVED";
@@ -21,6 +22,7 @@ const mapCase = (row: any, messages: AftercareMessage[] = []): AftercareCase => 
 const client = () => getSupabaseClient() as any;
 async function hydrate(rows: any[]): Promise<AftercareCase[]> {
   if (!rows.length) return [];
+  debugSupabaseFetch("aftercareMessages", "case-open", "heavy");
   const response = await client().from("aftercare_messages").select("id,case_id,sender_role,sender_name,message,created_at").in("case_id", rows.map(row => row.id)).order("created_at").limit(200);
   if (response.error) throw response.error;
   const messages = (response.data ?? []).map(mapMessage);
@@ -28,15 +30,24 @@ async function hydrate(rows: any[]): Promise<AftercareCase[]> {
 }
 
 export const aftercareService = {
+  async getCase(caseId: string) {
+    debugSupabaseFetch("aftercareCases", "case-open");
+    const response = await client().from("aftercare_cases").select("id,review_request_id,user_id,assigned_reviewer_id,kind,status,subject,body,rating,linked_review_request_id,resolved_at,created_at,updated_at").eq("id", caseId).maybeSingle();
+    if (response.error) throw response.error;
+    if (!response.data) return null;
+    return (await hydrate([response.data]))[0] ?? null;
+  },
   async getForRequest(requestId: string) {
+    debugSupabaseFetch("aftercareCases", "aftercare-section-open");
     const response = await client().from("aftercare_cases").select("id,review_request_id,user_id,assigned_reviewer_id,kind,status,subject,body,rating,linked_review_request_id,resolved_at,created_at,updated_at").eq("review_request_id", requestId).order("updated_at", { ascending: false }).limit(50);
     if (response.error) throw response.error;
     return hydrate(response.data ?? []);
   },
   async getAssigned() {
+    debugSupabaseFetch("aftercareCases", "workspace-summary");
     const response = await client().from("aftercare_cases").select("id,review_request_id,user_id,assigned_reviewer_id,kind,status,subject,body,rating,linked_review_request_id,resolved_at,created_at,updated_at").order("updated_at", { ascending: false }).limit(100);
     if (response.error) throw response.error;
-    return hydrate(response.data ?? []);
+    return (response.data ?? []).map((row: any) => mapCase(row));
   },
   async create(requestId: string, input: { kind: AftercareKind; subject: string; body: string; rating?: number | null }) {
     const response = await client().rpc("create_aftercare_case", { target_request_id: requestId, case_kind: input.kind, case_subject: input.subject, case_body: input.body, case_rating: input.rating ?? null });

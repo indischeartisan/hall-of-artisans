@@ -2,6 +2,7 @@ import { getSupabaseClient } from "../../lib/supabase";
 import type { RequestMessage, ReviewRequest } from "../orders/types";
 import { staffService, type ArtisanProposalInput, type StaffRequestDetail } from "../admin/staffService";
 import { aftercareService, type AftercareCase } from "../aftercare/aftercareService";
+import { debugSupabaseFetch } from "../../lib/supabaseFetchDebug";
 
 export interface PerfumerWorkspaceData {
   projects: ReviewRequest[];
@@ -18,6 +19,7 @@ export const isRequestLocallyRead = (requestId: string) => locallyReadRequests.h
 
 export const perfumerService = {
   async getWorkspace(userId: string): Promise<PerfumerWorkspaceData> {
+    debugSupabaseFetch("perfumerWorkspace", "initial-or-recovery");
     const [queue, customerResponse, aftercareCases] = await Promise.all([staffService.getQueue(), getSupabaseClient().rpc("get_assigned_customer_summaries"), aftercareService.getAssigned()]);
     if (customerResponse.error) throw customerResponse.error;
     const projects = queue.filter(item => item.assignedReviewerId === userId);

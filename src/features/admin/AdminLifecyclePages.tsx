@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useOutletContext } from "react-router";
 import type { AdminAftercareCase, AdminOrder } from "./adminDashboardService";
 import type { AdminOutletContext } from "./AdminDashboardLayout";
+import { aftercareService, type AftercareCase } from "../aftercare/aftercareService";
 
 const date = (value: string) => new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
 const label = (value: string) => value.replaceAll("_", " ").toLowerCase().replace(/(^|\s)\w/g, match => match.toUpperCase());
@@ -12,10 +13,13 @@ function Header({ eyebrow, title, copy }: { eyebrow: string; title: string; copy
 }
 
 function CaseDrawer({ item, onClose }: { item: AdminAftercareCase; onClose: () => void }) {
+  const [detail, setDetail] = useState<AftercareCase | null>(null);
+  useEffect(() => { void aftercareService.getCase(item.id).then(setDetail); }, [item.id]);
+  const messages = detail?.messages ?? [];
   return <div className="hoa-drawer-backdrop" onMouseDown={event => event.target === event.currentTarget && onClose()}><aside className="hoa-detail-drawer"><button className="hoa-drawer-close" onClick={onClose}>×</button><header><span>{label(item.kind)} Request</span><h2>{item.creationName}</h2><p>{item.requestNumber} · {item.customer.name}</p>{badge(item.status)}</header>
     <dl className="hoa-detail-facts"><div><dt>Artisan ID</dt><dd>{item.customer.artisanId}</dd></div><div><dt>Submitted</dt><dd>{date(item.createdAt)}</dd></div><div><dt>Updated</dt><dd>{date(item.updatedAt)}</dd></div><div><dt>Assigned artisan</dt><dd>{item.assignedReviewerId ? "Assigned" : "Unassigned"}</dd></div><div><dt>Follow-up order</dt><dd>{item.linkedReviewRequestId ? "Created" : "Not created"}</dd></div><div><dt>Case ID</dt><dd>{item.id.slice(0, 8)}</dd></div></dl>
     <section><h3>{item.subject}</h3><p>{item.body}</p></section>
-    <section><h3>Conversation</h3>{item.messages.length ? item.messages.map(message => <article className="hoa-message" key={message.id}><strong>{message.senderName}</strong><small>{date(message.createdAt)}</small><p>{message.message}</p></article>) : <p>No follow-up messages yet.</p>}</section>
+    <section><h3>Conversation</h3>{messages.length ? messages.map(message => <article className="hoa-message" key={message.id}><strong>{message.senderName}</strong><small>{date(message.createdAt)}</small><p>{message.message}</p></article>) : <p>{detail ? "No follow-up messages yet." : "Loading conversation…"}</p>}</section>
     {item.linkedReviewRequestId && <a className="hoa-primary" href={`/admin/creations?open=${item.linkedReviewRequestId}`}>Open Linked Creation <b>→</b></a>}
   </aside></div>;
 }

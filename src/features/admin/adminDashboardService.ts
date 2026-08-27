@@ -4,6 +4,7 @@ import type { Json, Tables } from "../../types/database.types";
 import type { ReviewRequest } from "../orders/types";
 import { staffService, type StaffReviewer } from "./staffService";
 import { aftercareService, type AftercareCase } from "../aftercare/aftercareService";
+import { debugSupabaseFetch } from "../../lib/supabaseFetchDebug";
 
 type OrderRow = Tables<"customer_orders">;
 type OrderItemRow = Tables<"order_items">;
@@ -132,6 +133,7 @@ export const adminDashboardService = {
     if (error) throw error;
   },
   async getSnapshot(): Promise<AdminDashboardSnapshot> {
+    debugSupabaseFetch("adminWorkspace", "initial-or-recovery");
     const client = getSupabaseClient();
     const [requests, reviewers, orderRows, orderItemRows, activityRows, messageRows, aftercareRows] = await Promise.all([
       staffService.getQueue(),

@@ -2,11 +2,13 @@ import { getSupabaseClient } from "../../lib/supabase";
 import type { AppRole, Json, Tables } from "../../types/database.types";
 import type { CommissionPackage, RequestActivity, RequestMessage, ReviewRequest } from "../orders/types";
 import { signedChatAttachment } from "../orders/chatAttachments";
+import { debugSupabaseFetch } from "../../lib/supabaseFetchDebug";
 
 type ReviewRow = Tables<"review_requests">;
 type MessageRow = Tables<"request_messages">;
 type ActivityRow = Tables<"request_activity">;
 const STAFF_QUEUE_COLUMNS = "id,user_id,creation_id,request_number,assigned_reviewer_id,assigned_at,status,creation_mode,submission_id,perfume_name,concentration,bottle_size,fragrance_direction,top_notes,heart_notes,base_notes,fragrance_brief,customer_notes,country_code,pricing_region,currency,estimated_price_min,estimated_price_max,final_price,selected_package_id,recommended_adjustments,included_items,estimated_production,revisions_included,submitted_at,reviewed_at,approved_at,consultation_started_at,consultation_completed_at,ready_for_payment_at,paid_at,shipped_at,completed_at,updated_at";
+const STAFF_DETAIL_COLUMNS = `${STAFF_QUEUE_COLUMNS},preview_snapshot,submission_snapshot,story_card_data,package_snapshot,artisan_review`;
 
 export type StaffRole = Extract<AppRole, "reviewer" | "admin" | "super_admin">;
 export interface StaffAccess { signedIn: boolean; role: StaffRole | null; email: string; userId: string }
@@ -80,6 +82,13 @@ export const staffService = {
     return (response.data ?? []).map(row => queueReviewFromRow(row as unknown as ReviewRow));
   },
 
+  async getQueueItem(requestId: string): Promise<ReviewRequest | null> {
+    debugSupabaseFetch("projectSummary", "realtime-project-patch");
+    const response = await getSupabaseClient().from("review_requests").select(STAFF_QUEUE_COLUMNS).eq("id", requestId).neq("status", "DRAFT_PREVIEW").maybeSingle();
+    if (response.error) throw response.error;
+    return response.data ? queueReviewFromRow(response.data as unknown as ReviewRow) : null;
+  },
+
   async getReviewers(): Promise<StaffReviewer[]> {
     const response = await getSupabaseClient().rpc("list_active_reviewers");
     if (response.error) throw response.error;
@@ -101,9 +110,10 @@ export const staffService = {
   },
 
   async getDetail(requestId: string): Promise<StaffRequestDetail | null> {
+    debugSupabaseFetch("projectSummary", "detail-open");
     const client = getSupabaseClient();
     const [request, messages, activity] = await Promise.all([
-      client.from("review_requests").select("*").eq("id", requestId).maybeSingle(),
+      client.from("review_requests").select(STAFF_DETAIL_COLUMNS).eq("id", requestId).maybeSingle(),
       client.from("request_messages").select("id,request_id,user_id,sender_role,sender_name,message,attachment_url,created_at,read_at").eq("request_id", requestId).order("created_at", { ascending: false }).limit(30),
       client.from("request_activity").select("id,request_id,event_type,label,created_at,metadata").eq("request_id", requestId).order("created_at", { ascending: false }).limit(50)
     ]);
