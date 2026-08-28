@@ -12,12 +12,12 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "https://cloudflare-migration.hall-of-artisans.pages.dev/",
+      "destination": "https://hall-of-artisans.pages.dev/",
       "permanent": true
     },
     {
       "source": "/:path*",
-      "destination": "https://cloudflare-migration.hall-of-artisans.pages.dev/:path*",
+      "destination": "https://hall-of-artisans.pages.dev/:path*",
       "permanent": true
     }
   ],
