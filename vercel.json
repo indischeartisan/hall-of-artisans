@@ -3,6 +3,9 @@
   "buildCommand": "pnpm build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "git": {
+    "deploymentEnabled": false
+  },
   "github": {
     "autoAlias": false
   },
