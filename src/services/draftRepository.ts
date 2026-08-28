@@ -3,6 +3,7 @@ import type { Json, Tables, TablesInsert, TablesUpdate } from "../types/database
 import {
   DRAFT_SCHEMA_VERSION,
   type CreationDraft,
+  type DraftSummary,
   type DescribedCreationDraft,
   type NewDescribedDraftData,
   type NewDraftData,
@@ -113,13 +114,29 @@ function updateFor(draft: CreationDraft): DraftUpdate {
   };
 }
 
-async function list(): Promise<{ drafts: CreationDraft[]; source: DraftStorageSource }> {
+async function list(): Promise<{ drafts: DraftSummary[]; source: DraftStorageSource }> {
   const userId = await authenticatedUserId();
   if (!userId) return { drafts: localStorageRepository.getDrafts(), source: "local" };
   const { data, error } = await getSupabaseClient().from("creation_drafts")
-    .select("*").eq("user_id", userId).order("updated_at", { ascending: false });
+    .select("id,mode,schema_version,draft_name,perfume_name,status,created_at,updated_at")
+    .eq("user_id", userId).order("updated_at", { ascending: false }).limit(100);
   if (error) throw new DraftRepositoryError("Unable to load your saved drafts.", error);
-  return { drafts: (data ?? []).map(rowToDraft).filter((draft): draft is CreationDraft => Boolean(draft)), source: "supabase" };
+  const drafts: DraftSummary[] = (data ?? []).map(row => ({
+    id: row.id, mode: row.mode, schemaVersion: row.schema_version, draftName: row.draft_name,
+    perfumeName: row.perfume_name ?? undefined, status: row.status,
+    createdAt: row.created_at, updatedAt: row.updated_at
+  }));
+  return { drafts, source: "supabase" };
+}
+
+async function get(id: string): Promise<CreationDraft | null> {
+  const userId = await authenticatedUserId();
+  if (!userId) return localStorageRepository.getDrafts().find(draft => draft.id === id) ?? null;
+  const { data, error } = await getSupabaseClient().from("creation_drafts")
+    .select("id,user_id,mode,schema_version,draft_name,perfume_name,status,payload,created_at,updated_at")
+    .eq("id", id).eq("user_id", userId).maybeSingle();
+  if (error) throw new DraftRepositoryError("Unable to open this saved draft.", error);
+  return data ? rowToDraft(data) : null;
 }
 
 async function insert(draft: CreationDraft): Promise<CreationDraft> {
@@ -161,7 +178,7 @@ function buildDescribedDraft(data: NewDescribedDraftData): DescribedCreationDraf
 }
 
 export const draftRepository = {
-  list,
+  list, get,
   createArtisan(data: NewDraftData) { return insert(buildArtisanDraft(data)); },
   createDescribed(data: NewDescribedDraftData) { return insert(buildDescribedDraft(data)); },
   save,

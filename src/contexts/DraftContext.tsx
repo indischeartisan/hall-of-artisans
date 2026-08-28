@@ -3,6 +3,7 @@ import { DraftRepositoryError, draftRepository, type DraftStorageSource } from "
 import { useAuth } from "./AuthContext";
 import type {
   CreationDraft,
+  DraftSummary,
   DescribedCreationDraft,
   NewDescribedDraftData,
   NewDraftData,
@@ -10,7 +11,7 @@ import type {
 } from "../types/perfumeDraft";
 
 interface DraftContextValue {
-  drafts: CreationDraft[];
+  drafts: DraftSummary[];
   activeDraft: CreationDraft | null;
   loading: boolean;
   error: string;
@@ -31,7 +32,7 @@ const errorMessage = (error: unknown) => error instanceof DraftRepositoryError ?
 
 export function DraftProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [drafts, setDrafts] = useState<CreationDraft[]>([]);
+  const [drafts, setDrafts] = useState<DraftSummary[]>([]);
   const [activeDraft, setActiveDraft] = useState<CreationDraft | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -44,7 +45,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
       const result = await draftRepository.list();
       setDrafts(result.drafts);
       setSource(result.source);
-      setActiveDraft((current) => current ? result.drafts.find((draft) => draft.id === current.id) ?? null : null);
+      setActiveDraft((current) => current && result.drafts.some(draft => draft.id === current.id) ? current : null);
     } catch (requestError) {
       setError(errorMessage(requestError));
     } finally {
@@ -89,7 +90,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const saveDraft = useCallback(async (id: string, changes: Partial<CreationDraft>) => {
-    const existing = drafts.find((draft) => draft.id === id) ?? (activeDraft?.id === id ? activeDraft : undefined);
+    const existing = activeDraft?.id === id ? activeDraft : await draftRepository.get(id) ?? undefined;
     if (!existing) return undefined;
     setError("");
     try {
@@ -112,16 +113,10 @@ export function DraftProvider({ children }: { children: ReactNode }) {
   }, [activeDraft, drafts, refresh]);
 
   const loadDraft = useCallback(async (id: string) => {
-    let result = drafts.find((draft) => draft.id === id);
-    if (!result) {
-      const latest = await draftRepository.list();
-      setDrafts(latest.drafts);
-      setSource(latest.source);
-      result = latest.drafts.find((draft) => draft.id === id);
-    }
+    const result = await draftRepository.get(id) ?? undefined;
     if (result) setActiveDraft(result);
     return result;
-  }, [drafts]);
+  }, []);
 
   const deleteDraft = useCallback(async (id: string) => {
     setError("");
@@ -136,7 +131,7 @@ export function DraftProvider({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const duplicateDraft = useCallback(async (id: string) => {
-    const sourceDraft = drafts.find((draft) => draft.id === id);
+    const sourceDraft = await draftRepository.get(id) ?? undefined;
     if (!sourceDraft) return undefined;
     setError("");
     try {

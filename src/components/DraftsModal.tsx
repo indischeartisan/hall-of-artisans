@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { useDrafts } from "../contexts/DraftContext";
 import { orderService } from "../features/orders/orderService";
-import type { CreationDraft, DraftMode } from "../types/perfumeDraft";
+import type { CreationDraft, DraftMode, DraftSummary } from "../types/perfumeDraft";
 
 type DraftsModalProps = {
   open: boolean;
@@ -43,6 +43,7 @@ export default function DraftsModal({ open, onClose, initialMode }: DraftsModalP
   const [busyId, setBusyId] = useState<string | null>(null);
   const [actionError, setActionError] = useState("");
   const [submittedDraftIds, setSubmittedDraftIds] = useState<Set<string>>(new Set());
+  const [detailDrafts, setDetailDrafts] = useState<Record<string, CreationDraft>>({});
 
   useEffect(() => {
     if (!open) return;
@@ -80,7 +81,7 @@ export default function DraftsModal({ open, onClose, initialMode }: DraftsModalP
 
   if (!open) return null;
 
-  const edit = async (draft: CreationDraft) => {
+  const edit = async (draft: DraftSummary) => {
     setBusyId(draft.id);
     setActionError("");
     try {
@@ -93,7 +94,7 @@ export default function DraftsModal({ open, onClose, initialMode }: DraftsModalP
     } finally { setBusyId(null); }
   };
 
-  const rename = async (draft: CreationDraft) => {
+  const rename = async (draft: DraftSummary) => {
     const name = window.prompt("Rename draft:", draft.draftName)?.trim();
     if (!name) return;
     setBusyId(draft.id);
@@ -103,7 +104,7 @@ export default function DraftsModal({ open, onClose, initialMode }: DraftsModalP
     finally { setBusyId(null); }
   };
 
-  const duplicate = async (draft: CreationDraft) => {
+  const duplicate = async (draft: DraftSummary) => {
     setBusyId(draft.id);
     setActionError("");
     try { await duplicateDraft(draft.id); }
@@ -111,7 +112,7 @@ export default function DraftsModal({ open, onClose, initialMode }: DraftsModalP
     finally { setBusyId(null); }
   };
 
-  const remove = async (draft: CreationDraft) => {
+  const remove = async (draft: DraftSummary) => {
     if (submittedDraftIds.has(draft.id)) return;
     if (!window.confirm(`Delete “${draft.draftName}”? Its unsubmitted creation preview will also be removed.`)) return;
     setBusyId(draft.id);
@@ -144,10 +145,20 @@ export default function DraftsModal({ open, onClose, initialMode }: DraftsModalP
               <div><p className="drafts-modal__mode">{modeLabel[draft.mode]}</p><h3>{draft.draftName}</h3><p>{draft.perfumeName || "Untitled creation"}</p><small>Updated {new Date(draft.updatedAt).toLocaleString()}</small></div>
               <span className={`status-badge${submitted ? " status-submitted" : ""}`}>{submitted ? "Submitted" : draft.status === "ready" ? "Ready" : "Draft"}</span>
             </div>
-            {expanded && <dl className="drafts-modal__details">{draftDetails(draft).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>}
+            {expanded && detailDrafts[draft.id] && <dl className="drafts-modal__details">{draftDetails(detailDrafts[draft.id]).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>}
             <div className="drafts-modal__actions">
               <button className="drafts-modal__edit" type="button" disabled={busyId === draft.id} onClick={() => void edit(draft)}>Edit Draft</button>
-              <button type="button" onClick={() => setExpandedId(expanded ? null : draft.id)}>{expanded ? "Hide Details" : "View Details"}</button>
+              <button type="button" disabled={busyId === draft.id} onClick={() => void (async () => {
+                if (expanded) { setExpandedId(null); return; }
+                setBusyId(draft.id); setActionError("");
+                try {
+                  const loaded = detailDrafts[draft.id] ?? await loadDraft(draft.id);
+                  if (!loaded) throw new Error("This draft could not be found.");
+                  setDetailDrafts(current => ({ ...current, [draft.id]: loaded }));
+                  setExpandedId(draft.id);
+                } catch (cause) { setActionError(cause instanceof Error ? cause.message : "Draft details could not be opened."); }
+                finally { setBusyId(null); }
+              })()}>{expanded ? "Hide Details" : "View Details"}</button>
               <button type="button" disabled={busyId === draft.id} onClick={() => void rename(draft)}>Rename</button>
               <button type="button" disabled={busyId === draft.id} onClick={() => void duplicate(draft)}>Duplicate</button>
               <button className="danger" type="button" disabled={busyId === draft.id || submitted} title={submitted ? "Submitted drafts are retained as part of the order record." : "Delete draft"} onClick={() => void remove(draft)}>Delete</button>

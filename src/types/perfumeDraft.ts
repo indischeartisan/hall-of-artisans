@@ -119,6 +119,7 @@ export interface DescribedCreationDraft {
 }
 
 export type CreationDraft = PerfumeDraft | DescribedCreationDraft;
+export type DraftSummary = Pick<CreationDraft, "id" | "schemaVersion" | "mode" | "draftName" | "perfumeName" | "status" | "createdAt" | "updatedAt">;
 export type NewDraftData = Omit<PerfumeDraft, "id" | "schemaVersion" | "mode" | "createdAt" | "updatedAt">;
 export type NewDescribedDraftData = Omit<DescribedCreationDraft, "id" | "schemaVersion" | "mode" | "createdAt" | "updatedAt">;
 
