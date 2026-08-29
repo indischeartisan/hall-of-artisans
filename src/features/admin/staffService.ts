@@ -1,14 +1,13 @@
 import { getSupabaseClient } from "../../lib/supabase";
 import type { AppRole, Json, Tables } from "../../types/database.types";
 import type { CommissionPackage, RequestActivity, RequestMessage, ReviewRequest } from "../orders/types";
-import { signedChatAttachment } from "../orders/chatAttachments";
 import { debugSupabaseFetch } from "../../lib/supabaseFetchDebug";
 import { invalidateTtlCache } from "../../lib/ttlCache";
 
 const invalidateStaffCaches = () => { invalidateTtlCache("admin:"); invalidateTtlCache("perfumer:"); };
 
 type ReviewRow = Tables<"review_requests">;
-type MessageRow = Tables<"request_messages">;
+type MessageRow = Pick<Tables<"request_messages">, "id" | "request_id" | "sender_role" | "sender_name" | "message" | "created_at" | "read_at">;
 type ActivityRow = Tables<"request_activity">;
 const STAFF_QUEUE_COLUMNS = "id,user_id,creation_id,request_number,assigned_reviewer_id,assigned_at,status,creation_mode,submission_id,perfume_name,concentration,bottle_size,currency,final_price,selected_package_id,submitted_at,paid_at,completed_at,updated_at";
 const STAFF_DETAIL_COLUMNS = "id,user_id,creation_id,request_number,assigned_reviewer_id,assigned_at,status,creation_mode,submission_id,perfume_name,concentration,bottle_size,fragrance_direction,top_notes,heart_notes,base_notes,fragrance_brief,customer_notes,country_code,pricing_region,currency,estimated_price_min,estimated_price_max,final_price,selected_package_id,recommended_adjustments,included_items,estimated_production,revisions_included,submitted_at,reviewed_at,approved_at,consultation_started_at,consultation_completed_at,ready_for_payment_at,paid_at,shipped_at,completed_at,updated_at,preview_snapshot,submission_snapshot,story_card_data,package_snapshot,artisan_review";
@@ -62,7 +61,7 @@ const queueReviewFromRow = (row: Partial<ReviewRow> & Pick<ReviewRow, "id" | "us
   approvedAt: row.approved_at ?? null, consultationStartedAt: row.consultation_started_at ?? null, consultationCompletedAt: row.consultation_completed_at ?? null,
   readyForPaymentAt: row.ready_for_payment_at ?? null, paidAt: row.paid_at ?? null, shippedAt: row.shipped_at ?? null, completedAt: row.completed_at ?? null, lastUpdatedAt: row.updated_at
 });
-const messageFromRow = (row: MessageRow): RequestMessage => ({ id: row.id, requestId: row.request_id, senderRole: row.sender_role as RequestMessage["senderRole"], senderName: row.sender_name, message: row.message, createdAt: row.created_at, readAt: row.read_at, attachmentUrl: row.attachment_url ?? undefined });
+const messageFromRow = (row: MessageRow): RequestMessage => ({ id: row.id, requestId: row.request_id, senderRole: row.sender_role as RequestMessage["senderRole"], senderName: row.sender_name, message: row.message, createdAt: row.created_at, readAt: row.read_at });
 type ActivityListRow = Pick<ActivityRow, "id" | "request_id" | "event_type" | "label" | "created_at" | "metadata">;
 const activityFromRow = (row: ActivityListRow): RequestActivity => ({ id: row.id, requestId: row.request_id, eventType: row.event_type, label: row.label, createdAt: row.created_at, metadata: clone(row.metadata) as RequestActivity["metadata"] });
 
@@ -119,12 +118,12 @@ export const staffService = {
     const client = getSupabaseClient();
     const [request, messages, activity] = await Promise.all([
       client.from("review_requests").select(STAFF_DETAIL_COLUMNS).eq("id", requestId).maybeSingle(),
-      client.from("request_messages").select("id,request_id,user_id,sender_role,sender_name,message,attachment_url,created_at,read_at").eq("request_id", requestId).order("created_at", { ascending: false }).limit(30),
+      client.from("request_messages").select("id,request_id,sender_role,sender_name,message,created_at,read_at").eq("request_id", requestId).order("created_at", { ascending: false }).limit(30),
       client.from("request_activity").select("id,request_id,event_type,label,created_at,metadata").eq("request_id", requestId).order("created_at", { ascending: false }).limit(50)
     ]);
     if (request.error || messages.error || activity.error) throw request.error ?? messages.error ?? activity.error;
     if (!request.data) return null;
-    const resolvedMessages=await Promise.all((messages.data??[]).slice().reverse().map(async row=>({...messageFromRow(row),attachmentUrl:await signedChatAttachment(row.attachment_url)})));
+    const resolvedMessages=(messages.data??[]).slice().reverse().map(messageFromRow);
     return { request: reviewFromRow(request.data), messages: resolvedMessages, activity: (activity.data ?? []).slice().reverse().map(activityFromRow) };
   },
 

@@ -7,7 +7,6 @@ import { getSupabaseClient, isSupabaseConfigured } from "../../lib/supabase";
 import type { Json, Tables } from "../../types/database.types";
 import { DRAFT_SCHEMA_VERSION, type ArtisanBenchState, type PerfumeDraft } from "../../types/perfumeDraft";
 import type { CheckoutDetails, CommissionPackage, Order, OrderDetailSnapshot, OrderItem, RequestActivity, RequestMessage, ReviewRequest } from "./types";
-import { signedChatAttachment, uploadCustomerChatImage } from "./chatAttachments";
 import { invalidateTtlCache, withTtlCache } from "../../lib/ttlCache";
 
 export type BespokeSubmissionInput = DescribedCreationInput;
@@ -23,7 +22,7 @@ export const ORDER_STORAGE_KEYS = {
 } as const;
 
 type ReviewRow = Tables<"review_requests">;
-type MessageRow = Tables<"request_messages">;
+type MessageRow = Pick<Tables<"request_messages">, "id" | "request_id" | "sender_role" | "sender_name" | "message" | "created_at" | "read_at">;
 type ActivityRow = Tables<"request_activity">;
 type OrderRow = Tables<"customer_orders">;
 type OrderItemRow = Tables<"order_items">;
@@ -114,7 +113,7 @@ function packageFromRow(row: PackageRow): CommissionPackage {
 }
 
 function messageFromRow(row: MessageRow): RequestMessage {
-  return { id: row.id, requestId: row.request_id, senderRole: row.sender_role as RequestMessage["senderRole"], senderName: row.sender_name, message: row.message, createdAt: row.created_at, readAt: row.read_at, attachmentUrl: row.attachment_url ?? undefined };
+  return { id: row.id, requestId: row.request_id, senderRole: row.sender_role as RequestMessage["senderRole"], senderName: row.sender_name, message: row.message, createdAt: row.created_at, readAt: row.read_at };
 }
 function activityFromRow(row: ActivityRow): RequestActivity {
   return { id: row.id, requestId: row.request_id, eventType: row.event_type, label: row.label, createdAt: row.created_at, metadata: clone(row.metadata) as RequestActivity["metadata"] };
@@ -223,12 +222,12 @@ export const orderService = {
   async loadOlderMessages(requestId: string, before: string): Promise<{ messages: RequestMessage[]; hasMore: boolean }> {
     await verifiedUserId();
     const response = await getSupabaseClient().from("request_messages")
-      .select("id,request_id,user_id,sender_role,sender_name,message,attachment_url,created_at,read_at")
+      .select("id,request_id,sender_role,sender_name,message,created_at,read_at")
       .eq("request_id", requestId).lt("created_at", before)
       .order("created_at", { ascending: false }).limit(30);
     if (response.error) throw new OrderServiceError("Unable to load older messages.", response.error);
     const rows = response.data ?? [];
-    const messages = await Promise.all(rows.slice().reverse().map(async row => ({ ...messageFromRow(row), attachmentUrl: await signedChatAttachment(row.attachment_url) })));
+    const messages = rows.slice().reverse().map(messageFromRow);
     return { messages, hasMore: rows.length === 30 };
   },
 
@@ -243,7 +242,7 @@ export const orderService = {
     if (requestResult.error) throw new OrderServiceError("Unable to open this request.", requestResult.error);
     if (!requestResult.data) return null;
     const [messages, activity, item] = await Promise.all([
-      getSupabaseClient().from("request_messages").select("id,request_id,user_id,sender_role,sender_name,message,attachment_url,created_at,read_at").eq("request_id", requestId).order("created_at", { ascending: false }).limit(30),
+      getSupabaseClient().from("request_messages").select("id,request_id,sender_role,sender_name,message,created_at,read_at").eq("request_id", requestId).order("created_at", { ascending: false }).limit(30),
       getSupabaseClient().from("request_activity").select(ACTIVITY_COLUMNS).eq("request_id", requestId).order("created_at", { ascending: false }).limit(50),
       getSupabaseClient().from("order_items").select(ORDER_ITEM_COLUMNS).eq("review_request_id", requestId).maybeSingle()
     ]);
@@ -266,7 +265,7 @@ export const orderService = {
       request.paidAt = request.paidAt ?? new Date().toISOString();
     }
     if (order?.productionStatus === "in_production" && ["PAYMENT_PENDING", "PAID"].includes(request.status)) request.status = "IN_PRODUCTION";
-    const resolvedMessages=await Promise.all((messages.data??[]).slice().reverse().map(async row=>({...messageFromRow(row),attachmentUrl:await signedChatAttachment(row.attachment_url)})));
+    const resolvedMessages=(messages.data??[]).slice().reverse().map(messageFromRow);
     return { request, messages: resolvedMessages, activity: (activity.data ?? []).slice().reverse().map(activityFromRow), order, hasOlderMessages: (messages.data?.length ?? 0) === 30 };
   },
 
@@ -381,16 +380,13 @@ export const orderService = {
 
   async setFinalPrice(): Promise<ServiceResult> { return { ok: false, error: "Final pricing requires the upcoming administrative backend." }; },
 
-  async sendMessage(requestId: string, message: string, senderRole: "customer" | "artisan" = "customer", attachment?: File): Promise<ServiceResult> {
+  async sendMessage(requestId: string, message: string): Promise<ServiceResult> {
     await verifiedUserId();
-    if (senderRole !== "customer") return { ok: false, error: "Artisan messages require the upcoming staff workspace." };
     const detail = await this.getDetail(requestId);
     if (!detail) return { ok: false, error: "Request not found." };
     if (!isChatAvailable(detail.request.status)) return { ok: false, error: "Chat is not available for this status." };
-    if(!message.trim()&&!attachment)return {ok:false,error:"Add a message or an image."};
-    let attachmentPath:string|null=null;
-    try{attachmentPath=attachment?await uploadCustomerChatImage(requestId,attachment):null}catch(cause){return {ok:false,error:cause instanceof Error?cause.message:"The image could not be uploaded."}}
-    const response = await (getSupabaseClient() as any).rpc("send_customer_request_message_with_attachment", { target_request_id: requestId, message_body: message.trim(), attachment_path:attachmentPath });
+    if(!message.trim())return {ok:false,error:"Add a message."};
+    const response = await getSupabaseClient().rpc("send_customer_request_message", { target_request_id: requestId, message_body: message.trim() });
     if (response.error) return { ok: false, error: response.error.message };
     emitChange();
     return { ok: true };
