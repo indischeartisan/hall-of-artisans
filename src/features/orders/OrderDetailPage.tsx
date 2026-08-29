@@ -51,5 +51,5 @@ export default function OrderDetailPage(){
   else if(room==="review")roomContent=<ArtisanReviewRoom request={request} messages={data.messages} activity={data.activity} busy={actionBusy} onCancel={()=>window.confirm("Cancel this project? Your submitted record will be closed.")&&void run("cancel")}/>;
   else if(room==="closed")roomContent=<ClosedProjectRoom request={request} activity={data.activity}/>;
   else roomContent=<section className="customer-project-room__fallback"><h2>We&apos;re preparing your creation.</h2><p>This Project Room will update as soon as the next step is ready.</p></section>;
-  return <><GlobalHeader variant="light" activeLabel="My Creations"/><ProjectRoomShell request={request} includeDemo={includeDemo} error={error||loadError} onRetry={loadError?()=>void refresh():undefined}>{roomContent}</ProjectRoomShell></>;
+  return <><GlobalHeader variant="light" activeLabel="My Creations"/><ProjectRoomShell request={request} includeDemo={includeDemo} error={error||loadError} onRetry={loadError?()=>void refresh():undefined}><button className="customer-project-room__refresh" type="button" disabled={actionBusy} onClick={() => void refresh()}>Refresh Messages &amp; Status</button>{roomContent}</ProjectRoomShell></>;
 }

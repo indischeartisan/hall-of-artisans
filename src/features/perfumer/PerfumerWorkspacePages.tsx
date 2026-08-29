@@ -8,7 +8,6 @@ import type { PerfumerOutletContext } from "./PerfumerWorkspaceLayout";
 import { isRequestLocallyRead, perfumerService } from "./perfumerService";
 import { aftercareService, type AftercareCase } from "../aftercare/aftercareService";
 import "../../styles/chat-attachments.css";
-import type { StaffRealtimeEvent } from "../orders/requestLiveUpdates";
 import CreationPreparation from "../orders/components/CreationPreparation";
 import StaffProposalForm from "../admin/StaffProposalForm";
 import type { ArtisanProposalInput } from "../admin/staffService";
@@ -44,28 +43,6 @@ function ProjectWorkspace({ project, customerName, mode = "drawer", onClose, onC
     if ((projectDetail?.request.status ?? project.status) === "COMPLETED") await loadAftercare();
   };
   useEffect(() => { void load().catch(cause => setError(cause instanceof Error ? cause.message : "Project could not be opened.")); }, [project.id]);
-  useEffect(() => {
-    const patch = (rawEvent: Event) => {
-      const event = (rawEvent as CustomEvent<StaffRealtimeEvent>).detail;
-      const row = event.eventType === "DELETE" ? event.old : event.new;
-      if (String(row.request_id ?? row.id ?? "") !== project.id) return;
-      setDetail(current => {
-        if (!current) return current;
-        if (event.table === "request_messages") {
-          if (event.eventType === "DELETE") return { ...current, messages: current.messages.filter(item => item.id !== row.id) };
-          const next = { id: String(row.id), requestId: project.id, senderRole: row.sender_role as RequestMessage["senderRole"], senderName: String(row.sender_name ?? "Customer"), message: String(row.message ?? ""), createdAt: String(row.created_at ?? new Date().toISOString()), readAt: row.read_at ? String(row.read_at) : null, attachmentUrl: row.attachment_url ? String(row.attachment_url) : undefined };
-          return { ...current, messages: [...current.messages.filter(item => item.id !== next.id), next].sort((a, b) => a.createdAt.localeCompare(b.createdAt)) };
-        }
-        if (event.table === "request_activity" && event.eventType !== "DELETE") {
-          const next = { id: String(row.id), requestId: project.id, eventType: String(row.event_type ?? "updated"), label: String(row.label ?? "Project updated"), createdAt: String(row.created_at ?? new Date().toISOString()), metadata: row.metadata as Record<string, string | number | boolean | null> };
-          return { ...current, activity: [...current.activity.filter(item => item.id !== next.id), next].sort((a, b) => a.createdAt.localeCompare(b.createdAt)) };
-        }
-        return current;
-      });
-    };
-    window.addEventListener("hoa:staff-realtime", patch);
-    return () => window.removeEventListener("hoa:staff-realtime", patch);
-  }, [project.id]);
   const request = detail?.request ?? project;
   const consultationOpen = isOperationalStageStatus("consultation", request.status);
   const proposalEditable = ["CONSULTATION", "REVISION_REQUESTED"].includes(request.status);
@@ -84,7 +61,7 @@ function ProjectWorkspace({ project, customerName, mode = "drawer", onClose, onC
     <div className="perfumer-creation-review"><CreationPreparation request={request} busy={false} packages={[]} selectedPackageId={null} onEdit={() => undefined} onSelectPackage={() => undefined} onSubmit={() => undefined}/></div>
     <div className="perfumer-facts"><div><small>Concentration</small><strong>{request.concentration}</strong></div><div><small>Submitted</small><strong>{formatDate(request.submittedAt)}</strong></div><div><small>Updated</small><strong>{formatDate(request.lastUpdatedAt)}</strong></div></div>
     <section className="perfumer-brief"><h3>Customer Creation Brief</h3><p>{request.fragranceBrief || snapshot?.writtenStory || "No written brief supplied."}</p><dl><div><dt>Direction</dt><dd>{request.fragranceDirection.join(" · ") || "—"}</dd></div><div><dt>Top</dt><dd>{request.topNotes.join(" · ") || "To interpret"}</dd></div><div><dt>Heart</dt><dd>{request.heartNotes.join(" · ") || "To interpret"}</dd></div><div><dt>Base</dt><dd>{request.baseNotes.join(" · ") || "To interpret"}</dd></div><div><dt>Customer notes</dt><dd>{request.customerNotes || snapshot?.additionalNotes || "None"}</dd></div><div><dt>Avoid</dt><dd>{snapshot?.notesToAvoid.join(" · ") || "None"}</dd></div></dl></section>
-    <section className="perfumer-chat" onClick={openChat}><header><div><span>Private Consultation</span><h3>Letters with the customer</h3></div><small>{consultationOpen ? "Chat is open" : "Opens during consultation"}</small></header><div className="perfumer-chat-log">{detail?.messages.length ? detail.messages.map(item => <article className={item.senderRole} key={item.id}><header><strong>{staffSenderName(item.senderRole, item.senderName, customerName)}</strong><small>{formatDate(item.createdAt)}</small></header><p>{item.message}</p></article>) : <p className="empty">No letters yet.</p>}</div><form onSubmit={submitMessage}><textarea value={message} onChange={e => setMessage(e.target.value)} disabled={!consultationOpen} placeholder={consultationOpen ? "Write a clear consultation message…" : "Chat opens when this creation enters consultation."}/><button disabled={busy || !consultationOpen || !message.trim()}>Send</button></form></section>
+    <section className="perfumer-chat" onClick={openChat}><header><div><span>Private Consultation</span><h3>Letters with the customer</h3></div><button type="button" disabled={busy} onClick={() => void load()}>{busy ? "Refreshing…" : "Refresh Messages"}</button><small>{consultationOpen ? "Chat is open" : "Opens during consultation"}</small></header><div className="perfumer-chat-log">{detail?.messages.length ? detail.messages.map(item => <article className={item.senderRole} key={item.id}><header><strong>{staffSenderName(item.senderRole, item.senderName, customerName)}</strong><small>{formatDate(item.createdAt)}</small></header><p>{item.message}</p></article>) : <p className="empty">No letters yet.</p>}</div><form onSubmit={submitMessage}><textarea value={message} onChange={e => setMessage(e.target.value)} disabled={!consultationOpen} placeholder={consultationOpen ? "Write a clear consultation message…" : "Chat opens when this creation enters consultation."}/><button disabled={busy || !consultationOpen || !message.trim()}>Send</button></form></section>
     {detail?.messages.some(item=>item.attachmentUrl)&&<section className="perfumer-chat-attachments"><span>Customer images</span><div>{detail.messages.filter(item=>item.attachmentUrl).map(item=><a href={item.attachmentUrl} target="_blank" rel="noreferrer" key={`attachment-${item.id}`}><img src={item.attachmentUrl} alt={`Chat attachment from ${staffSenderName(item.senderRole,item.senderName,customerName)}`}/><small>{formatDate(item.createdAt)}</small></a>)}</div></section>}
     {proposalEditable && <StaffProposalForm key={`${request.id}-${request.status}`} request={request} busy={busy} variant="perfumer" onSubmit={submitProposal}/>} 
     {request.status === "READY_FOR_APPROVAL" && <section className="perfumer-proposal-sent"><span>Proposal Sent</span><h3>Waiting for customer decision</h3><p>The proposal remains attached to this Consultation. Chat stays open while the customer reviews it.</p><dl><div><dt>Summary</dt><dd>{request.artisanReview?.summary || "Recorded in the proposal"}</dd></div><div><dt>Olfactive direction</dt><dd>{request.artisanReview?.olfactiveDirection || "Recorded in the proposal"}</dd></div><div><dt>Drydown</dt><dd>{request.artisanReview?.drydown || "Recorded in the proposal"}</dd></div></dl></section>}

@@ -4,7 +4,6 @@ import { navigationItems } from "../data/navigation";
 import { authService } from "../features/auth/authService";
 import { useAuth } from "../contexts/AuthContext";
 import { orderService, type CustomerNotification } from "../features/orders/orderService";
-import { subscribeToCustomerNotificationUpdates } from "../features/orders/requestLiveUpdates";
 import DraftsModal from "./DraftsModal";
 
 export type GlobalHeaderVariant = "default" | "transparent" | "light";
@@ -30,6 +29,7 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
   const [accountMessage, setAccountMessage] = useState("");
   const [notifications, setNotifications] = useState<CustomerNotification[]>([]);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notificationsRefreshing, setNotificationsRefreshing] = useState(false);
   const [notificationFilter, setNotificationFilter] = useState<"chat" | "update">("chat");
   const [scrolled, setScrolled] = useState(false);
   const [draftsOpen, setDraftsOpen] = useState(false);
@@ -61,19 +61,26 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
 
   const loadNotifications = useCallback(async () => {
     if (!user?.id) { setNotifications([]); return; }
+    setNotificationsRefreshing(true);
     try {
       setNotifications(await orderService.getNotificationFeed(user.id));
     } catch { setNotifications([]); }
+    finally { setNotificationsRefreshing(false); }
   }, [user?.id]);
 
   useEffect(() => {
-    void loadNotifications();
-    if (!user) return;
-    const refresh = () => void loadNotifications();
-    const unsubscribe = subscribeToCustomerNotificationUpdates(user.id, refresh);
-    window.addEventListener("hoa:orders-change", refresh);
-    return () => { unsubscribe(); window.removeEventListener("hoa:orders-change", refresh); };
-  }, [loadNotifications, user]);
+    setNotifications([]);
+    setNotificationsOpen(false);
+  }, [user?.id]);
+
+  const toggleNotifications = () => {
+    const next = !notificationsOpen;
+    setNotificationsOpen(next);
+  };
+
+  useEffect(() => {
+    if (notificationsOpen) void loadNotifications();
+  }, [loadNotifications, notificationsOpen]);
 
   const isNotificationUnread = useCallback((item: CustomerNotification) => item.readAt === null, []);
   const unreadNotifications = useMemo(() => {
@@ -215,12 +222,13 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
         <div className="mobile-nav-tools" aria-label="Account and appearance" ref={mobileAccountRef}>
           {accountEmail && (
             <>
-              <button className="mobile-nav-account-item mobile-nav-notifications mobile-nav-notifications-primary" type="button" onClick={() => setNotificationsOpen(open => !open)}>
+              <button className="mobile-nav-account-item mobile-nav-notifications mobile-nav-notifications-primary" type="button" onClick={toggleNotifications}>
                 <i aria-hidden="true">✉</i><span><strong>Messages &amp; Updates</strong><small>{unreadNotifications.length ? `${unreadNotifications.length} unread notifications` : "You're all caught up"}</small></span>
                 {unreadNotifications.length > 0 && <b>{unreadNotifications.length > 99 ? "99+" : unreadNotifications.length}</b>}
               </button>
               {notificationsOpen && (
                 <div className="mobile-nav-notification-list mobile-nav-notification-list-primary">
+                  <button type="button" disabled={notificationsRefreshing} onClick={() => void loadNotifications()}>{notificationsRefreshing ? "Refreshing…" : "Refresh Notifications"}</button>
                   <header>
                     <button type="button" className={notificationFilter === "chat" ? "is-active" : ""} onClick={() => setNotificationFilter("chat")}>Chat <b>{unreadChats}</b></button>
                     <button type="button" className={notificationFilter === "update" ? "is-active" : ""} onClick={() => setNotificationFilter("update")}>Updates <b>{unreadUpdates}</b></button>
@@ -287,6 +295,7 @@ export default function GlobalHeader({ action, activeLabel, variant = "default" 
           {accountEmail ? (
             <>
               <span className="account-dropdown-identity" title={accountEmail}>{accountEmail}</span>
+              <button className="account-notification-refresh" type="button" role="menuitem" disabled={notificationsRefreshing} onClick={() => void loadNotifications()}>{notificationsRefreshing ? "Refreshing…" : "Refresh Notifications"}</button>
               <button className="account-dropdown-action account-notification-toggle" type="button" role="menuitem" aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen(open => !open)}><i aria-hidden="true">✉</i><span><strong>Messages &amp; Updates</strong><small>{unreadNotifications.length ? `${unreadNotifications.length} unread notifications` : "You're all caught up"}</small></span>{unreadNotifications.length > 0 && <b>{unreadNotifications.length}</b>}</button>
               {notificationsOpen && <section className="account-notification-panel" aria-label="Messages and project updates"><header><button type="button" className={notificationFilter === "chat" ? "is-active" : ""} onClick={() => setNotificationFilter("chat")}>Chat <b>{unreadChats}</b></button><button type="button" className={notificationFilter === "update" ? "is-active" : ""} onClick={() => setNotificationFilter("update")}>Updates <b>{unreadUpdates}</b></button></header><div>{unreadNotifications.filter(item => item.kind === notificationFilter).slice(0, 5).map(item => <button type="button" className="is-unread" onClick={() => openNotification(item.requestId)} key={item.id}><i aria-hidden="true">{item.kind === "chat" ? "✉" : "↻"}</i><span><strong>{item.title}</strong><small>{item.detail}</small></span></button>)}{!unreadNotifications.some(item => item.kind === notificationFilter) && <p>No unread {notificationFilter === "chat" ? "messages" : "project updates"}.</p>}</div><footer><button type="button" onClick={markNotificationsSeen}>Mark all as read</button><a href="/my-creations/latest" onClick={(event) => navigateWithTransition(event, "/my-creations/latest")}>View creations</a></footer></section>}
               <a href="/my-artisan-id" role="menuitem" onClick={(event) => navigateWithTransition(event, "/my-artisan-id")}><i aria-hidden="true">ID</i><span><strong>My Artisan ID</strong><small>View your identity card</small></span></a>

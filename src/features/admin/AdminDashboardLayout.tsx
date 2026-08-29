@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
 import { adminDashboardService, type AdminDashboardSnapshot } from "./adminDashboardService";
 import { staffService, type StaffAccess } from "./staffService";
-import { subscribeToStaffMessageUpdates, type StaffRealtimeEvent } from "../orders/requestLiveUpdates";
 
 export interface AdminOutletContext { access: StaffAccess; snapshot: AdminDashboardSnapshot | null; loading: boolean; error: string; refresh: () => Promise<void> }
 
@@ -18,39 +17,8 @@ export default function AdminDashboardLayout() {
   const [snapshot, setSnapshot] = useState<AdminDashboardSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const lastSuccessfulFetch = useRef(0);
-  const refresh = async () => { setLoading(true); try { setSnapshot(await adminDashboardService.getSnapshot()); lastSuccessfulFetch.current = Date.now(); setError(""); } catch (cause) { setError(cause instanceof Error ? cause.message : "Admin data could not be loaded."); } finally { setLoading(false); } };
+  const refresh = async () => { setLoading(true); try { setSnapshot(await adminDashboardService.getSnapshot()); setError(""); } catch (cause) { setError(cause instanceof Error ? cause.message : "Admin data could not be loaded."); } finally { setLoading(false); } };
   useEffect(() => { void staffService.getAccess().then(result => { setAccess(result); if (result.role) return refresh(); setLoading(false); }).catch(cause => { setError(cause instanceof Error ? cause.message : "Admin access could not be checked."); setLoading(false); }); }, []);
-  const requestIds = (snapshot?.creations ?? []).map(item => item.request.id);
-  useEffect(() => {
-    if (access?.role !== "admin" && access?.role !== "super_admin") return;
-    const patch = (event: StaffRealtimeEvent) => setSnapshot(current => {
-      if (!current) return current;
-      const row = event.eventType === "DELETE" ? event.old : event.new;
-      const requestId = String(row.request_id ?? row.id ?? "");
-      const creation = current.creations.find(item => item.request.id === requestId);
-      if (event.table === "request_messages" && event.eventType !== "DELETE" && row.sender_role === "customer" && creation) {
-        const message = { id: String(row.id), requestId, creationName: creation.request.perfumeName, message: String(row.message ?? ""), senderName: String(row.sender_name ?? "Customer"), createdAt: String(row.created_at ?? new Date().toISOString()) };
-        return { ...current, customerMessages: [message, ...current.customerMessages.filter(item => item.id !== message.id)].slice(0, 20) };
-      }
-      if (event.table === "request_activity" && event.eventType === "INSERT" && creation) {
-        const activity = { id: String(row.id), requestId, creationName: creation.request.perfumeName, label: String(row.label ?? "Project updated"), createdAt: String(row.created_at ?? new Date().toISOString()) };
-        return { ...current, activity: [activity, ...current.activity.filter(item => item.id !== activity.id)].slice(0, 20) };
-      }
-      return current;
-    });
-    const handle = (event: StaffRealtimeEvent) => {
-      patch(event);
-      if (event.table === "request_activity" && event.eventType === "INSERT") {
-        const requestId = String(event.new.request_id ?? "");
-        void staffService.getQueueItem(requestId).then(project => {
-          if (!project) return;
-          setSnapshot(current => current ? { ...current, creations: current.creations.map(item => item.request.id === requestId ? { ...item, request: project } : item) } : current);
-        });
-      }
-    };
-    return subscribeToStaffMessageUpdates(requestIds, handle, { onRecovery: () => void refresh(), getLastSuccessfulFetch: () => lastSuccessfulFetch.current });
-  }, [access?.role, requestIds.join(",")]);
   if (error && !access) return <main className="hoa-admin-gate"><h1>Admin Workspace unavailable</h1><p>{error}</p><button onClick={() => window.location.reload()}>Try Again</button></main>;
   if (!access) return <div className="hoa-admin-loading">Opening the Admin Workspace…</div>;
   if (access.role !== "admin" && access.role !== "super_admin") return <AccessGate access={access}/>;
@@ -68,6 +36,7 @@ export default function AdminDashboardLayout() {
         <span className="disabled"><LinkIcon>⚙</LinkIcon>Settings<small>Later</small></span>
       </nav>
       <div className="hoa-admin-user"><b>{access.email.slice(0, 1).toUpperCase()}</b><span><strong>{access.email}</strong><small>{access.role.replaceAll("_", " ")}</small></span></div>
+      <button className="hoa-admin-manual-refresh" type="button" disabled={loading} onClick={() => void refresh()}>{loading ? "Refreshing…" : "Refresh Data"}</button>
     </aside>
     <main className="hoa-admin-main">{error && snapshot && <div className="hoa-workspace-warning" role="alert"><span><strong>Live data could not be refreshed.</strong> The last successfully loaded data remains available.</span><button type="button" disabled={loading} onClick={() => void refresh()}>{loading ? "Retrying…" : "Try Again"}</button></div>}<Outlet context={{ access, snapshot, loading, error, refresh } satisfies AdminOutletContext}/></main>
   </div>;
