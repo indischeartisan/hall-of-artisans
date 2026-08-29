@@ -26,7 +26,10 @@ type MessageRow = Pick<Tables<"request_messages">, "id" | "request_id" | "sender
 type ActivityRow = Tables<"request_activity">;
 type OrderRow = Tables<"customer_orders">;
 type OrderItemRow = Tables<"order_items">;
-type PackageRow = Tables<"commission_packages">;
+type PackageRow = Pick<Tables<"commission_packages">,
+  "id" | "slug" | "name" | "description" | "price" | "currency" | "concentration" |
+  "bottle_size" | "included_items" | "consultations_included" | "estimated_production" | "display_order"
+>;
 
 const REVIEW_LIST_COLUMNS = "id,user_id,creation_id,request_number,assigned_reviewer_id,assigned_at,status,creation_mode,submission_id,perfume_name,concentration,bottle_size,fragrance_direction,top_notes,heart_notes,base_notes,fragrance_brief,customer_notes,country_code,pricing_region,currency,estimated_price_min,estimated_price_max,final_price,selected_package_id,recommended_adjustments,included_items,estimated_production,revisions_included,submitted_at,reviewed_at,approved_at,consultation_started_at,consultation_completed_at,ready_for_payment_at,paid_at,shipped_at,completed_at,updated_at";
 const REVIEW_DETAIL_COLUMNS = `${REVIEW_LIST_COLUMNS},preview_snapshot,submission_snapshot,story_card_data,package_snapshot,artisan_review`;
