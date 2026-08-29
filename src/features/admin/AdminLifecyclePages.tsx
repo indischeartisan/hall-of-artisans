@@ -25,11 +25,12 @@ function CaseDrawer({ item, onClose }: { item: AdminAftercareCase; onClose: () =
 }
 
 function AftercareQueuePage({ kind, title, copy }: { kind: "ADJUSTMENT" | "REORDER"; title: string; copy: string }) {
-  const { snapshot, loading, error } = useOutletContext<AdminOutletContext>();
+  const { snapshot, aftercare, loading, error, loadAftercare } = useOutletContext<AdminOutletContext>();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("ALL");
   const [selectedId, setSelectedId] = useState("");
-  const cases = (snapshot?.aftercare ?? []).filter(item => item.kind === kind);
+  useEffect(() => { if (!aftercare) void loadAftercare(); }, [aftercare]);
+  const cases = (aftercare ?? []).filter(item => item.kind === kind);
   const filtered = useMemo(() => cases.filter(item => `${item.creationName} ${item.requestNumber} ${item.customer.name} ${item.customer.artisanId} ${item.subject}`.toLowerCase().includes(search.toLowerCase()) && (status === "ALL" || item.status === status)), [cases, search, status]);
   const selected = cases.find(item => item.id === selectedId);
   return <div className="hoa-admin-page"><Header eyebrow="Aftercare" title={title} copy={copy}/>{!snapshot ? <div className="hoa-admin-state">{loading ? "Preparing requests…" : error}</div> : <><section className="hoa-filter-bar orders"><input aria-label={`Search ${title}`} placeholder="Search perfume, customer, or request…" value={search} onChange={event => setSearch(event.target.value)}/><label>Status<select value={status} onChange={event => setStatus(event.target.value)}><option value="ALL">All statuses</option><option value="OPEN">Open</option><option value="DISCUSSING">Discussing</option><option value="RESOLVED">Resolved</option></select></label></section><section className="hoa-data-card"><table><thead><tr><th>Perfume</th><th>Customer</th><th>Request</th><th>Subject</th><th>Status</th><th>Updated</th><th/></tr></thead><tbody>{filtered.map(item => <tr key={item.id}><td><strong>{item.creationName}</strong><small>{item.requestNumber}</small></td><td><strong>{item.customer.name}</strong><small>{item.customer.artisanId}</small></td><td>{label(item.kind)}</td><td>{item.subject}</td><td>{badge(item.status)}</td><td>{date(item.updatedAt)}</td><td><button onClick={() => setSelectedId(item.id)}>Details</button></td></tr>)}</tbody></table>{!filtered.length && <p className="empty-copy">No {title.toLowerCase()} match this view.</p>}</section></>}{selected && <CaseDrawer item={selected} onClose={() => setSelectedId("")}/>}</div>;

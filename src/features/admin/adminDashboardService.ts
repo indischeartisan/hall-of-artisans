@@ -2,7 +2,7 @@ import { getSupabaseClient } from "../../lib/supabase";
 import { getLocalOrderStage, isLocallyConfirmedOrder, isLocallyConfirmedOrderId, registerLocallyConfirmedOrder, setLocalOrderStage } from "../../dev/confirmedOrderOverrides";
 import type { Json, Tables } from "../../types/database.types";
 import type { ReviewRequest } from "../orders/types";
-import { staffService, type StaffReviewer } from "./staffService";
+import { staffService } from "./staffService";
 import { aftercareService, type AftercareCase } from "../aftercare/aftercareService";
 import { debugSupabaseFetch } from "../../lib/supabaseFetchDebug";
 import { invalidateTtlCache, withTtlCache } from "../../lib/ttlCache";
@@ -61,8 +61,6 @@ export interface AdminAftercareCase extends AftercareCase {
 export interface AdminDashboardSnapshot {
   creations: AdminCreation[];
   orders: AdminOrder[];
-  reviewers: StaffReviewer[];
-  aftercare: AdminAftercareCase[];
 }
 
 const jsonObject = (value: Json): Record<string, unknown> =>
@@ -115,16 +113,27 @@ export const adminDashboardService = {
     if (error) throw error;
     invalidateTtlCache("admin:");
   },
+  async getAftercare(snapshot: AdminDashboardSnapshot): Promise<AdminAftercareCase[]> {
+    const rows = await aftercareService.getAssigned();
+    const creations = new Map(snapshot.creations.map(item => [item.request.id, item]));
+    return rows.map((item: AftercareCase) => {
+      const creation = creations.get(item.reviewRequestId);
+      return {
+        ...item,
+        creationName: creation?.request.perfumeName ?? "Completed creation",
+        requestNumber: creation?.request.requestNumber ?? "—",
+        customer: creation?.customer ?? { userId: item.userId, name: "Customer", artisanId: "Not issued" }
+      };
+    });
+  },
   async getSnapshot(): Promise<AdminDashboardSnapshot> {
     return withTtlCache("admin:snapshot", 30_000, async () => {
     debugSupabaseFetch("adminWorkspace", "initial-or-recovery");
     const client = getSupabaseClient();
-    const [requests, reviewers, orderRows, orderItemRows, aftercareRows] = await Promise.all([
+    const [requests, orderRows, orderItemRows] = await Promise.all([
       staffService.getQueue(),
-      staffService.getReviewers().catch(() => []),
       client.from("customer_orders").select("id,user_id,order_number,amount,currency,payment_status,production_status,shipping_status,shipping_preference,tracking_number,checkout_details,created_at,updated_at").order("updated_at", { ascending: false }).limit(30),
-      client.from("order_items").select("id,order_id,review_request_id,creation_name,amount,currency,production_status,shipping_status,tracking_number").order("created_at", { ascending: false }).limit(100),
-      aftercareService.getAssigned()
+      client.from("order_items").select("id,order_id,review_request_id,creation_name,amount,currency,production_status,shipping_status,tracking_number").order("created_at", { ascending: false }).limit(100)
     ]);
     if (orderRows.error || orderItemRows.error) {
       throw orderRows.error ?? orderItemRows.error;
@@ -132,9 +141,6 @@ export const adminDashboardService = {
 
     const users = [...new Set([...requests.map(item => item.userId), ...(orderRows.data ?? []).map(item => item.user_id)])];
     const customers = await customerMap(users);
-    const reviewerNames = new Map(reviewers.map(item => [item.userId, item.displayName]));
-    const requestNames = new Map(requests.map(item => [item.id, item.perfumeName]));
-    const requestNumbers = new Map(requests.map(item => [item.id, item.requestNumber]));
     const requestPaidAt = new Map(requests.map(item => [item.id, item.paidAt]));
     const orderItems = new Map<string, AdminOrderItem[]>();
     (orderItemRows.data ?? []).forEach(row => orderItems.set(row.order_id, [...(orderItems.get(row.order_id) ?? []), mapOrderItem(row)]));
@@ -142,7 +148,7 @@ export const adminDashboardService = {
     const creations = requests.map(request => ({
       request,
       customer: customers.get(request.userId)!,
-      reviewerName: request.assignedReviewerId ? reviewerNames.get(request.assignedReviewerId) ?? "Assigned staff" : "Unassigned"
+      reviewerName: request.assignedReviewerId ? "Assigned staff" : "Unassigned"
     }));
     const orders = (orderRows.data ?? []).map((row: OrderRow): AdminOrder => {
       const items = orderItems.get(row.id) ?? [];
@@ -161,8 +167,6 @@ export const adminDashboardService = {
     return {
       creations,
       orders,
-      reviewers,
-      aftercare: aftercareRows.map((item: AftercareCase) => ({ ...item, creationName: requestNames.get(item.reviewRequestId) ?? "Completed creation", requestNumber: requestNumbers.get(item.reviewRequestId) ?? "—", customer: customers.get(item.userId)! }))
     };
     });
   }
