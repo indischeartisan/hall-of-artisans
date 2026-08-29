@@ -4,8 +4,11 @@ import { authService } from "../features/auth/authService";
 import { getSupabaseClient, isSupabaseConfigured } from "../lib/supabase";
 import type { AppRole, Tables } from "../types/database.types";
 
-type Profile = Tables<"profiles">;
-type ArtisanId = Tables<"artisan_ids">;
+type Profile = Pick<Tables<"profiles">, "id" | "display_name" | "preferred_locale" | "certificate_name">;
+type ArtisanId = Pick<Tables<"artisan_ids">, "id" | "user_id" | "public_id">;
+
+const AUTH_PROFILE_COLUMNS = "id,display_name,preferred_locale,certificate_name";
+const AUTH_ARTISAN_ID_COLUMNS = "id,user_id,public_id";
 
 export type AuthContextValue = {
   session: Session | null;
@@ -45,8 +48,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const client = getSupabaseClient();
     const userId = activeSession.user.id;
     const [profileResult, artisanIdResult, rolesResult] = await Promise.all([
-      client.from("profiles").select("*").eq("id", userId).maybeSingle(),
-      client.from("artisan_ids").select("*").eq("user_id", userId).maybeSingle(),
+      client.from("profiles").select(AUTH_PROFILE_COLUMNS).eq("id", userId).maybeSingle(),
+      client.from("artisan_ids").select(AUTH_ARTISAN_ID_COLUMNS).eq("user_id", userId).maybeSingle(),
       client.from("user_roles").select("role").eq("user_id", userId).is("revoked_at", null)
     ]);
 
