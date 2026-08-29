@@ -3,12 +3,15 @@ import type { AppRole, Json, Tables } from "../../types/database.types";
 import type { CommissionPackage, RequestActivity, RequestMessage, ReviewRequest } from "../orders/types";
 import { signedChatAttachment } from "../orders/chatAttachments";
 import { debugSupabaseFetch } from "../../lib/supabaseFetchDebug";
+import { invalidateTtlCache } from "../../lib/ttlCache";
+
+const invalidateStaffCaches = () => { invalidateTtlCache("admin:"); invalidateTtlCache("perfumer:"); };
 
 type ReviewRow = Tables<"review_requests">;
 type MessageRow = Tables<"request_messages">;
 type ActivityRow = Tables<"request_activity">;
-const STAFF_QUEUE_COLUMNS = "id,user_id,creation_id,request_number,assigned_reviewer_id,assigned_at,status,creation_mode,submission_id,perfume_name,concentration,bottle_size,fragrance_direction,top_notes,heart_notes,base_notes,fragrance_brief,customer_notes,country_code,pricing_region,currency,estimated_price_min,estimated_price_max,final_price,selected_package_id,recommended_adjustments,included_items,estimated_production,revisions_included,submitted_at,reviewed_at,approved_at,consultation_started_at,consultation_completed_at,ready_for_payment_at,paid_at,shipped_at,completed_at,created_at,follow_up_kind,parent_request_id,updated_at";
-const STAFF_DETAIL_COLUMNS = `${STAFF_QUEUE_COLUMNS},preview_snapshot,submission_snapshot,story_card_data,package_snapshot,artisan_review`;
+const STAFF_QUEUE_COLUMNS = "id,user_id,creation_id,request_number,assigned_reviewer_id,assigned_at,status,creation_mode,submission_id,perfume_name,concentration,bottle_size,currency,final_price,selected_package_id,submitted_at,paid_at,completed_at,updated_at";
+const STAFF_DETAIL_COLUMNS = "id,user_id,creation_id,request_number,assigned_reviewer_id,assigned_at,status,creation_mode,submission_id,perfume_name,concentration,bottle_size,fragrance_direction,top_notes,heart_notes,base_notes,fragrance_brief,customer_notes,country_code,pricing_region,currency,estimated_price_min,estimated_price_max,final_price,selected_package_id,recommended_adjustments,included_items,estimated_production,revisions_included,submitted_at,reviewed_at,approved_at,consultation_started_at,consultation_completed_at,ready_for_payment_at,paid_at,shipped_at,completed_at,updated_at,preview_snapshot,submission_snapshot,story_card_data,package_snapshot,artisan_review";
 
 export type StaffRole = Extract<AppRole, "reviewer" | "admin" | "super_admin">;
 export interface StaffAccess { signedIn: boolean; role: StaffRole | null; email: string; userId: string }
@@ -77,7 +80,7 @@ export const staffService = {
   },
 
   async getQueue(): Promise<ReviewRequest[]> {
-    const response = await getSupabaseClient().from("review_requests").select(STAFF_QUEUE_COLUMNS).neq("status", "DRAFT_PREVIEW").order("updated_at", { ascending: false }).limit(100);
+    const response = await getSupabaseClient().from("review_requests").select(STAFF_QUEUE_COLUMNS).neq("status", "DRAFT_PREVIEW").order("updated_at", { ascending: false }).limit(30);
     if (response.error) throw response.error;
     return (response.data ?? []).map(row => queueReviewFromRow(row as unknown as ReviewRow));
   },
@@ -100,12 +103,14 @@ export const staffService = {
   async claim(requestId: string) {
     const response = await getSupabaseClient().rpc("claim_review_request", { target_request_id: requestId });
     if (response.error) throw response.error;
+    invalidateStaffCaches();
     return reviewFromRow(response.data);
   },
 
   async assign(requestId: string, reviewerId: string | null) {
     const response = await (getSupabaseClient() as any).rpc("assign_review_request", { target_request_id: requestId, reviewer_id: reviewerId });
     if (response.error) throw response.error;
+    invalidateStaffCaches();
     return reviewFromRow(response.data);
   },
 
@@ -132,12 +137,14 @@ export const staffService = {
     } as Json : null;
     const response = await getSupabaseClient().rpc("staff_transition_review_request", { target_request_id: requestId, next_status: nextStatus, proposal: proposalPayload, activity_label: label });
     if (response.error) throw response.error;
+    invalidateStaffCaches();
     return reviewFromRow(response.data);
   },
 
   async sendMessage(requestId: string, message: string) {
     const response = await getSupabaseClient().rpc("send_staff_request_message", { target_request_id: requestId, message_body: message.trim() });
     if (response.error) throw response.error;
+    invalidateStaffCaches();
     return messageFromRow(response.data);
   }
 };

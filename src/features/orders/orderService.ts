@@ -8,6 +8,7 @@ import type { Json, Tables } from "../../types/database.types";
 import { DRAFT_SCHEMA_VERSION, type ArtisanBenchState, type PerfumeDraft } from "../../types/perfumeDraft";
 import type { CheckoutDetails, CommissionPackage, Order, OrderDetailSnapshot, OrderItem, RequestActivity, RequestMessage, ReviewRequest } from "./types";
 import { signedChatAttachment, uploadCustomerChatImage } from "./chatAttachments";
+import { invalidateTtlCache, withTtlCache } from "../../lib/ttlCache";
 
 export type BespokeSubmissionInput = DescribedCreationInput;
 export interface ServiceResult<T = undefined> { ok: boolean; data?: T; error?: string }
@@ -204,19 +205,19 @@ export const orderService = {
 
   async getNotificationFeed(userId: string): Promise<CustomerNotification[]> {
     if (!isSupabaseConfigured || !userId) return [];
-    const client = getSupabaseClient();
-    const response = await (client as any).from("notifications")
-      .select("id,request_id,kind,title,detail,created_at,read_at")
-      .eq("recipient_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(40);
-    if (response.error) throw new OrderServiceError("Unable to load notifications.", response.error);
-    return (response.data ?? []).map((row: any) => ({ id: row.id, requestId: row.request_id, kind: row.kind, title: row.title, detail: row.detail, createdAt: row.created_at, readAt: row.read_at }));
+    return withTtlCache(`notifications:${userId}`, 20_000, async () => {
+      const response = await (getSupabaseClient() as any).from("notifications")
+        .select("id,request_id,kind,title,detail,created_at,read_at")
+        .eq("recipient_id", userId).order("created_at", { ascending: false }).limit(20);
+      if (response.error) throw new OrderServiceError("Unable to load notifications.", response.error);
+      return (response.data ?? []).map((row: any) => ({ id: row.id, requestId: row.request_id, kind: row.kind, title: row.title, detail: row.detail, createdAt: row.created_at, readAt: row.read_at }));
+    });
   },
 
   async markNotificationsRead(requestId?: string): Promise<void> {
     const response = await (getSupabaseClient() as any).rpc("mark_notifications_read", { target_request_id: requestId ?? null });
     if (response.error) throw new OrderServiceError("Unable to mark notifications as read.", response.error);
+    invalidateTtlCache("notifications:");
   },
 
   async loadOlderMessages(requestId: string, before: string): Promise<{ messages: RequestMessage[]; hasMore: boolean }> {
@@ -354,9 +355,11 @@ export const orderService = {
   async submitForReview(requestId: string) { await verifiedUserId(); return rpcReview("submit_review_request", { target_request_id: requestId }); },
 
   async getCommissionPackages(): Promise<CommissionPackage[]> {
-    const response = await getSupabaseClient().from("commission_packages").select("*").eq("is_active", true).order("display_order");
-    if (response.error) throw new OrderServiceError("Commission packages could not be loaded.", response.error);
-    return (response.data ?? []).map(packageFromRow);
+    return withTtlCache("commission-packages:active", 10 * 60 * 1000, async () => {
+      const response = await getSupabaseClient().from("commission_packages").select("id,slug,name,tagline,description,amount,currency,estimated_production,revisions_included,included_items,is_featured,is_active,display_order,created_at,updated_at").eq("is_active", true).order("display_order");
+      if (response.error) throw new OrderServiceError("Commission packages could not be loaded.", response.error);
+      return (response.data ?? []).map(packageFromRow);
+    });
   },
 
   async selectCommissionPackage(requestId: string, packageId: string): Promise<ServiceResult<ReviewRequest>> {

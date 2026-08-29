@@ -15,7 +15,7 @@ export async function getMyEnrollment(courseId: string, knownUserId?: string) {
 export async function getMyActiveEnrollments(userId: string): Promise<EnrollmentWithCourse[]> {
   const { data, error } = await academyClient().from("academy_enrollments")
     .select("*, academy_courses(*, academy_course_translations(*))")
-    .eq("user_id", userId).eq("status", "active").order("enrolled_at", { ascending: false });
+    .eq("user_id", userId).eq("status", "active").order("enrolled_at", { ascending: false }).limit(30);
   return requireAcademyData(data, error);
 }
 

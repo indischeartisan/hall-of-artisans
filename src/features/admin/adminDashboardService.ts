@@ -5,6 +5,7 @@ import type { ReviewRequest } from "../orders/types";
 import { staffService, type StaffReviewer } from "./staffService";
 import { aftercareService, type AftercareCase } from "../aftercare/aftercareService";
 import { debugSupabaseFetch } from "../../lib/supabaseFetchDebug";
+import { invalidateTtlCache, withTtlCache } from "../../lib/ttlCache";
 
 type OrderRow = Tables<"customer_orders">;
 type OrderItemRow = Tables<"order_items">;
@@ -131,15 +132,17 @@ export const adminDashboardService = {
       target_tracking_number: trackingNumber?.trim() || null
     });
     if (error) throw error;
+    invalidateTtlCache("admin:");
   },
   async getSnapshot(): Promise<AdminDashboardSnapshot> {
+    return withTtlCache("admin:snapshot", 30_000, async () => {
     debugSupabaseFetch("adminWorkspace", "initial-or-recovery");
     const client = getSupabaseClient();
     const [requests, reviewers, orderRows, orderItemRows, activityRows, messageRows, aftercareRows] = await Promise.all([
       staffService.getQueue(),
       staffService.getReviewers().catch(() => []),
-      client.from("customer_orders").select("id,user_id,order_number,amount,currency,payment_status,production_status,shipping_status,shipping_preference,tracking_number,checkout_details,created_at,updated_at").order("updated_at", { ascending: false }).limit(100),
-      client.from("order_items").select("id,order_id,review_request_id,submission_id,creation_name,amount,currency,production_status,shipping_status,tracking_number,created_at").order("created_at", { ascending: false }).limit(300),
+      client.from("customer_orders").select("id,user_id,order_number,amount,currency,payment_status,production_status,shipping_status,shipping_preference,tracking_number,checkout_details,created_at,updated_at").order("updated_at", { ascending: false }).limit(30),
+      client.from("order_items").select("id,order_id,review_request_id,creation_name,amount,currency,production_status,shipping_status,tracking_number").order("created_at", { ascending: false }).limit(100),
       client.from("request_activity").select("id,request_id,label,created_at").order("created_at", { ascending: false }).limit(20),
       client.from("request_messages").select("id,request_id,message,sender_name,created_at").eq("sender_role", "customer").order("created_at", { ascending: false }).limit(20),
       aftercareService.getAssigned()
@@ -184,5 +187,6 @@ export const adminDashboardService = {
       customerMessages: (messageRows.data ?? []).map(item => ({ ...item, requestId: item.request_id, creationName: requestNames.get(item.request_id) ?? "Creation", senderName: item.sender_name, createdAt: item.created_at })),
       aftercare: aftercareRows.map((item: AftercareCase) => ({ ...item, creationName: requestNames.get(item.reviewRequestId) ?? "Completed creation", requestNumber: requestNumbers.get(item.reviewRequestId) ?? "—", customer: customers.get(item.userId)! }))
     };
+    });
   }
 };

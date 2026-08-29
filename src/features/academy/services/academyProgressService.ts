@@ -13,7 +13,7 @@ export async function getMyLessonProgress(lessonId: string, knownUserId?: string
 
 export async function getMyProgress(userId: string): Promise<AcademyProgress[]> {
   const { data, error } = await academyClient().from("academy_lesson_progress")
-    .select("*").eq("user_id", userId).order("last_opened_at", { ascending: false, nullsFirst: false });
+    .select("id,user_id,lesson_id,status,last_block_position,started_at,last_opened_at,completed_at,created_at,updated_at").eq("user_id", userId).order("last_opened_at", { ascending: false, nullsFirst: false }).limit(200);
   return requireAcademyData(data, error);
 }
 

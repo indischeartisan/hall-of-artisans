@@ -1,5 +1,8 @@
 import type { Tables } from "../../../types/database.types";
 import { academyClient, requireAcademyData } from "./academyServiceSupport";
+import { withTtlCache } from "../../../lib/ttlCache";
+
+const ACADEMY_CATALOG_CACHE_MS = 5 * 60 * 1000;
 
 export type AcademyCourse = Tables<"academy_courses">;
 export type AcademyCourseTranslation = Tables<"academy_course_translations">;
@@ -21,19 +24,28 @@ export type LessonReaderRecord = LessonWithTranslations & {
 };
 
 export async function getPublishedCourses(): Promise<CourseWithTranslations[]> {
-  const { data, error } = await academyClient().from("academy_courses")
-    .select("*, academy_course_translations(*)").eq("status", "published").order("published_at", { ascending: false });
-  return requireAcademyData(data, error);
+  return withTtlCache("academy:published-courses", ACADEMY_CATALOG_CACHE_MS, async () => {
+    const { data, error } = await academyClient().from("academy_courses")
+      .select("*, academy_course_translations(*)").eq("status", "published").order("published_at", { ascending: false }).limit(30);
+    return requireAcademyData(data, error);
+  });
 }
 
 export async function getCourseBySlug(slug: string): Promise<CourseWithTranslations | null> {
-  const { data, error } = await academyClient().from("academy_courses")
-    .select("*, academy_course_translations(*)").eq("slug", slug).maybeSingle();
-  if (error) throw new Error(error.message);
-  return data;
+  return withTtlCache(`academy:course:${slug}`, ACADEMY_CATALOG_CACHE_MS, async () => {
+    const { data, error } = await academyClient().from("academy_courses")
+      .select("*, academy_course_translations(*)").eq("slug", slug).maybeSingle();
+    if (error) throw new Error(error.message);
+    return data;
+  });
 }
 
 export async function getCourseCurriculum(courseId: string, options: { includeDrafts?: boolean } = {}): Promise<ModuleWithCurriculum[]> {
+  if (!options.includeDrafts) return withTtlCache(`academy:curriculum:${courseId}`, ACADEMY_CATALOG_CACHE_MS, () => loadCourseCurriculum(courseId, options));
+  return loadCourseCurriculum(courseId, options);
+}
+
+async function loadCourseCurriculum(courseId: string, options: { includeDrafts?: boolean }): Promise<ModuleWithCurriculum[]> {
   const client = academyClient();
   let modulesQuery = client.from("academy_modules")
     .select("*, academy_module_translations(*)").eq("course_id", courseId).order("position");
