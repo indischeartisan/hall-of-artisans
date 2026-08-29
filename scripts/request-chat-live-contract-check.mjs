@@ -23,12 +23,10 @@ assert.match(perfumer, /role === "customer" \? customerName \|\| "Customer"/, "p
 assert.match(customerChat, /message\.senderRole==="customer"\?"You":message\.senderName/, "customer must see their own message as You");
 assert.match(migration, /'customer','Customer'/, "new customer messages must store a neutral label");
 assert.match(migration, /revoke all on function public\.send_customer_request_message/, "message RPC must remain locked down");
-assert.match(perfumer, /chat-unread-count/, "every perfumer chat needs an unread badge");
 assert.match(perfumer, /if \(selectedId\) void perfumerService\.markMessagesRead\(selectedId\)/, "selecting a project must clear its unread messages");
 assert.match(migration, /mark_staff_request_messages_read/, "unread state must be persisted securely");
-assert.match(perfumerLayout, /perfumer-nav-badge/, "Customer Projects menu needs a total unread-chat badge");
-assert.match(perfumerService, /hoa:perfumer-chat-seen:v2:/, "legacy read state needs a versioned local fallback");
-assert.match(perfumerService, /hoa:perfumer-chat-read/, "opening a chat must publish an immediate local read event");
+assert.doesNotMatch(perfumerService, /from\("request_messages"\)/, "perfumer workspace must not preload messages for every project");
+assert.doesNotMatch(perfumerLayout, /perfumer-nav-badge/, "perfumer navigation must not depend on a global message preload");
 assert.match(customerHeader, /Messages &amp; Updates/, "customer account menu needs a notification center");
 assert.match(customerHeader, /notificationFilter === "chat"/, "notification center needs a Chat category");
 assert.match(customerHeader, /notificationFilter === "update"/, "notification center needs an Updates category");
