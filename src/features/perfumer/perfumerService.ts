@@ -16,9 +16,8 @@ export const perfumerService = {
   async getWorkspace(userId: string): Promise<PerfumerWorkspaceData> {
     return withTtlCache(`perfumer:workspace:${userId}`, 30_000, async () => {
     debugSupabaseFetch("perfumerWorkspace", "initial-or-recovery");
-    const [queue, customerResponse, aftercareCases] = await Promise.all([staffService.getQueue(), getSupabaseClient().rpc("get_assigned_customer_summaries"), aftercareService.getAssigned()]);
+    const [projects, customerResponse, aftercareCases] = await Promise.all([staffService.getAssignedQueue(userId), getSupabaseClient().rpc("get_assigned_customer_summaries"), aftercareService.getAssigned()]);
     if (customerResponse.error) throw customerResponse.error;
-    const projects = queue.filter(item => item.assignedReviewerId === userId);
     const customers = (customerResponse.data ?? []).map(item => ({ userId: item.user_id, displayName: item.display_name, artisanId: item.artisan_id }));
     return { projects, customers, aftercareCases };
     });

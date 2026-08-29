@@ -84,6 +84,14 @@ export const staffService = {
     return (response.data ?? []).map(row => queueReviewFromRow(row as unknown as ReviewRow));
   },
 
+  async getAssignedQueue(reviewerId: string): Promise<ReviewRequest[]> {
+    const response = await getSupabaseClient().from("review_requests").select(STAFF_QUEUE_COLUMNS)
+      .eq("assigned_reviewer_id", reviewerId).neq("status", "DRAFT_PREVIEW")
+      .order("updated_at", { ascending: false }).limit(30);
+    if (response.error) throw response.error;
+    return (response.data ?? []).map(row => queueReviewFromRow(row as unknown as ReviewRow));
+  },
+
   async getQueueItem(requestId: string): Promise<ReviewRequest | null> {
     debugSupabaseFetch("projectSummary", "realtime-project-patch");
     const response = await getSupabaseClient().from("review_requests").select(STAFF_QUEUE_COLUMNS).eq("id", requestId).neq("status", "DRAFT_PREVIEW").maybeSingle();
