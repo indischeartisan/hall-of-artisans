@@ -126,13 +126,18 @@ export const adminDashboardService = {
       };
     });
   },
+  async getOrderCheckout(orderId: string): Promise<Record<string, unknown>> {
+    const response = await getSupabaseClient().from("customer_orders").select("checkout_details").eq("id", orderId).maybeSingle();
+    if (response.error) throw response.error;
+    return response.data ? jsonObject(response.data.checkout_details) : {};
+  },
   async getSnapshot(): Promise<AdminDashboardSnapshot> {
     return withTtlCache("admin:snapshot", 30_000, async () => {
     debugSupabaseFetch("adminWorkspace", "initial-or-recovery");
     const client = getSupabaseClient();
     const [requests, orderRows, orderItemRows] = await Promise.all([
       staffService.getQueue(),
-      client.from("customer_orders").select("id,user_id,order_number,amount,currency,payment_status,production_status,shipping_status,shipping_preference,tracking_number,checkout_details,created_at,updated_at").order("updated_at", { ascending: false }).limit(30),
+      client.from("customer_orders").select("id,user_id,order_number,amount,currency,payment_status,production_status,shipping_status,shipping_preference,tracking_number,created_at,updated_at").order("updated_at", { ascending: false }).limit(30),
       client.from("order_items").select("id,order_id,review_request_id,creation_name,amount,currency,production_status,shipping_status,tracking_number").order("created_at", { ascending: false }).limit(100)
     ]);
     if (orderRows.error || orderItemRows.error) {
@@ -160,7 +165,7 @@ export const adminDashboardService = {
         id: row.id, userId: row.user_id, orderNumber: row.order_number, amount: row.amount, currency: row.currency,
         paymentStatus: locallyConfirmed ? "paid" : row.payment_status, productionStatus: localStage ?? row.production_status, shippingStatus: row.shipping_status,
         shippingPreference: row.shipping_preference, trackingNumber: row.tracking_number, createdAt: row.created_at,
-        updatedAt: row.updated_at, checkoutDetails: jsonObject(row.checkout_details), customer: customers.get(row.user_id)!,
+        updatedAt: row.updated_at, checkoutDetails: {}, customer: customers.get(row.user_id)!,
         items, paidAt: locallyConfirmed ? paidDates.at(-1) ?? row.updated_at : paidDates.at(-1) ?? null
       };
     });

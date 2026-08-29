@@ -106,7 +106,8 @@ export function AdminCreationsPage() {
 }
 
 function OrderDrawer({ order, onClose, onChanged }: { order: AdminOrder; onClose: () => void; onChanged: () => Promise<void> }) {
-  const detail = order.checkoutDetails;
+  const [detail, setDetail] = useState<Record<string, unknown>>(order.checkoutDetails);
+  useEffect(() => { void adminDashboardService.getOrderCheckout(order.id).then(setDetail).catch(() => setDetail({})); }, [order.id]);
   const address = [detail.address, detail.city, detail.region, detail.postalCode, detail.country].filter(Boolean).join(", ");
   const [tracking, setTracking] = useState(order.trackingNumber ?? "");
   const [busy, setBusy] = useState(false);
