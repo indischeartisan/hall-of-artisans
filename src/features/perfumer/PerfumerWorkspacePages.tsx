@@ -7,7 +7,6 @@ import type { StaffRequestDetail } from "../admin/staffService";
 import type { PerfumerOutletContext } from "./PerfumerWorkspaceLayout";
 import { isRequestLocallyRead, perfumerService } from "./perfumerService";
 import { aftercareService, type AftercareCase } from "../aftercare/aftercareService";
-import "../../styles/chat-attachments.css";
 import CreationPreparation from "../orders/components/CreationPreparation";
 import StaffProposalForm from "../admin/StaffProposalForm";
 import type { ArtisanProposalInput } from "../admin/staffService";

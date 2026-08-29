@@ -39,8 +39,7 @@ export const perfumerService = {
         id: row.id, requestId: row.request_id, senderRole,
         senderName: senderRole === "customer" ? customer?.displayName ?? "Customer" : row.sender_name,
         message: row.message, createdAt: row.created_at,
-        readAt: senderRole === "customer" && new Date(row.created_at).getTime() > lastSeenAt(row.request_id) ? null : row.read_at ?? new Date(lastSeenAt(row.request_id)).toISOString(),
-        attachmentUrl: undefined
+        readAt: senderRole === "customer" && new Date(row.created_at).getTime() > lastSeenAt(row.request_id) ? null : row.read_at ?? new Date(lastSeenAt(row.request_id)).toISOString()
       };
     });
     return { projects, recentMessages, customers, aftercareCases };

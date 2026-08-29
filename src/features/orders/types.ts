@@ -30,7 +30,7 @@ export interface ReviewRequest {
   completedAt: string | null; lastUpdatedAt: string;
 }
 
-export interface RequestMessage { id: string; requestId: string; senderRole: SenderRole; senderName: string; message: string; createdAt: string; readAt: string | null; attachmentUrl?: string }
+export interface RequestMessage { id: string; requestId: string; senderRole: SenderRole; senderName: string; message: string; createdAt: string; readAt: string | null }
 export interface RequestActivity { id: string; requestId: string; eventType: string; label: string; createdAt: string; metadata?: Record<string, string | number | boolean | null> }
 export interface OrderItem {
   reviewRequestId: string;
