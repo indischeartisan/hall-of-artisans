@@ -36,22 +36,10 @@ export function AdminOverviewPage() {
   ] as const);
   const paid = snapshot.orders.filter(order => order.paymentStatus.toLowerCase() === "paid");
   const waiting = snapshot.orders.filter(order => order.paymentStatus.toLowerCase() === "pending");
-  const attention = [
-    ...requests.filter(item => item.request.status === "SUBMITTED").map(item => ({ label: "Waiting for review", title: item.request.perfumeName, copy: item.request.requestNumber, href: `/admin/creations?open=${item.request.id}` })),
-    ...snapshot.customerMessages.map(item => ({ label: "Customer update", title: item.creationName, copy: item.message, href: `/admin/creations?open=${item.requestId}` })),
-    ...requests.filter(item => item.request.status === "READY_FOR_PAYMENT").map(item => ({ label: "Ready for payment", title: item.request.perfumeName, copy: item.request.requestNumber, href: `/admin/creations?open=${item.request.id}` })),
-    ...snapshot.orders.filter(order => order.paymentStatus.toLowerCase() === "paid" && order.productionStatus === "not_started").map(order => ({ label: "Payment confirmed", title: order.orderNumber, copy: "Production has not started", href: `/admin/orders?open=${order.id}` })),
-    ...snapshot.orders.filter(order => order.productionStatus === "completed" && order.shippingStatus === "not_shipped").map(order => ({ label: "Ready to ship", title: order.orderNumber, copy: `${order.items.length} creation${order.items.length === 1 ? "" : "s"}`, href: `/admin/orders?open=${order.id}` }))
-  ].slice(0, 5);
   return <div className="hoa-admin-page">
     <PageHeader eyebrow="Admin Workspace" title="Creation journey" copy="See how many creations are currently in each stage, from brief through delivery." actions={<button className="hoa-text-button" onClick={() => void refresh()}>Refresh data</button>}/>
     <section className="hoa-metric-grid hoa-stage-metric-grid">{counts.map(([label, value, href], index) => <a href={href} key={label}><i>{index + 1}</i><span><small>{label}</small><strong>{value}</strong><em>creations</em></span></a>)}</section>
     <section className="hoa-money-strip"><header><span>Money In</span><small>Recorded orders only</small></header><div><small>Paid Today</small><strong>{money(paid.filter(item => sameDay(item.paidAt, now)).reduce((sum, item) => sum + item.amount, 0))}</strong></div><div><small>Paid This Month</small><strong>{money(paid.filter(item => sameMonth(item.paidAt, now)).reduce((sum, item) => sum + item.amount, 0))}</strong></div><div><small>Waiting for Payment</small><strong>{money(waiting.reduce((sum, item) => sum + item.amount, 0))}</strong></div></section>
-    <div className="hoa-overview-grid">
-      <section className="hoa-admin-card"><header><h2>Needs Attention</h2><a href="/admin/creations">View all</a></header>{attention.length ? attention.map((item, index) => <article key={`${item.label}-${index}`}><b>{index + 1}</b><div><strong>{item.title}</strong><small>{item.label} · {item.copy}</small></div><a href={item.href}>Open</a></article>) : <p className="empty-copy">Nothing requires immediate attention.</p>}</section>
-      <section className="hoa-admin-card"><header><h2>Recent Activity</h2><a href="/admin/creations">View creations</a></header>{snapshot.activity.slice(0, 6).map(item => <article key={item.id}><b>✓</b><div><strong>{item.label}</strong><small>{item.creationName} · {date(item.createdAt)}</small></div></article>)}</section>
-      <section className="hoa-admin-card hoa-recent"><header><h2>Recent Creations</h2><a href="/admin/creations">View all</a></header>{requests.slice(0, 6).map(item => <article key={item.request.id}><div><strong>{item.request.perfumeName}</strong><small>{item.customer.name} · {item.request.requestNumber}</small></div>{badge(item.request.status)}</article>)}</section>
-    </div>
   </div>;
 }
 
