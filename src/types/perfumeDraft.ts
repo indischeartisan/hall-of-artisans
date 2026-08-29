@@ -101,7 +101,7 @@ export interface DescribedCreationLetter {
   story: string;
   preferredNotes: string[];
   notesToAvoid: string[];
-  ambienceImage?: { dataUrl: string; fileName: string } | null;
+  ambienceImage?: { dataUrl?: string; url?: string; fileName: string } | null;
   /** Legacy field retained so older saved drafts can still be opened. */
   additionalNotes?: string;
 }

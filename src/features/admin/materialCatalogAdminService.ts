@@ -3,6 +3,7 @@ import type { Tables, TablesInsert, TablesUpdate } from "../../types/database.ty
 
 export type MaterialCategory = Tables<"material_categories">;
 export type CatalogMaterial = Tables<"materials">;
+export type CatalogMaterialSummary = Pick<CatalogMaterial, "id" | "slug" | "name" | "category_id" | "description" | "status" | "display_order" | "is_featured" | "family" | "tags" | "image_path" | "image_alt">;
 export type MaterialInput = Omit<TablesInsert<"materials">, "id" | "created_at" | "updated_at" | "created_by" | "updated_by">;
 
 export const materialCatalogAdminService = {
@@ -23,18 +24,23 @@ export const materialCatalogAdminService = {
     const client = getSupabaseClient();
     const [categories, materials] = await Promise.all([
       client.from("material_categories").select("id,slug,name,description,status,display_order,created_at,updated_at,created_by,updated_by").order("display_order").order("name").limit(100),
-      client.from("materials").select("id,slug,name,category_id,description,status,display_order,is_featured,family,material_type,layers,moods,tags,best_used_for,pairs_well_with,avoid_if,image_path,image_alt,media_id,legacy_bench_id,legacy_library_id,intensity,longevity,sweetness,freshness,warmth,clean,darkness,floral,woody,green,powdery,strangeness,created_at,updated_at,created_by,updated_by").order("display_order").order("name").limit(500),
+      client.from("materials").select("id,slug,name,category_id,description,status,display_order,is_featured,family,tags,image_path,image_alt").order("display_order").order("name").limit(100),
     ]);
     if (categories.error || materials.error) throw categories.error ?? materials.error;
     return { categories: categories.data ?? [], materials: materials.data ?? [] };
   },
+  async get(id: string) {
+    const response = await getSupabaseClient().from("materials").select("id,slug,name,category_id,description,status,display_order,is_featured,family,material_type,layers,moods,tags,best_used_for,pairs_well_with,avoid_if,image_path,image_alt,media_id,legacy_bench_id,legacy_library_id,intensity,longevity,sweetness,freshness,warmth,clean,darkness,floral,woody,green,powdery,strangeness,created_at,updated_at,created_by,updated_by").eq("id", id).maybeSingle();
+    if (response.error) throw response.error;
+    return response.data;
+  },
   async create(input: MaterialInput) {
-    const response = await getSupabaseClient().from("materials").insert(input).select().single();
+    const response = await getSupabaseClient().from("materials").insert(input).select("id,slug,name,category_id,description,status,display_order,is_featured,family,material_type,layers,moods,tags,best_used_for,pairs_well_with,avoid_if,image_path,image_alt,media_id,legacy_bench_id,legacy_library_id,intensity,longevity,sweetness,freshness,warmth,clean,darkness,floral,woody,green,powdery,strangeness,created_at,updated_at,created_by,updated_by").single();
     if (response.error) throw response.error;
     return response.data;
   },
   async update(id: string, input: TablesUpdate<"materials">) {
-    const response = await getSupabaseClient().from("materials").update(input).eq("id", id).select().single();
+    const response = await getSupabaseClient().from("materials").update(input).eq("id", id).select("id,slug,name,category_id,description,status,display_order,is_featured,family,material_type,layers,moods,tags,best_used_for,pairs_well_with,avoid_if,image_path,image_alt,media_id,legacy_bench_id,legacy_library_id,intensity,longevity,sweetness,freshness,warmth,clean,darkness,floral,woody,green,powdery,strangeness,created_at,updated_at,created_by,updated_by").single();
     if (response.error) throw response.error;
     return response.data;
   },

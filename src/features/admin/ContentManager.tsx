@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { cmsService, type CmsContentType, type CmsEntry, type CmsEntryInput, type CmsStatus } from "./cmsService";
+import { cmsService, type CmsContentType, type CmsEntry, type CmsEntryInput, type CmsEntrySummary, type CmsStatus } from "./cmsService";
 
 const labels: Record<CmsContentType, string> = {
   page: "Page",
@@ -38,8 +38,9 @@ const fromEntry = (entry: CmsEntry) => ({
 });
 
 export default function ContentManager() {
-  const [entries, setEntries] = useState<CmsEntry[]>([]);
+  const [entries, setEntries] = useState<CmsEntrySummary[]>([]);
   const [selectedId, setSelectedId] = useState("");
+  const [selectedEntry, setSelectedEntry] = useState<CmsEntry | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -55,8 +56,8 @@ export default function ContentManager() {
 
   useEffect(() => { void load().catch(cause => setError(cause instanceof Error ? cause.message : "Content could not be loaded.")); }, []);
 
-  const choose = (entry: CmsEntry) => { setSelectedId(entry.id); setForm(fromEntry(entry)); setError(""); setNotice(""); };
-  const createNew = () => { setSelectedId(""); setForm(emptyForm); setError(""); setNotice(""); };
+  const choose = async (entry: CmsEntrySummary) => { setSelectedId(entry.id); setBusy(true); setError(""); setNotice(""); try { const full = await cmsService.get(entry.id); if (!full) throw new Error("Content no longer exists."); setSelectedEntry(full); setForm(fromEntry(full)); } catch (cause) { setError(cause instanceof Error ? cause.message : "Content could not be opened."); } finally { setBusy(false); } };
+  const createNew = () => { setSelectedId(""); setSelectedEntry(null); setForm(emptyForm); setError(""); setNotice(""); };
   const change = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => setForm(current => ({ ...current, [key]: value }));
   const save = async (event: { preventDefault(): void }, nextStatus: CmsStatus) => {
     event.preventDefault();
@@ -68,17 +69,17 @@ export default function ContentManager() {
         content: { body: form.body },
         seo: { title: form.seoTitle || form.title, description: form.seoDescription || form.summary }
       };
-      const saved = selected ? await cmsService.update(selected.id, input) : await cmsService.create(input);
-      setSelectedId(saved.id); setForm(fromEntry(saved)); await load(saved.id);
+      const saved = selectedEntry ? await cmsService.update(selectedEntry.id, input) : await cmsService.create(input);
+      setSelectedId(saved.id); setSelectedEntry(saved); setForm(fromEntry(saved)); await load(saved.id);
       setNotice(nextStatus === "published" ? "Content published." : "Draft saved.");
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Content could not be saved."); }
     finally { setBusy(false); }
   };
 
   const archive = async () => {
-    if (!selected) return;
+    if (!selectedEntry) return;
     setBusy(true); setError(""); setNotice("");
-    try { const saved = await cmsService.archive(selected.id); setForm(fromEntry(saved)); await load(saved.id); setNotice("Content archived."); }
+    try { const saved = await cmsService.archive(selectedEntry.id); setSelectedEntry(saved); setForm(fromEntry(saved)); await load(saved.id); setNotice("Content archived."); }
     catch (cause) { setError(cause instanceof Error ? cause.message : "Content could not be archived."); }
     finally { setBusy(false); }
   };

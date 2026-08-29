@@ -11,7 +11,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "test": "node scripts/workflow-contract-check.mjs && node scripts/role-handoff-contract-check.mjs && node scripts/staff-workspace-contract-check.mjs && node scripts/auth-return-contract-check.mjs && node scripts/request-chat-live-contract-check.mjs && node scripts/action-error-contract-check.mjs && node scripts/route-performance-contract-check.mjs",
+    "test": "node scripts/workflow-contract-check.mjs && node scripts/role-handoff-contract-check.mjs && node scripts/staff-workspace-contract-check.mjs && node scripts/auth-return-contract-check.mjs && node scripts/request-chat-live-contract-check.mjs && node scripts/action-error-contract-check.mjs && node scripts/route-performance-contract-check.mjs && node scripts/media-functions-contract-check.mjs",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:live": "playwright test e2e/live-role-handoff.spec.ts",

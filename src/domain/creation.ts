@@ -10,10 +10,10 @@ export interface CreationSubmissionSnapshot {
   formulaMaterials: FormulaMaterialSnapshot[]; formulaMetadata: FormulaMetadata | null;
   fragranceBrief: FragranceBrief | null; storyCardData: StoryCardData | null;
   writtenStory: string; preferredNotes: string[]; notesToAvoid: string[]; moodOrDirection: string[];
-  additionalNotes: string; ambienceImage: { dataUrl: string; fileName: string } | null; createdAt: string;
+  additionalNotes: string; ambienceImage: { dataUrl?: string; url?: string; fileName: string } | null; createdAt: string;
 }
 
-export interface DescribedCreationInput { creationTitle: string; story: string; preferredNotes: string[]; notesToAvoid: string[]; ambienceImage?: { dataUrl: string; fileName: string } | null }
+export interface DescribedCreationInput { creationTitle: string; story: string; preferredNotes: string[]; notesToAvoid: string[]; ambienceImage?: { dataUrl?: string; url?: string; fileName: string } | null }
 const makeId = () => `snapshot-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`}`;
 const clone = <T,>(value:T):T => JSON.parse(JSON.stringify(value)) as T;
 
