@@ -131,24 +131,28 @@ export const adminDashboardService = {
     if (response.error) throw response.error;
     return response.data ? jsonObject(response.data.checkout_details) : {};
   },
+  async getOrderItems(orders: AdminOrder[]): Promise<AdminOrder[]> {
+    if (!orders.length) return orders;
+    const response = await getSupabaseClient().from("order_items")
+      .select("id,order_id,review_request_id,creation_name,amount,currency,production_status,shipping_status,tracking_number")
+      .in("order_id", orders.map(order => order.id)).order("created_at", { ascending: false }).limit(100);
+    if (response.error) throw response.error;
+    const items = new Map<string, AdminOrderItem[]>();
+    (response.data ?? []).forEach(row => items.set(row.order_id, [...(items.get(row.order_id) ?? []), mapOrderItem(row)]));
+    return orders.map(order => ({ ...order, items: items.get(order.id) ?? [] }));
+  },
   async getSnapshot(): Promise<AdminDashboardSnapshot> {
     return withTtlCache("admin:snapshot", 30_000, async () => {
     debugSupabaseFetch("adminWorkspace", "initial-or-recovery");
     const client = getSupabaseClient();
-    const [requests, orderRows, orderItemRows] = await Promise.all([
+    const [requests, orderRows] = await Promise.all([
       staffService.getQueue(),
-      client.from("customer_orders").select("id,user_id,order_number,amount,currency,payment_status,production_status,shipping_status,shipping_preference,tracking_number,created_at,updated_at").order("updated_at", { ascending: false }).limit(30),
-      client.from("order_items").select("id,order_id,review_request_id,creation_name,amount,currency,production_status,shipping_status,tracking_number").order("created_at", { ascending: false }).limit(100)
+      client.from("customer_orders").select("id,user_id,order_number,amount,currency,payment_status,production_status,shipping_status,shipping_preference,tracking_number,created_at,updated_at").order("updated_at", { ascending: false }).limit(30)
     ]);
-    if (orderRows.error || orderItemRows.error) {
-      throw orderRows.error ?? orderItemRows.error;
-    }
+    if (orderRows.error) throw orderRows.error;
 
     const users = [...new Set([...requests.map(item => item.userId), ...(orderRows.data ?? []).map(item => item.user_id)])];
     const customers = await customerMap(users);
-    const requestPaidAt = new Map(requests.map(item => [item.id, item.paidAt]));
-    const orderItems = new Map<string, AdminOrderItem[]>();
-    (orderItemRows.data ?? []).forEach(row => orderItems.set(row.order_id, [...(orderItems.get(row.order_id) ?? []), mapOrderItem(row)]));
 
     const creations = requests.map(request => ({
       request,
@@ -156,8 +160,7 @@ export const adminDashboardService = {
       reviewerName: request.assignedReviewerId ? "Assigned staff" : "Unassigned"
     }));
     const orders = (orderRows.data ?? []).map((row: OrderRow): AdminOrder => {
-      const items = orderItems.get(row.id) ?? [];
-      const paidDates = items.map(item => requestPaidAt.get(item.reviewRequestId)).filter((value): value is string => Boolean(value)).sort();
+      const items: AdminOrderItem[] = [];
       const locallyConfirmed = isLocallyConfirmedOrder(row.order_number);
       if (locallyConfirmed) registerLocallyConfirmedOrder(row.id, row.order_number);
       const localStage = getLocalOrderStage(row.id);
@@ -166,7 +169,7 @@ export const adminDashboardService = {
         paymentStatus: locallyConfirmed ? "paid" : row.payment_status, productionStatus: localStage ?? row.production_status, shippingStatus: row.shipping_status,
         shippingPreference: row.shipping_preference, trackingNumber: row.tracking_number, createdAt: row.created_at,
         updatedAt: row.updated_at, checkoutDetails: {}, customer: customers.get(row.user_id)!,
-        items, paidAt: locallyConfirmed ? paidDates.at(-1) ?? row.updated_at : paidDates.at(-1) ?? null
+        items, paidAt: locallyConfirmed || row.payment_status.toLowerCase() === "paid" ? row.updated_at : null
       };
     });
     return {

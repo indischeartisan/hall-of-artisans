@@ -133,12 +133,13 @@ function OrderDrawer({ order, onClose, onChanged }: { order: AdminOrder; onClose
 }
 
 export function AdminOrdersPage() {
-  const { snapshot, loading, error, refresh } = useOutletContext<AdminOutletContext>();
+  const { snapshot, orderItemsLoaded, loading, error, refresh, loadOrderItems } = useOutletContext<AdminOutletContext>();
   const query = new URLSearchParams(location.search);
   const [search, setSearch] = useState("");
   const [payment, setPayment] = useState(query.get("payment") ?? "ALL");
   const [status, setStatus] = useState(query.get("status") ?? "ALL");
   const [selectedId, setSelectedId] = useState(query.get("open") ?? "");
+  useEffect(() => { if (!orderItemsLoaded) void loadOrderItems(); }, [orderItemsLoaded]);
   const orders = snapshot?.orders ?? [];
   const filtered = useMemo(() => orders.filter(order => {
     const haystack = `${order.orderNumber} ${order.customer.name} ${order.customer.artisanId} ${order.items.map(item => item.creationName).join(" ")}`.toLowerCase();
