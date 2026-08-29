@@ -355,7 +355,7 @@ export const orderService = {
 
   async getCommissionPackages(): Promise<CommissionPackage[]> {
     return withTtlCache("commission-packages:active", 10 * 60 * 1000, async () => {
-      const response = await getSupabaseClient().from("commission_packages").select("id,slug,name,tagline,description,amount,currency,estimated_production,revisions_included,included_items,is_featured,is_active,display_order,created_at,updated_at").eq("is_active", true).order("display_order");
+      const response = await getSupabaseClient().from("commission_packages").select("id,slug,name,description,price,currency,concentration,bottle_size,included_items,consultations_included,estimated_production,display_order").eq("is_active", true).order("display_order");
       if (response.error) throw new OrderServiceError("Commission packages could not be loaded.", response.error);
       return (response.data ?? []).map(packageFromRow);
     });

@@ -132,7 +132,7 @@ export const staffService = {
     if (request.error || messages.error || activity.error) throw request.error ?? messages.error ?? activity.error;
     if (!request.data) return null;
     const resolvedMessages=(messages.data??[]).slice().reverse().map(messageFromRow);
-    return { request: reviewFromRow(request.data), messages: resolvedMessages, activity: (activity.data ?? []).slice().reverse().map(activityFromRow) };
+    return { request: reviewFromRow(request.data as unknown as ReviewRow), messages: resolvedMessages, activity: (activity.data ?? []).slice().reverse().map(activityFromRow) };
   },
 
   async transition(requestId: string, nextStatus: string, label: string, proposal?: ArtisanProposalInput) {

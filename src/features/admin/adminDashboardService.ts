@@ -159,7 +159,7 @@ export const adminDashboardService = {
       customer: customers.get(request.userId)!,
       reviewerName: request.assignedReviewerId ? "Assigned staff" : "Unassigned"
     }));
-    const orders = (orderRows.data ?? []).map((row: OrderRow): AdminOrder => {
+    const orders = (orderRows.data ?? []).map((row): AdminOrder => {
       const items: AdminOrderItem[] = [];
       const locallyConfirmed = isLocallyConfirmedOrder(row.order_number);
       if (locallyConfirmed) registerLocallyConfirmedOrder(row.id, row.order_number);
