@@ -338,9 +338,13 @@ function renderDialog() {
       <div class="dialog-material-grid">
         ${items.map((item) => `
           <button class="panel-button dialog-material-option" value="${item.id}" data-dialog-material="${item.id}" data-layer="${addTargetLayer}">
-            <span class="dialog-material-name">${item.name}</span>
-            <span class="dialog-material-meta">${layerLabel(item)} note</span>
-            <span class="dialog-material-description">${item.description}</span>
+            <span class="dialog-material-artwork" aria-hidden="true">${materialArtwork(item)}</span>
+            <span class="dialog-material-copy">
+              <span class="dialog-material-name">${item.name}</span>
+              <span class="dialog-material-meta">${item.category} · ${layerLabel(item)} note</span>
+              <span class="dialog-material-tags">${(item.tags || []).slice(0, 3).map((tag) => `<span>${tag}</span>`).join('')}</span>
+            </span>
+            <span class="dialog-material-add" aria-hidden="true">+</span>
           </button>
         `).join('')}
       </div>

@@ -1214,39 +1214,100 @@ body.expert-lab-page .dialog-material-grid {
 
 body.expert-lab-page #dialogMaterials .dialog-material-option.panel-button {
   display: grid;
-  justify-items: start;
-  gap: 4px;
-  min-height: 0;
-  padding: 12px 14px;
+  grid-template-columns: 76px minmax(0, 1fr) 28px;
+  gap: 11px;
+  align-items: center;
+  min-height: 104px;
+  padding: 9px 10px;
+  overflow: hidden;
   text-align: left;
   text-transform: none;
   letter-spacing: 0;
   font-family: var(--font-body);
   font-weight: 400;
   line-height: 1.35;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(255, 251, 240, .98), rgba(246, 233, 207, .97));
+  box-shadow: 0 6px 15px rgba(20, 12, 7, .2);
+}
+
+body.expert-lab-page #dialogMaterials .dialog-material-option.panel-button:hover,
+body.expert-lab-page #dialogMaterials .dialog-material-option.panel-button:focus-visible {
+  transform: translateY(-1px);
+  background: linear-gradient(90deg, #fffdf6, #f8edd5);
+}
+
+body.expert-lab-page .dialog-material-artwork {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  overflow: hidden;
+  color: #315a39;
+  font-size: 34px;
+  background: radial-gradient(circle, #fffdf5 0 46%, #efe2bd 48% 50%, transparent 51%);
+}
+
+body.expert-lab-page .dialog-material-artwork img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 7px 7px rgba(70, 46, 16, .14));
+}
+
+body.expert-lab-page .dialog-material-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
 }
 
 body.expert-lab-page .dialog-material-name {
-  color: #f3dfad;
+  overflow: hidden;
+  color: #244332;
   font-family: var(--font-serif);
-  font-size: 1rem;
+  font-size: 1.18rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  line-height: 1;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 body.expert-lab-page .dialog-material-meta {
-  color: rgba(224, 185, 112, 0.82);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
+  overflow: hidden;
+  color: #6e604b;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-body.expert-lab-page .dialog-material-description {
-  color: rgba(238, 224, 197, 0.76);
-  font-size: 0.82rem;
-  letter-spacing: 0;
-  text-transform: none;
+body.expert-lab-page .dialog-material-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+body.expert-lab-page .dialog-material-tags > span {
+  padding: 3px 6px;
+  color: #5b4635;
+  border: 1px solid rgba(106, 76, 41, .24);
+  border-radius: 999px;
+  background: rgba(255, 251, 241, .42);
+  font: 500 .58rem/1 var(--font-body);
+  text-transform: capitalize;
+}
+
+body.expert-lab-page .dialog-material-add {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  color: #f6e2ab;
+  border-radius: 50%;
+  background: #174c34;
+  font: 400 1.1rem/1 var(--font-body);
 }
 
 body.expert-lab-page .top-controls .name-help {
@@ -1382,6 +1443,16 @@ body.expert-lab-page .formula-check #formulaMessages .message.warn {
 @media (max-width: 760px) {
   body.expert-lab-page .dialog-material-grid {
     grid-template-columns: 1fr;
+  }
+
+  body.expert-lab-page #dialogMaterials .dialog-material-option.panel-button {
+    grid-template-columns: 82px minmax(0, 1fr) 28px;
+    min-height: 110px;
+  }
+
+  body.expert-lab-page .dialog-material-artwork {
+    width: 82px;
+    height: 82px;
   }
 }
 
