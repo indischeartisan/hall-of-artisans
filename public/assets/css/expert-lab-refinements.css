@@ -1214,11 +1214,11 @@ body.expert-lab-page .dialog-material-grid {
 
 body.expert-lab-page #dialogMaterials .dialog-material-option.panel-button {
   display: grid;
-  grid-template-columns: 76px minmax(0, 1fr) 28px;
-  gap: 11px;
+  grid-template-columns: 64px minmax(0, 1fr) 26px;
+  gap: 9px;
   align-items: center;
-  min-height: 104px;
-  padding: 9px 10px;
+  min-height: 88px;
+  padding: 7px 9px;
   overflow: hidden;
   text-align: left;
   text-transform: none;
@@ -1240,11 +1240,11 @@ body.expert-lab-page #dialogMaterials .dialog-material-option.panel-button:focus
 body.expert-lab-page .dialog-material-artwork {
   display: grid;
   place-items: center;
-  width: 76px;
-  height: 76px;
+  width: 64px;
+  height: 64px;
   overflow: hidden;
   color: #315a39;
-  font-size: 34px;
+  font-size: 28px;
   background: radial-gradient(circle, #fffdf5 0 46%, #efe2bd 48% 50%, transparent 51%);
 }
 
@@ -1265,7 +1265,7 @@ body.expert-lab-page .dialog-material-name {
   overflow: hidden;
   color: #244332;
   font-family: var(--font-serif);
-  font-size: 1.18rem;
+  font-size: 1.02rem;
   font-weight: 600;
   line-height: 1;
   letter-spacing: 0;
@@ -1276,7 +1276,7 @@ body.expert-lab-page .dialog-material-name {
 body.expert-lab-page .dialog-material-meta {
   overflow: hidden;
   color: #6e604b;
-  font-size: 0.65rem;
+  font-size: 0.59rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   text-overflow: ellipsis;
@@ -1290,24 +1290,24 @@ body.expert-lab-page .dialog-material-tags {
 }
 
 body.expert-lab-page .dialog-material-tags > span {
-  padding: 3px 6px;
+  padding: 2px 5px;
   color: #5b4635;
   border: 1px solid rgba(106, 76, 41, .24);
   border-radius: 999px;
   background: rgba(255, 251, 241, .42);
-  font: 500 .58rem/1 var(--font-body);
+  font: 500 .52rem/1 var(--font-body);
   text-transform: capitalize;
 }
 
 body.expert-lab-page .dialog-material-add {
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   color: #f6e2ab;
   border-radius: 50%;
   background: #174c34;
-  font: 400 1.1rem/1 var(--font-body);
+  font: 400 1rem/1 var(--font-body);
 }
 
 body.expert-lab-page .top-controls .name-help {
@@ -1446,13 +1446,19 @@ body.expert-lab-page .formula-check #formulaMessages .message.warn {
   }
 
   body.expert-lab-page #dialogMaterials .dialog-material-option.panel-button {
-    grid-template-columns: 82px minmax(0, 1fr) 28px;
-    min-height: 110px;
+    grid-template-columns: 58px minmax(0, 1fr) 24px;
+    gap: 8px;
+    min-height: 80px;
+    padding: 6px 8px;
   }
 
   body.expert-lab-page .dialog-material-artwork {
-    width: 82px;
-    height: 82px;
+    width: 58px;
+    height: 58px;
+  }
+
+  body.expert-lab-page .dialog-material-name {
+    font-size: .94rem;
   }
 }
 
