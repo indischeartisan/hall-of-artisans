@@ -4,18 +4,25 @@ import {
   type DescribedCreationDraft,
   type PerfumeDraft
 } from "../types/perfumeDraft";
+import { normalizeArtisanDraftContent } from "./draftNormalization";
 
 export const DRAFT_STORAGE_KEY = "hallOfArtisans.perfumeDrafts.v1";
 
 const storageAvailable = () => typeof window !== "undefined" && Boolean(window.localStorage);
 
-function isArtisanBenchDraft(value: unknown): value is Omit<PerfumeDraft, "mode"> & { mode?: "artisan_bench" } {
-  if (!value || typeof value !== "object") return false;
+function normalizeArtisanBenchDraft(value: unknown): PerfumeDraft | null {
+  if (!value || typeof value !== "object") return null;
   const draft = value as Partial<PerfumeDraft>;
-  return draft.schemaVersion === DRAFT_SCHEMA_VERSION && typeof draft.id === "string" &&
+  if (!(draft.schemaVersion === DRAFT_SCHEMA_VERSION && typeof draft.id === "string" &&
     typeof draft.draftName === "string" && typeof draft.createdAt === "string" &&
-    typeof draft.updatedAt === "string" && Array.isArray(draft.formula) &&
-    Boolean(draft.benchState && Array.isArray(draft.benchState.formula));
+    typeof draft.updatedAt === "string" && draft.benchState)) return null;
+  const normalized = normalizeArtisanDraftContent(draft);
+  if (!normalized) return null;
+  return {
+    ...draft,
+    mode: "artisan_bench",
+    ...normalized
+  } as PerfumeDraft;
 }
 
 function isDescribedDraft(value: unknown): value is DescribedCreationDraft {
@@ -30,7 +37,8 @@ function isDescribedDraft(value: unknown): value is DescribedCreationDraft {
 
 function normalizeDraft(value: unknown): CreationDraft | null {
   if (isDescribedDraft(value)) return value;
-  if (isArtisanBenchDraft(value)) return { ...value, mode: "artisan_bench" };
+  const artisanDraft = normalizeArtisanBenchDraft(value);
+  if (artisanDraft) return artisanDraft;
   return null;
 }
 

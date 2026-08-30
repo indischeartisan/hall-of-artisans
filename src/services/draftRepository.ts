@@ -10,11 +10,19 @@ import {
   type PerfumeDraft
 } from "../types/perfumeDraft";
 import * as localStorageRepository from "./draftStorage";
+import { normalizeArtisanDraftContent } from "./draftNormalization";
 
 type DraftRow = Tables<"creation_drafts">;
 type DraftInsert = TablesInsert<"creation_drafts">;
 type DraftUpdate = TablesUpdate<"creation_drafts">;
 export type DraftStorageSource = "local" | "supabase";
+export type DraftRenameResult = Pick<DraftRow, "id" | "draft_name" | "updated_at">;
+export type DraftListPage = { drafts: DraftSummary[]; source: DraftStorageSource; hasMore: boolean };
+
+const DRAFT_LIST_COLUMNS = "id,draft_name,mode,perfume_name,status,created_at,updated_at";
+const DRAFT_WRITE_COLUMNS = "id,draft_name,mode,status,updated_at";
+const DRAFT_RENAME_COLUMNS = "id,draft_name,updated_at";
+const ARTISAN_DRAFT_PAYLOAD_VERSION = 2;
 
 export class DraftRepositoryError extends Error {
   constructor(message: string, readonly cause?: unknown) {
@@ -27,7 +35,8 @@ const now = () => new Date().toISOString();
 const makeId = () => globalThis.crypto?.randomUUID?.() ?? `draft-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
-async function authenticatedUserId(): Promise<string | null> {
+async function authenticatedUserId(knownUserId?: string | null): Promise<string | null> {
+  if (knownUserId !== undefined) return knownUserId;
   if (!isSupabaseConfigured) return null;
   const client = getSupabaseClient();
   const sessionResult = await client.auth.getSession();
@@ -43,6 +52,7 @@ async function authenticatedUserId(): Promise<string | null> {
 function payloadFor(draft: CreationDraft): Json {
   if (draft.mode === "described") return { letter: clone(draft.letter) } as unknown as Json;
   return {
+    formatVersion: ARTISAN_DRAFT_PAYLOAD_VERSION,
     formula: clone(draft.formula),
     formulaMetadata: clone(draft.formulaMetadata),
     fragranceBrief: draft.fragranceBrief ? clone(draft.fragranceBrief) : null,
@@ -70,21 +80,19 @@ function rowToDraft(row: DraftRow): CreationDraft | null {
       updatedAt: row.updated_at
     };
   }
-  const benchState = payload.benchState as PerfumeDraft["benchState"] | undefined;
-  const formula = payload.formula as PerfumeDraft["formula"] | undefined;
-  const formulaMetadata = payload.formulaMetadata as PerfumeDraft["formulaMetadata"] | undefined;
-  if (!benchState || !Array.isArray(benchState.formula) || !Array.isArray(formula) || !formulaMetadata) return null;
+  const normalized = normalizeArtisanDraftContent(payload);
+  if (!normalized) return null;
   return {
     id: row.id,
     schemaVersion: row.schema_version,
     mode: "artisan_bench",
     draftName: row.draft_name,
     perfumeName: row.perfume_name ?? undefined,
-    formula: clone(formula),
-    formulaMetadata: clone(formulaMetadata),
-    fragranceBrief: (payload.fragranceBrief as PerfumeDraft["fragranceBrief"] | null) ?? undefined,
-    storyCard: (payload.storyCard as PerfumeDraft["storyCard"] | null) ?? undefined,
-    benchState: clone(benchState),
+    formula: clone(normalized.formula),
+    formulaMetadata: clone(normalized.formulaMetadata),
+    fragranceBrief: normalized.fragranceBrief ? clone(normalized.fragranceBrief) : undefined,
+    storyCard: normalized.storyCard ? clone(normalized.storyCard) : undefined,
+    benchState: clone(normalized.benchState),
     status: row.status,
     createdAt: row.created_at,
     updatedAt: row.updated_at
@@ -114,23 +122,29 @@ function updateFor(draft: CreationDraft): DraftUpdate {
   };
 }
 
-async function list(): Promise<{ drafts: DraftSummary[]; source: DraftStorageSource }> {
-  const userId = await authenticatedUserId();
-  if (!userId) return { drafts: localStorageRepository.getDrafts(), source: "local" };
+async function list(knownUserId?: string | null, offset = 0, limit = 20): Promise<DraftListPage> {
+  const userId = await authenticatedUserId(knownUserId);
+  if (!userId) {
+    const allDrafts = localStorageRepository.getDrafts();
+    return { drafts: allDrafts.slice(offset, offset + limit), source: "local", hasMore: offset + limit < allDrafts.length };
+  }
   const { data, error } = await getSupabaseClient().from("creation_drafts")
-    .select("id,mode,schema_version,draft_name,perfume_name,status,created_at,updated_at")
-    .eq("user_id", userId).order("updated_at", { ascending: false }).limit(100);
+    .select(DRAFT_LIST_COLUMNS)
+    .eq("user_id", userId)
+    .order("updated_at", { ascending: false })
+    .order("id", { ascending: false })
+    .range(offset, offset + limit - 1);
   if (error) throw new DraftRepositoryError("Unable to load your saved drafts.", error);
   const drafts: DraftSummary[] = (data ?? []).map(row => ({
-    id: row.id, mode: row.mode, schemaVersion: row.schema_version, draftName: row.draft_name,
+    id: row.id, mode: row.mode, schemaVersion: DRAFT_SCHEMA_VERSION, draftName: row.draft_name,
     perfumeName: row.perfume_name ?? undefined, status: row.status,
     createdAt: row.created_at, updatedAt: row.updated_at
   }));
-  return { drafts, source: "supabase" };
+  return { drafts, source: "supabase", hasMore: drafts.length === limit };
 }
 
-async function get(id: string): Promise<CreationDraft | null> {
-  const userId = await authenticatedUserId();
+async function get(id: string, knownUserId?: string | null): Promise<CreationDraft | null> {
+  const userId = await authenticatedUserId(knownUserId);
   if (!userId) return localStorageRepository.getDrafts().find(draft => draft.id === id) ?? null;
   const { data, error } = await getSupabaseClient().from("creation_drafts")
     .select("id,user_id,mode,schema_version,draft_name,perfume_name,status,payload,created_at,updated_at")
@@ -139,32 +153,66 @@ async function get(id: string): Promise<CreationDraft | null> {
   return data ? rowToDraft(data) : null;
 }
 
-async function insert(draft: CreationDraft): Promise<CreationDraft> {
-  const userId = await authenticatedUserId();
+async function insert(draft: CreationDraft, knownUserId?: string | null): Promise<CreationDraft> {
+  const userId = await authenticatedUserId(knownUserId);
   if (!userId) return localStorageRepository.saveDraft(draft);
   const { data, error } = await getSupabaseClient().from("creation_drafts")
-    .insert(insertFor(draft, userId)).select("*").single();
-  const result = data ? rowToDraft(data) : null;
-  if (error || !result) throw new DraftRepositoryError("Unable to save this draft to your account.", error);
-  return result;
+    .insert(insertFor(draft, userId)).select(DRAFT_WRITE_COLUMNS).single();
+  if (error || !data) throw new DraftRepositoryError("Unable to save this draft to your account.", error);
+  return {
+    ...draft,
+    id: data.id,
+    draftName: data.draft_name,
+    mode: data.mode,
+    status: data.status,
+    updatedAt: data.updated_at
+  } as CreationDraft;
 }
 
-async function save(draft: CreationDraft): Promise<CreationDraft> {
+async function save(draft: CreationDraft, knownUserId?: string | null): Promise<CreationDraft> {
   const updated = { ...draft, updatedAt: now() } as CreationDraft;
-  const userId = await authenticatedUserId();
+  const userId = await authenticatedUserId(knownUserId);
   if (!userId) return localStorageRepository.saveDraft(updated);
   const { data, error } = await getSupabaseClient().from("creation_drafts")
-    .update(updateFor(updated)).eq("id", updated.id).eq("user_id", userId).select("*").single();
-  const result = data ? rowToDraft(data) : null;
-  if (error || !result) throw new DraftRepositoryError("Unable to update this draft.", error);
-  return result;
+    .update(updateFor(updated)).eq("id", updated.id).eq("user_id", userId).select(DRAFT_WRITE_COLUMNS).single();
+  if (error || !data) throw new DraftRepositoryError("Unable to update this draft.", error);
+  return {
+    ...updated,
+    id: data.id,
+    draftName: data.draft_name,
+    mode: data.mode,
+    status: data.status,
+    updatedAt: data.updated_at
+  } as CreationDraft;
 }
 
-async function remove(id: string): Promise<void> {
-  const userId = await authenticatedUserId();
+async function rename(id: string, draftName: string, knownUserId?: string | null): Promise<DraftRenameResult> {
+  const userId = await authenticatedUserId(knownUserId);
+  if (!userId) {
+    const draft = localStorageRepository.getDraftById(id);
+    if (!draft) throw new DraftRepositoryError("This draft could not be found.");
+    const updated = localStorageRepository.saveDraft({ ...draft, draftName, updatedAt: now() } as CreationDraft);
+    return { id: updated.id, draft_name: updated.draftName, updated_at: updated.updatedAt };
+  }
+  const { data, error } = await getSupabaseClient().from("creation_drafts")
+    .update({ draft_name: draftName }).eq("id", id).eq("user_id", userId)
+    .select(DRAFT_RENAME_COLUMNS).single();
+  if (error || !data) throw new DraftRepositoryError("Unable to rename this draft.", error);
+  return data;
+}
+
+async function remove(id: string, knownUserId?: string | null): Promise<void> {
+  const userId = await authenticatedUserId(knownUserId);
   if (!userId) return localStorageRepository.deleteDraft(id);
   const { error } = await getSupabaseClient().from("creation_drafts").delete().eq("id", id).eq("user_id", userId);
   if (error) throw new DraftRepositoryError("Unable to delete this draft.", error);
+}
+
+async function clearAll(knownUserId?: string | null): Promise<void> {
+  const userId = await authenticatedUserId(knownUserId);
+  if (!userId) return localStorageRepository.clearDrafts();
+  const { error } = await getSupabaseClient().from("creation_drafts").delete().eq("user_id", userId);
+  if (error) throw new DraftRepositoryError("Unable to clear your saved drafts.", error);
 }
 
 function buildArtisanDraft(data: NewDraftData): PerfumeDraft {
@@ -178,16 +226,14 @@ function buildDescribedDraft(data: NewDescribedDraftData): DescribedCreationDraf
 }
 
 export const draftRepository = {
-  list, get,
-  createArtisan(data: NewDraftData) { return insert(buildArtisanDraft(data)); },
-  createDescribed(data: NewDescribedDraftData) { return insert(buildDescribedDraft(data)); },
-  save,
-  remove,
-  async duplicate(draft: CreationDraft) {
+  list, get, rename, save, remove, clearAll,
+  createArtisan(data: NewDraftData, userId?: string | null) { return insert(buildArtisanDraft(data), userId); },
+  createDescribed(data: NewDescribedDraftData, userId?: string | null) { return insert(buildDescribedDraft(data), userId); },
+  async duplicate(draft: CreationDraft, userId?: string | null) {
     if (draft.mode === "described") {
-      return insert(buildDescribedDraft({ draftName: `${draft.draftName} Copy`, perfumeName: draft.perfumeName, letter: draft.letter, status: "draft" }));
+      return insert(buildDescribedDraft({ draftName: `${draft.draftName} Copy`, perfumeName: draft.perfumeName, letter: draft.letter, status: "draft" }), userId);
     }
     const { id: _id, schemaVersion: _schemaVersion, mode: _mode, createdAt: _createdAt, updatedAt: _updatedAt, ...data } = draft;
-    return insert(buildArtisanDraft({ ...data, draftName: `${draft.draftName} Copy`, status: "draft" }));
+    return insert(buildArtisanDraft({ ...data, draftName: `${draft.draftName} Copy`, status: "draft" }), userId);
   }
 };

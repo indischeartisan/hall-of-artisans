@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { useDrafts } from "../contexts/DraftContext";
 import { orderService } from "../features/orders/orderService";
-import type { CreationDraft, DraftMode, DraftSummary } from "../types/perfumeDraft";
+import { toArtisanBenchState, type CreationDraft, type DraftMode, type DraftSummary } from "../types/perfumeDraft";
 
 type DraftsModalProps = {
   open: boolean;
@@ -22,8 +22,9 @@ const destination: Record<DraftMode, string> = {
 
 function draftDetails(draft: CreationDraft) {
   if (draft.mode === "artisan_bench") {
+    const state = toArtisanBenchState(draft);
     return [
-      ["Concentration", draft.benchState.concentration.toUpperCase()],
+      ["Concentration", state.concentration.toUpperCase()],
       ["Materials", `${draft.formula.length} selected`],
       ["Formula", `${draft.formulaMetadata.total}% complete`]
     ];
@@ -37,7 +38,7 @@ function draftDetails(draft: CreationDraft) {
 
 export default function DraftsModal({ open, onClose, initialMode }: DraftsModalProps) {
   const navigate = useNavigate();
-  const { drafts, loading, error, source, refresh, loadDraft, saveDraft, duplicateDraft, deleteDraft } = useDrafts();
+  const { drafts, loading, loadingMore, hasMore, error, source, refresh, loadMore, loadDraft, renameDraft, duplicateDraft, deleteDraft } = useDrafts();
   const [mode, setMode] = useState<DraftMode>(initialMode ?? "artisan_bench");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -99,7 +100,7 @@ export default function DraftsModal({ open, onClose, initialMode }: DraftsModalP
     if (!name) return;
     setBusyId(draft.id);
     setActionError("");
-    try { await saveDraft(draft.id, { draftName: name }); }
+    try { await renameDraft(draft.id, name); }
     catch (cause) { setActionError(cause instanceof Error ? cause.message : "This draft could not be renamed."); }
     finally { setBusyId(null); }
   };
@@ -167,6 +168,7 @@ export default function DraftsModal({ open, onClose, initialMode }: DraftsModalP
           </article>;
         })}
       </div>}
+      {!loading && hasMore && <button className="panel-button" type="button" disabled={loadingMore} onClick={() => void loadMore()}>{loadingMore ? "Loading..." : "Load More"}</button>}
     </section>
   </div>;
 }

@@ -318,7 +318,14 @@ export const orderService = {
       formulaMetadata: clone(state.formulaMetadata),
       fragranceBrief: state.fragranceBrief ? clone(state.fragranceBrief) : undefined,
       storyCard: state.storyCard ? clone(state.storyCard) : undefined,
-      benchState: clone(state),
+      benchState: {
+        concentration: state.concentration,
+        perfumeName: state.perfumeName,
+        creatorCredit: state.creatorCredit,
+        perfumerNotes: state.perfumerNotes,
+        nameEdited: state.nameEdited,
+        suggestedNames: clone(state.suggestedNames)
+      },
       status: state.formulaMetadata.total === 100 ? "ready" : "draft",
       createdAt: stamp,
       updatedAt: stamp

@@ -80,6 +80,8 @@ export interface ArtisanBenchState {
   storyCard: StoryCardData | null;
 }
 
+export type ArtisanBenchDraftState = Omit<ArtisanBenchState, "formula" | "formulaMetadata" | "fragranceBrief" | "storyCard">;
+
 export interface PerfumeDraft {
   id: string;
   schemaVersion: number;
@@ -90,7 +92,7 @@ export interface PerfumeDraft {
   formulaMetadata: FormulaMetadata;
   fragranceBrief?: FragranceBrief;
   storyCard?: StoryCardData;
-  benchState: ArtisanBenchState;
+  benchState: ArtisanBenchDraftState;
   status: DraftStatus;
   createdAt: string;
   updatedAt: string;
@@ -125,3 +127,11 @@ export type NewDescribedDraftData = Omit<DescribedCreationDraft, "id" | "schemaV
 
 export const isArtisanBenchDraft = (draft: CreationDraft | null | undefined): draft is PerfumeDraft => draft?.mode === "artisan_bench";
 export const isDescribedCreationDraft = (draft: CreationDraft | null | undefined): draft is DescribedCreationDraft => draft?.mode === "described";
+
+export const toArtisanBenchState = (draft: PerfumeDraft): ArtisanBenchState => ({
+  ...draft.benchState,
+  formula: draft.formula,
+  formulaMetadata: draft.formulaMetadata,
+  fragranceBrief: draft.fragranceBrief ?? null,
+  storyCard: draft.storyCard ?? null
+});

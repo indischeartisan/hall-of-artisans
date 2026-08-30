@@ -2,12 +2,13 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const read = path => readFile(new URL(`../${path}`, import.meta.url), "utf8");
-const [orderDetail, orderPage, customerChat, customerHeader, customerHeaderCss, perfumer, perfumerLayout, perfumerService, adminLayout, migration] = await Promise.all([
+const [orderDetail, orderPage, customerChat, customerHeader, customerHeaderCss, perfumer, perfumerLayout, perfumerService, adminLayout, migration, notificationMilestones] = await Promise.all([
   read("src/features/orders/useOrderDetail.ts"), read("src/features/orders/OrderDetailPage.tsx"),
   read("src/features/orders/components/OrderComponents.tsx"), read("src/components/GlobalHeader.tsx"),
   read("src/styles/entrance-hall.css"), read("src/features/perfumer/PerfumerWorkspacePages.tsx"),
   read("src/features/perfumer/PerfumerWorkspaceLayout.tsx"), read("src/features/perfumer/perfumerService.ts"),
   read("src/features/admin/AdminDashboardLayout.tsx"), read("supabase/migrations/20260810170000_enable_request_chat_realtime.sql"),
+  read("supabase/migrations/20260830010000_limit_customer_update_notifications.sql"),
 ]);
 
 for (const source of [orderDetail, customerHeader, perfumer, perfumerLayout, adminLayout]) {
@@ -32,5 +33,7 @@ assert.match(customerHeader, /notificationFilter === "chat"/, "notification cent
 assert.match(customerHeader, /notificationFilter === "update"/, "notification center needs an Updates category");
 assert.doesNotMatch(customerHeader, /getDetail\(request\.id\)/, "notifications must not load every request detail");
 assert.match(customerHeaderCss, /\.account-notification-panel/, "notification center needs a visible panel layout");
+assert.match(notificationMilestones, /new\.event_type not in \('consultation', 'paid', 'payment_confirmed', 'shipped'\)/, "update notifications must be limited to consultation, successful payment, and shipping milestones");
+assert.doesNotMatch(notificationMilestones, /'production_started'.*notification_kind := 'update'/s, "production start must not create an update notification");
 
 console.log("Manual-refresh chat and notification contract passed.");

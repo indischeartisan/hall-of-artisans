@@ -871,6 +871,12 @@ body.entrance-body[data-theme="dark"] .final-cta {
 .account-notification-toggle { position: relative; grid-template-columns: 34px 1fr auto !important; background: #f6edda !important; }
 .account-notification-toggle > b { min-width: 21px; height: 21px; padding: 0 5px; display: grid; place-items: center; border-radius: 999px; background: #b43b32; color: #fff; font: 700 9px Arial,sans-serif; }
 .account-notification-panel { margin: 2px 3px 7px; overflow: hidden; border: 1px solid rgba(153,111,43,.25); border-radius: 8px; background: #fffdf7; }
+.account-notification-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 11px 8px; }
+.account-notification-toolbar > strong { color: #26351f; font: 600 11px Arial,sans-serif; letter-spacing: .04em; }
+.account-notification-refresh { display: inline-flex; align-items: center; gap: 5px; padding: 5px 8px; border: 1px solid rgba(153,111,43,.26); border-radius: 999px; background: #faf3e4; color: #765626; font: 600 9px Arial,sans-serif; cursor: pointer; }
+.account-notification-refresh:hover { border-color: rgba(153,111,43,.5); background: #f1e6cf; }
+.account-notification-refresh:disabled { cursor: wait; opacity: .62; }
+.account-notification-refresh > span { font-size: 12px; line-height: 1; }
 .account-notification-panel > header { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid rgba(153,111,43,.2); }
 .account-notification-panel > header button { padding: 9px; border: 0; background: transparent; color: #786b54; font: 600 10px Arial,sans-serif; cursor: pointer; }
 .account-notification-panel > header button.is-active { color: #17453a; background: #edf1e6; box-shadow: inset 0 -2px #9b7535; }

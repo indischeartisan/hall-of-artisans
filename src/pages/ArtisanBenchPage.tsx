@@ -6,7 +6,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { useDrafts } from "../contexts/DraftContext";
 import { orderService } from "../features/orders/orderService";
 import { authPathWithReturnTo } from "../features/auth/returnTo";
-import { isArtisanBenchDraft, type ArtisanBenchState, type NewDraftData } from "../types/perfumeDraft";
+import { clearArtisanBenchWorkingSession, readArtisanBenchWorkingSession, saveArtisanBenchWorkingSession } from "../services/artisanBenchWorkingSession";
+import { isArtisanBenchDraft, toArtisanBenchState, type ArtisanBenchState, type NewDraftData } from "../types/perfumeDraft";
 
 type Theme = "dark" | "bright";
 type MobileWorkspace = "materials" | "formula" | "insights" | "notes" | "review";
@@ -42,6 +43,7 @@ const createEmptyBenchState = (): ArtisanBenchState => ({
 });
 
 const PENDING_BENCH_PREVIEW_KEY = "hallOfArtisans.pendingArtisanBenchPreview";
+const WORKING_SESSION_DEBOUNCE_MS = 1_000;
 const readPendingBenchPreview = (): ArtisanBenchState | null => {
   try {
     const value = JSON.parse(window.localStorage.getItem(PENDING_BENCH_PREVIEW_KEY) || "null") as ArtisanBenchState | null;
@@ -81,6 +83,7 @@ export default function ArtisanBenchPage() {
   const navigate = useNavigate();
   const { activeDraft: activeCreationDraft, clearActiveDraft, createDraft, saveDraft, source } = useDrafts();
   const activeDraft = isArtisanBenchDraft(activeCreationDraft) ? activeCreationDraft : null;
+  const activeBenchState = activeDraft ? toArtisanBenchState(activeDraft) : null;
   const isAuthenticated = Boolean(user);
   const [isDirty, setIsDirty] = useState(!activeDraft);
   const [draftSaveStatus, setDraftSaveStatus] = useState("");
@@ -97,17 +100,23 @@ export default function ArtisanBenchPage() {
   const [storyCardPopupImage, setStoryCardPopupImage] = useState<string | null>(null);
   const [, setBenchRevision] = useState(0);
   const workspaceRef = useRef<HTMLElement>(null);
-  const savedSignature = useRef(activeDraft ? JSON.stringify(activeDraft.benchState) : "");
+  const savedSignature = useRef(activeBenchState ? JSON.stringify(activeBenchState) : "");
   const hasBaseline = useRef(Boolean(activeDraft));
   const pendingPreview = useRef(activeDraft ? null : readPendingBenchPreview()).current;
-  const pendingRestore = useRef(activeDraft?.benchState ?? pendingPreview);
+  const pendingRestore = useRef(activeBenchState ?? pendingPreview);
   const restoringPendingPreview = useRef(Boolean(pendingPreview));
-  const latestBenchState = useRef<ArtisanBenchState>(activeDraft?.benchState ?? pendingPreview ?? createEmptyBenchState());
+  const latestBenchState = useRef<ArtisanBenchState>(activeBenchState ?? pendingPreview ?? createEmptyBenchState());
   const [generatedFormulaMetadata, setGeneratedFormulaMetadata] = useState(() => ({
     ...latestBenchState.current.formulaMetadata,
     layerTotals: { ...latestBenchState.current.formulaMetadata.layerTotals }
   }));
   const loadedDraftId = useRef(activeDraft?.id ?? null);
+  const benchReady = useRef(false);
+  const recoveryCheckedKey = useRef<string | null>(null);
+  const recoveryComplete = useRef(false);
+  const workingSessionTimer = useRef<ReturnType<typeof window.setTimeout> | null>(null);
+  const workingSessionDirty = useRef(false);
+  const workingSessionKey = user?.id ?? "anonymous";
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = window.localStorage.getItem("hoa-theme");
     return saved === "dark" || saved === "bright" ? saved : "bright";
@@ -146,19 +155,48 @@ export default function ArtisanBenchPage() {
   }, [isAuthenticated, user]);
 
   useEffect(() => {
+    if (recoveryCheckedKey.current === workingSessionKey) return;
+    recoveryCheckedKey.current = workingSessionKey;
+    let cancelled = false;
+    void readArtisanBenchWorkingSession(workingSessionKey).then((session) => {
+      if (cancelled || !session) return;
+      const currentSignature = activeBenchState ? JSON.stringify(activeBenchState) : "";
+      if (currentSignature && JSON.stringify(session.state) === currentSignature) {
+        void clearArtisanBenchWorkingSession(workingSessionKey);
+        return;
+      }
+      if (!window.confirm("We found an unsaved Artisan Bench session. Restore it?")) {
+        void clearArtisanBenchWorkingSession(workingSessionKey);
+        return;
+      }
+      latestBenchState.current = session.state;
+      pendingRestore.current = session.state;
+      workingSessionDirty.current = true;
+      setIsDirty(true);
+      setDraftSaveStatus(`Unsaved session from ${new Date(session.savedAt).toLocaleString()} restored locally.`);
+      if (benchReady.current) {
+        window.dispatchEvent(new CustomEvent("hoa:artisan-bench-load-state", { detail: session.state }));
+        pendingRestore.current = null;
+      }
+    }).finally(() => { if (!cancelled) recoveryComplete.current = true; });
+    return () => { cancelled = true; };
+  }, [activeBenchState, workingSessionKey]);
+
+  useEffect(() => {
     if (!activeDraft || loadedDraftId.current === activeDraft.id) return;
     loadedDraftId.current = activeDraft.id;
-    pendingRestore.current = activeDraft.benchState;
-    latestBenchState.current = activeDraft.benchState;
+    const restoredState = toArtisanBenchState(activeDraft);
+    pendingRestore.current = restoredState;
+    latestBenchState.current = restoredState;
     setGeneratedFormulaMetadata({
-      ...activeDraft.benchState.formulaMetadata,
-      layerTotals: { ...activeDraft.benchState.formulaMetadata.layerTotals }
+      ...restoredState.formulaMetadata,
+      layerTotals: { ...restoredState.formulaMetadata.layerTotals }
     });
-    savedSignature.current = JSON.stringify(activeDraft.benchState);
+    savedSignature.current = JSON.stringify(restoredState);
     hasBaseline.current = true;
     setIsDirty(false);
     setDraftSaveStatus(`Editing “${activeDraft.draftName}”.`);
-    window.dispatchEvent(new CustomEvent("hoa:artisan-bench-load-state", { detail: activeDraft.benchState }));
+    window.dispatchEvent(new CustomEvent("hoa:artisan-bench-load-state", { detail: restoredState }));
   }, [activeDraft]);
 
   useLayoutEffect(() => {
@@ -243,13 +281,23 @@ export default function ArtisanBenchPage() {
     formulaMetadata: snapshot.formulaMetadata,
     fragranceBrief: snapshot.fragranceBrief || undefined,
     storyCard: snapshot.storyCard || undefined,
-    benchState: snapshot,
+    benchState: {
+      concentration: snapshot.concentration,
+      perfumeName: snapshot.perfumeName,
+      creatorCredit: snapshot.creatorCredit,
+      perfumerNotes: snapshot.perfumerNotes,
+      nameEdited: snapshot.nameEdited,
+      suggestedNames: snapshot.suggestedNames
+    },
     status: snapshot.formulaMetadata.total === 100 ? "ready" : "draft"
   }), []);
 
   const startNewDraft = useCallback(() => {
     if (isDirty && !window.confirm("Start a new draft and discard your unsaved Artisan Bench changes?")) return;
     const emptyState = createEmptyBenchState();
+    if (workingSessionTimer.current) window.clearTimeout(workingSessionTimer.current);
+    workingSessionDirty.current = false;
+    void clearArtisanBenchWorkingSession(workingSessionKey);
     clearActiveDraft();
     pendingRestore.current = null;
     latestBenchState.current = emptyState;
@@ -262,7 +310,7 @@ export default function ArtisanBenchPage() {
     setIsDirty(true);
     setDraftSaveStatus("New draft started. Your previously saved drafts remain in My Drafts.");
     window.dispatchEvent(new CustomEvent("hoa:artisan-bench-load-state", { detail: emptyState }));
-  }, [clearActiveDraft, isDirty]);
+  }, [clearActiveDraft, isDirty, workingSessionKey]);
 
   useEffect(() => {
     const onState = (event: Event) => {
@@ -277,9 +325,20 @@ export default function ArtisanBenchPage() {
         setIsDirty(true);
         return;
       }
-      setIsDirty(Boolean(savedSignature.current) && JSON.stringify(snapshot) !== savedSignature.current);
+      const changed = Boolean(savedSignature.current) && JSON.stringify(snapshot) !== savedSignature.current;
+      setIsDirty(changed);
+      workingSessionDirty.current = changed;
+      if (workingSessionTimer.current) window.clearTimeout(workingSessionTimer.current);
+      workingSessionTimer.current = null;
+      if (changed && recoveryComplete.current) {
+        workingSessionTimer.current = window.setTimeout(() => {
+          void saveArtisanBenchWorkingSession(workingSessionKey, snapshot, activeDraft?.id ?? null);
+          workingSessionTimer.current = null;
+        }, WORKING_SESSION_DEBOUNCE_MS);
+      }
     };
     const restore = () => {
+      benchReady.current = true;
       if (pendingRestore.current) {
         window.dispatchEvent(new CustomEvent("hoa:artisan-bench-load-state", { detail: pendingRestore.current }));
         pendingRestore.current = null;
@@ -312,6 +371,10 @@ export default function ArtisanBenchPage() {
         }
         savedSignature.current = JSON.stringify(snapshot);
         setIsDirty(false);
+        workingSessionDirty.current = false;
+        if (workingSessionTimer.current) window.clearTimeout(workingSessionTimer.current);
+        workingSessionTimer.current = null;
+        await clearArtisanBenchWorkingSession(workingSessionKey);
         const destination = source === "supabase" ? "to your account" : "on this device";
         setDraftSaveStatus(`Draft “${result.draftName}” saved ${destination}.`);
       } catch (requestError) {
@@ -327,8 +390,12 @@ export default function ArtisanBenchPage() {
       window.removeEventListener("hoa:artisan-bench-state-change", onState);
       window.removeEventListener("hoa:artisan-bench-ready", restore);
       window.removeEventListener("hoa:artisan-bench-save-request", onSaveRequest);
+      if (workingSessionTimer.current) window.clearTimeout(workingSessionTimer.current);
+      if (workingSessionDirty.current) {
+        void saveArtisanBenchWorkingSession(workingSessionKey, latestBenchState.current, activeDraft?.id ?? null);
+      }
     };
-  }, [activeDraft, createDraft, draftData, navigate, saveDraft, source, user]);
+  }, [activeDraft, createDraft, draftData, navigate, saveDraft, source, user, workingSessionKey]);
 
   useEffect(() => {
     const warnBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -374,6 +441,10 @@ export default function ArtisanBenchPage() {
       if (!linkedDraft) throw new Error("The current draft could not be linked to this preview.");
       savedSignature.current = JSON.stringify(snapshot);
       setIsDirty(false);
+      workingSessionDirty.current = false;
+      if (workingSessionTimer.current) window.clearTimeout(workingSessionTimer.current);
+      workingSessionTimer.current = null;
+      await clearArtisanBenchWorkingSession(workingSessionKey);
       const request = await orderService.createArtisanBenchPreview(snapshot, linkedDraft.id, materialNames);
       navigate(`/my-creations/${request.id}`);
     } catch (requestError) {
