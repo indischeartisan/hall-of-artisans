@@ -50,13 +50,19 @@ export default function DraftsModal({ open, onClose, initialMode }: DraftsModalP
     if (!open) return;
     setActionError("");
     void refresh();
-    void orderService.getRequests(false).then((requests) => {
-      setSubmittedDraftIds(new Set(requests
-        .filter((request) => Boolean(request.submissionId))
-        .map((request) => request.previewSnapshot?.sourceDraftId)
-        .filter((id): id is string => Boolean(id))));
-    }).catch(() => setSubmittedDraftIds(new Set()));
   }, [open, refresh]);
+
+  useEffect(() => {
+    if (!open || !drafts.length) {
+      setSubmittedDraftIds(new Set());
+      return;
+    }
+    let active = true;
+    void orderService.getSubmittedDraftIds(drafts.map((draft) => draft.id))
+      .then((ids) => { if (active) setSubmittedDraftIds(ids); })
+      .catch(() => { if (active) setSubmittedDraftIds(new Set()); });
+    return () => { active = false; };
+  }, [drafts, open]);
 
   useEffect(() => {
     if (!open) return;

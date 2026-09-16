@@ -1,8 +1,8 @@
 {
-  "name": "The Hall of Artisans",
-  "short_name": "Artisan Bench",
-  "description": "Compose, save, and review bespoke fragrance creations.",
-  "start_url": "/artisan-bench",
+  "name": "Indische Artisan",
+  "short_name": "Indische",
+  "description": "Indische Artisan, including The Hall of Artisans.",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",

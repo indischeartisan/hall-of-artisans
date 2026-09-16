@@ -30,3 +30,5 @@ e2e/.auth/
 
 # Supabase CLI project link cache (contains environment-specific connection metadata)
 supabase/.temp/
+.env.qa.local
+.env.qa.local.txt

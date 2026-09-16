@@ -1,5 +1,5 @@
-const CACHE = "hoa-artisan-bench-v30";
-const SHELL = ["/", "/artisan-bench", "/manifest.webmanifest", "/pwa-icon-192.svg", "/pwa-icon-512.svg"];
+const CACHE = "indische-artisan-v31";
+const SHELL = ["/", "/hall", "/manifest.webmanifest", "/pwa-icon-192.svg", "/pwa-icon-512.svg"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)));
@@ -28,7 +28,7 @@ self.addEventListener("fetch", (event) => {
           caches.open(CACHE).then((cache) => cache.put(request, copy));
           return response;
         })
-        .catch(async () => (await caches.match(request)) || caches.match("/artisan-bench"))
+        .catch(async () => (await caches.match(request)) || caches.match("/"))
     );
     return;
   }

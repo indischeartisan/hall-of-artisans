@@ -5,10 +5,10 @@ import { getSupabaseClient, isSupabaseConfigured } from "../lib/supabase";
 import type { AppRole, Tables } from "../types/database.types";
 
 type Profile = Pick<Tables<"profiles">, "id" | "display_name" | "preferred_locale" | "certificate_name">;
-type ArtisanId = Pick<Tables<"artisan_ids">, "id" | "user_id" | "public_id">;
+type ArtisanId = Pick<Tables<"artisan_ids">, "id" | "user_id" | "public_id" | "display_name_snapshot" | "issued_at" | "status">;
 
 const AUTH_PROFILE_COLUMNS = "id,display_name,preferred_locale,certificate_name";
-const AUTH_ARTISAN_ID_COLUMNS = "id,user_id,public_id";
+const AUTH_ARTISAN_ID_COLUMNS = "id,user_id,public_id,display_name_snapshot,issued_at,status";
 
 export type AuthContextValue = {
   session: Session | null;

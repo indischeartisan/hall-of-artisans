@@ -1,4 +1,5 @@
 import { getSupabaseClient, isSupabaseConfigured } from "../../lib/supabase";
+import { withTtlCache } from "../../lib/ttlCache";
 
 export type LibraryMaterial = {
   id: string;
@@ -40,6 +41,10 @@ const iconFor = (category: string) => category
 export async function loadLibraryCatalog(): Promise<LibraryCatalog | null> {
   if (!isSupabaseConfigured) return null;
 
+  return withTtlCache("library:catalog", 5 * 60_000, loadLibraryCatalogFromSupabase);
+}
+
+async function loadLibraryCatalogFromSupabase(): Promise<LibraryCatalog | null> {
   const client = getSupabaseClient();
   const [categoryResult, materialResult] = await Promise.all([
     client

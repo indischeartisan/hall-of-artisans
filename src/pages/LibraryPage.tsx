@@ -23,11 +23,26 @@ type LibraryWindow = Window & {
 };
 
 function loadScript(src: string) {
+  const absoluteSrc = new URL(src, document.baseURI).href;
+  const existing = Array.from(document.querySelectorAll<HTMLScriptElement>('script[data-react-legacy-asset="library"]'))
+    .find((script) => script.src === absoluteSrc);
+
+  if (existing) {
+    if (existing.dataset.reactLegacyLoaded === "true") return Promise.resolve(existing);
+    return new Promise<HTMLScriptElement>((resolve, reject) => {
+      existing.addEventListener("load", () => resolve(existing), { once: true });
+      existing.addEventListener("error", () => reject(new Error(`Unable to load ${src}`)), { once: true });
+    });
+  }
+
   return new Promise<HTMLScriptElement>((resolve, reject) => {
     const script = document.createElement("script");
     script.src = src;
     script.dataset.reactLegacyAsset = "library";
-    script.onload = () => resolve(script);
+    script.onload = () => {
+      script.dataset.reactLegacyLoaded = "true";
+      resolve(script);
+    };
     script.onerror = () => reject(new Error(`Unable to load ${src}`));
     document.body.appendChild(script);
   });

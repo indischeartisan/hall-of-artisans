@@ -4,8 +4,8 @@ import type { Database } from "../types/database.types";
 // These production fallbacks are public browser credentials, not privileged
 // secrets. Environment variables remain the first choice so a future project
 // migration can replace them without another application change.
-const productionUrl="https://jnjaotrdtzcxtrfftidv.supabase.co";
-const productionPublishableKey="sb_publishable_KxEmA9Dmu22w-qddfb3SAA_MozbJDl4";
+const productionUrl="https://ydiuhyeoplegifxilcep.supabase.co";
+const productionPublishableKey="sb_publishable_wkMTkzyW1jCccBjZyx_t7w_mkYC55y7";
 const url=import.meta.env.VITE_SUPABASE_URL?.trim()||(import.meta.env.PROD?productionUrl:"");
 const publishableKey=(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY??import.meta.env.VITE_SUPABASE_ANON_KEY)?.trim()||(import.meta.env.PROD?productionPublishableKey:"");
 export const isSupabaseConfigured=Boolean(url&&publishableKey);

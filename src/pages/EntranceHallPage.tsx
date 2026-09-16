@@ -13,6 +13,8 @@ export default function EntranceHallPage() {
   const isDark = theme === "dark";
 
   useLayoutEffect(() => {
+    const previousTitle = document.title;
+    document.title = "The Hall of Artisans";
     document.body.classList.add("entrance-body");
     document.body.dataset.theme = theme;
     const brightPanels = document.createElement("link");
@@ -22,6 +24,7 @@ export default function EntranceHallPage() {
     document.head.appendChild(brightPanels);
 
     return () => {
+      document.title = previousTitle;
       document.body.classList.remove("entrance-body", "page-leaving");
       delete document.body.dataset.theme;
       brightPanels.remove();
@@ -64,7 +67,7 @@ export default function EntranceHallPage() {
     event.preventDefault();
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     document.body.classList.add("page-leaving");
-    window.setTimeout(() => navigate("/hall"), reduceMotion ? 0 : 260);
+    window.setTimeout(() => navigate("/hall/lobby"), reduceMotion ? 0 : 260);
   };
 
   const toggleTheme = () => {
@@ -109,7 +112,7 @@ export default function EntranceHallPage() {
             <h1>The Hall of Artisans</h1>
             <p className="tagline">A place within Indische World where extraordinary scents are born through story, craft, and timeless artistry.</p>
             <div className="hero-entry-actions">
-              <a className="primary-button hero-enter-panel inner-panel" href="/hall" aria-label="Enter The Hall" onClick={enterHall}>
+              <a className="primary-button hero-enter-panel inner-panel" href="/hall/lobby" aria-label="Enter The Hall" onClick={enterHall}>
                 <span>Enter The Hall</span>
               </a>
               <a className="primary-button hero-enter-panel inner-panel" href="/chamber-of-creation" aria-label="Craft Your Own Perfume">
@@ -140,7 +143,7 @@ export default function EntranceHallPage() {
             <h2>Every Extraordinary Scent Has A Beginning.</h2>
             <div className="ornament" aria-hidden="true" />
             <p>Beyond these doors lies the Academy, the Library, and the Creation Chambers of The Hall of Artisans.</p>
-            <a className="primary-button svg-button" href="/hall" aria-label="Enter The Hall" onClick={enterHall}>
+            <a className="primary-button svg-button" href="/hall/lobby" aria-label="Enter The Hall" onClick={enterHall}>
               <img src="/assets/images/enter-hall-button.svg" alt="" aria-hidden="true" />
               <span>Enter The Hall</span>
             </a>

@@ -8,6 +8,7 @@ import type { Json, Tables } from "../../types/database.types";
 import { DRAFT_SCHEMA_VERSION, type ArtisanBenchState, type PerfumeDraft } from "../../types/perfumeDraft";
 import type { CheckoutDetails, CommissionPackage, Order, OrderDetailSnapshot, OrderItem, RequestActivity, RequestMessage, ReviewRequest } from "./types";
 import { invalidateTtlCache, withTtlCache } from "../../lib/ttlCache";
+import { cloneReviewJson, reviewActivityFromRow, reviewMessageFromRow, reviewRequestFromRow, reviewRequestSummaryFromRow } from "../reviews/reviewReadModel";
 
 export type BespokeSubmissionInput = DescribedCreationInput;
 export interface ServiceResult<T = undefined> { ok: boolean; data?: T; error?: string }
@@ -22,8 +23,6 @@ export const ORDER_STORAGE_KEYS = {
 } as const;
 
 type ReviewRow = Tables<"review_requests">;
-type MessageRow = Pick<Tables<"request_messages">, "id" | "request_id" | "sender_role" | "sender_name" | "message" | "created_at" | "read_at">;
-type ActivityRow = Tables<"request_activity">;
 type OrderRow = Tables<"customer_orders">;
 type OrderItemRow = Tables<"order_items">;
 type PackageRow = Pick<Tables<"commission_packages">,
@@ -47,7 +46,7 @@ class OrderServiceError extends Error {
   constructor(message: string, readonly cause?: unknown) { super(message); this.name = "OrderServiceError"; }
 }
 
-const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
+const clone = cloneReviewJson;
 const emitChange = () => window.dispatchEvent(new CustomEvent("hoa:orders-change"));
 const readLocal = <T,>(key: string, fallback: T): T => {
   try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) as T : fallback; } catch { return fallback; }
@@ -62,51 +61,8 @@ async function verifiedUserId(): Promise<string> {
   return user.data.user.id;
 }
 
-function reviewFromRow(row: ReviewRow): ReviewRequest {
-  return {
-    id: row.id, userId: row.user_id, creationId: row.creation_id, requestNumber: row.request_number,
-    assignedReviewerId: row.assigned_reviewer_id, assignedAt: row.assigned_at,
-    status: row.status as ReviewRequest["status"], creationMode: row.creation_mode,
-    previewSnapshot: clone(row.preview_snapshot) as unknown as ReviewRequest["previewSnapshot"],
-    submissionId: row.submission_id,
-    submissionSnapshot: row.submission_snapshot ? clone(row.submission_snapshot) as unknown as ReviewRequest["submissionSnapshot"] : null,
-    perfumeName: row.perfume_name, concentration: row.concentration, bottleSize: row.bottle_size,
-    fragranceDirection: [...row.fragrance_direction], topNotes: [...row.top_notes], heartNotes: [...row.heart_notes], baseNotes: [...row.base_notes],
-    fragranceBrief: row.fragrance_brief,
-    storyCardData: clone(row.story_card_data) as unknown as ReviewRequest["storyCardData"],
-    customerNotes: row.customer_notes, countryCode: row.country_code, pricingRegion: row.pricing_region,
-    currency: row.currency, estimatedPriceMin: row.estimated_price_min, estimatedPriceMax: row.estimated_price_max,
-    finalPrice: row.final_price, selectedPackageId: row.selected_package_id,
-    packageSnapshot: row.package_snapshot ? clone(row.package_snapshot) as unknown as CommissionPackage : null,
-    artisanReview: row.artisan_review ? clone(row.artisan_review) as unknown as ReviewRequest["artisanReview"] : null,
-    recommendedAdjustments: [...row.recommended_adjustments], includedItems: [...row.included_items],
-    estimatedProduction: row.estimated_production, revisionsIncluded: row.revisions_included,
-    submittedAt: row.submitted_at, reviewedAt: row.reviewed_at, approvedAt: row.approved_at,
-    consultationStartedAt: row.consultation_started_at, consultationCompletedAt: row.consultation_completed_at,
-    readyForPaymentAt: row.ready_for_payment_at,
-    paidAt: row.paid_at, shippedAt: row.shipped_at, completedAt: row.completed_at, lastUpdatedAt: row.updated_at
-  };
-}
-
-function reviewSummaryFromRow(row: Partial<ReviewRow> & Pick<ReviewRow, "id" | "user_id" | "creation_id" | "request_number" | "status" | "perfume_name" | "updated_at">): ReviewRequest {
-  return {
-    id: row.id, userId: row.user_id, creationId: row.creation_id, requestNumber: row.request_number,
-    assignedReviewerId: row.assigned_reviewer_id ?? null, assignedAt: row.assigned_at ?? null,
-    status: row.status as ReviewRequest["status"], creationMode: row.creation_mode ?? undefined,
-    submissionId: row.submission_id ?? null, perfumeName: row.perfume_name,
-    concentration: row.concentration ?? "", bottleSize: row.bottle_size ?? "",
-    fragranceDirection: row.fragrance_direction ?? [], topNotes: row.top_notes ?? [], heartNotes: row.heart_notes ?? [], baseNotes: row.base_notes ?? [],
-    fragranceBrief: row.fragrance_brief ?? "", storyCardData: { title: row.perfume_name, subtitle: "" }, customerNotes: row.customer_notes ?? "",
-    countryCode: row.country_code ?? "", pricingRegion: row.pricing_region ?? "", currency: row.currency ?? "IDR",
-    estimatedPriceMin: row.estimated_price_min ?? 0, estimatedPriceMax: row.estimated_price_max ?? 0, finalPrice: row.final_price ?? null,
-    selectedPackageId: row.selected_package_id ?? null, packageSnapshot: null, artisanReview: null,
-    recommendedAdjustments: row.recommended_adjustments ?? [], includedItems: row.included_items ?? [], estimatedProduction: row.estimated_production ?? null,
-    revisionsIncluded: row.revisions_included ?? null, submittedAt: row.submitted_at ?? null, reviewedAt: row.reviewed_at ?? null,
-    approvedAt: row.approved_at ?? null, consultationStartedAt: row.consultation_started_at ?? null,
-    consultationCompletedAt: row.consultation_completed_at ?? null, readyForPaymentAt: row.ready_for_payment_at ?? null,
-    paidAt: row.paid_at ?? null, shippedAt: row.shipped_at ?? null, completedAt: row.completed_at ?? null, lastUpdatedAt: row.updated_at
-  };
-}
+const reviewFromRow = reviewRequestFromRow;
+const reviewSummaryFromRow = reviewRequestSummaryFromRow;
 
 function packageFromRow(row: PackageRow): CommissionPackage {
   return { id: row.id, slug: row.slug, name: row.name, description: row.description, price: row.price,
@@ -115,12 +71,8 @@ function packageFromRow(row: PackageRow): CommissionPackage {
     estimatedProduction: row.estimated_production, displayOrder: row.display_order };
 }
 
-function messageFromRow(row: MessageRow): RequestMessage {
-  return { id: row.id, requestId: row.request_id, senderRole: row.sender_role as RequestMessage["senderRole"], senderName: row.sender_name, message: row.message, createdAt: row.created_at, readAt: row.read_at };
-}
-function activityFromRow(row: ActivityRow): RequestActivity {
-  return { id: row.id, requestId: row.request_id, eventType: row.event_type, label: row.label, createdAt: row.created_at, metadata: clone(row.metadata) as RequestActivity["metadata"] };
-}
+const messageFromRow = reviewMessageFromRow;
+const activityFromRow = reviewActivityFromRow;
 function itemFromRow(row: OrderItemRow): OrderItem {
   return { reviewRequestId: row.review_request_id, submissionId: row.submission_id, submissionSnapshot: clone(row.submission_snapshot) as unknown as OrderItem["submissionSnapshot"], creationName: row.creation_name, amount: row.amount, currency: row.currency, productionStatus: row.production_status as OrderItem["productionStatus"], shippingStatus: row.shipping_status as OrderItem["shippingStatus"], trackingNumber: row.tracking_number ?? undefined };
 }
@@ -204,6 +156,19 @@ async function rpcReview(name: "submit_review_request" | "customer_transition_re
 export const orderService = {
   ensureDemoData() { return import.meta.env.DEV ? DEMO_REQUEST_ID : undefined; },
   getRequests(includeDemo = false) { return loadRequests(includeDemo); },
+
+  async getSubmittedDraftIds(draftIds: string[]): Promise<Set<string>> {
+    if (!isSupabaseConfigured || !draftIds.length) return new Set();
+    await verifiedUserId();
+    const response = await getSupabaseClient().from("review_requests")
+      .select("preview_snapshot->>sourceDraftId")
+      .in("preview_snapshot->>sourceDraftId", draftIds)
+      .not("submission_id", "is", null);
+    if (response.error) throw new OrderServiceError("Unable to load submitted draft status.", response.error);
+    return new Set((response.data ?? [])
+      .map((row) => row.sourceDraftId)
+      .filter((id): id is string => Boolean(id)));
+  },
 
   async getNotificationFeed(userId: string): Promise<CustomerNotification[]> {
     if (!isSupabaseConfigured || !userId) return [];

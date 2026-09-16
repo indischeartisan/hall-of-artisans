@@ -47,18 +47,6 @@ function ArchiveEditor({ record, seed, onClose, onSaved }: { record: CatalogArch
   const [error, setError] = useState("");
   const preview = useMemo(() => file ? URL.createObjectURL(file) : form.imagePath, [file, form.imagePath]);
   useEffect(() => () => { if (preview.startsWith("blob:")) URL.revokeObjectURL(preview); }, [preview]);
-  useEffect(() => {
-    if (record || seed) return;
-    const candidateId = new URLSearchParams(window.location.search).get("candidate");
-    if (!candidateId) return;
-    void Promise.all([adminDashboardService.getSnapshot(), archiveCatalogAdminService.list()]).then(([snapshot, archiveRecords]) => {
-      const order = snapshot.orders.find(entry => entry.items.some(item => item.reviewRequestId === candidateId));
-      const item = order?.items.find(entry => entry.reviewRequestId === candidateId);
-      if (!order || !item) return;
-      const creation = snapshot.creations.find(entry => entry.request.id === candidateId);
-      setForm(current => ({ ...current, ...seedFromCandidate({ order, item, creation }, archiveRecords) }));
-    }).catch(cause => setError(cause instanceof Error ? cause.message : "Completed creation could not be prepared."));
-  }, [record, seed]);
   const change = <K extends keyof EditorForm>(key: K, value: EditorForm[K]) => setForm(current => ({ ...current, [key]: value }));
   const submit = async (event: FormEvent) => {
     event.preventDefault(); setBusy(true); setError("");

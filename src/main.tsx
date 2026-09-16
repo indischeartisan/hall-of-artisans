@@ -45,6 +45,8 @@ import "./styles/describe-creation-overrides.css";
 import "./styles/bright-title-clarity.css";
 import "./styles/beta-environment.css";
 import "./styles/accessibility.css";
+import "./styles/indische-shell.css";
+import "./styles/hall-indische-exit.css";
 // Keep the shared phone/PWA header contract after page-specific header overrides.
 import "./styles/mobile-global-header.css";
 // Keep this after shared mobile styles: it is the sole owner of the phone Formula presentation.

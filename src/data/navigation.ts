@@ -4,10 +4,10 @@ export type NavigationItem = {
 };
 
 export const navigationItems: NavigationItem[] = [
-  { label: "The Hall", href: "/hall" },
-  { label: "The Academy", href: "/academy" },
-  { label: "The Library", href: "/library" },
-  { label: "Chamber of Creation", href: "/chamber-of-creation" },
-  { label: "Bespoke Atelier", href: "/bespoke-atelier" },
-  { label: "Hall Archive", href: "/hall-archive" }
+  { label: "The Hall", href: "/hall/lobby" },
+  { label: "The Academy", href: "/hall/academy" },
+  { label: "The Library", href: "/hall/library" },
+  { label: "Chamber of Creation", href: "/hall/chamber" },
+  { label: "Bespoke Atelier", href: "/hall/bespoke" },
+  { label: "Hall Archive", href: "/hall/archive" }
 ];

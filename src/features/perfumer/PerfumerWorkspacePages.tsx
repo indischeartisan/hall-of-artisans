@@ -3,13 +3,13 @@ import { useOutletContext, useSearchParams } from "react-router";
 import { WORKFLOW } from "../../domain/workflow";
 import { getOperationalStage, isOperationalStageStatus } from "../../domain/operationalStage";
 import type { ReviewRequest } from "../orders/types";
-import type { StaffRequestDetail } from "../admin/staffService";
+import type { ReviewRequestDetail } from "../reviews/reviewWorkflowService";
 import type { PerfumerOutletContext } from "./PerfumerWorkspaceLayout";
 import { perfumerService } from "./perfumerService";
 import { aftercareService, type AftercareCase } from "../aftercare/aftercareService";
 import CreationPreparation from "../orders/components/CreationPreparation";
 import StaffProposalForm from "../admin/StaffProposalForm";
-import type { ArtisanProposalInput } from "../admin/staffService";
+import type { ArtisanProposalInput } from "../reviews/reviewWorkflowService";
 import { actionableError } from "../../lib/actionError";
 
 const formatDate = (value: string | null) => value ? new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)) : "—";
@@ -29,7 +29,7 @@ function PerfumerAftercare({ cases, reload }: { cases: AftercareCase[]; reload: 
 }
 
 function ProjectWorkspace({ project, customerName, mode = "drawer", onClose, onChanged }: { project: ReviewRequest; customerName?: string; mode?: "drawer" | "inline"; onClose?: () => void; onChanged: () => Promise<void> }) {
-  const [detail, setDetail] = useState<StaffRequestDetail | null>(null);
+  const [detail, setDetail] = useState<ReviewRequestDetail | null>(null);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");

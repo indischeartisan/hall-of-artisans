@@ -30,20 +30,20 @@ function LobbyLink({ ariaLabel, className, href, icon, id }: LobbyLinkProps) {
 }
 
 const desktopLinks: LobbyLinkProps[] = [
-  { className: "lobby-marker marker-archive", id: "hall-archive", href: "/hall-archive", ariaLabel: "Hall Archive", icon: "/assets/icons/translucent/hall-archive.webp" },
-  { className: "lobby-marker marker-academy", id: "academy", href: "/academy", ariaLabel: "The Academy", icon: "/assets/icons/translucent/academy.webp" },
-  { className: "lobby-marker marker-library", id: "library", href: "/library", ariaLabel: "The Library", icon: "/assets/icons/translucent/library.webp" },
-  { className: "lobby-marker marker-make marker-primary", id: "make-your-perfume", href: "/chamber-of-creation", ariaLabel: "Make Your Perfume", icon: "/assets/icons/translucent/make-your-perfume.webp" },
-  { className: "lobby-marker marker-bespoke", id: "bespoke-atelier", href: "/bespoke-atelier", ariaLabel: "Bespoke Atelier", icon: "/assets/icons/translucent/bespoke-atelier.webp" },
+  { className: "lobby-marker marker-archive", id: "hall-archive", href: "/hall/archive", ariaLabel: "Hall Archive", icon: "/assets/icons/translucent/hall-archive.webp" },
+  { className: "lobby-marker marker-academy", id: "academy", href: "/hall/academy", ariaLabel: "The Academy", icon: "/assets/icons/translucent/academy.webp" },
+  { className: "lobby-marker marker-library", id: "library", href: "/hall/library", ariaLabel: "The Library", icon: "/assets/icons/translucent/library.webp" },
+  { className: "lobby-marker marker-make marker-primary", id: "make-your-perfume", href: "/hall/chamber", ariaLabel: "Make Your Perfume", icon: "/assets/icons/translucent/make-your-perfume.webp" },
+  { className: "lobby-marker marker-bespoke", id: "bespoke-atelier", href: "/hall/bespoke", ariaLabel: "Bespoke Atelier", icon: "/assets/icons/translucent/bespoke-atelier.webp" },
   { className: "lobby-marker marker-register", id: "artisan-register", href: "/artisan-register", ariaLabel: "Artisan Register", icon: "/assets/icons/translucent/artisan-register.webp" }
 ];
 
 const mobileLinks: LobbyLinkProps[] = [
-  { className: "mobile-marker mobile-main-cta mobile-marker-make", href: "/chamber-of-creation", ariaLabel: "Make Your Perfume", icon: "/assets/icons/translucent/make-your-perfume.webp" },
-  { className: "mobile-marker mobile-marker-archive", href: "/hall-archive", ariaLabel: "Hall Archive", icon: "/assets/icons/translucent/hall-archive.webp" },
-  { className: "mobile-marker mobile-marker-academy", href: "/academy", ariaLabel: "The Academy", icon: "/assets/icons/translucent/academy.webp" },
-  { className: "mobile-marker mobile-marker-library", href: "/library", ariaLabel: "The Library", icon: "/assets/icons/translucent/library.webp" },
-  { className: "mobile-marker mobile-marker-bespoke", href: "/bespoke-atelier", ariaLabel: "Bespoke Atelier", icon: "/assets/icons/translucent/bespoke-atelier.webp" },
+  { className: "mobile-marker mobile-main-cta mobile-marker-make", href: "/hall/chamber", ariaLabel: "Make Your Perfume", icon: "/assets/icons/translucent/make-your-perfume.webp" },
+  { className: "mobile-marker mobile-marker-archive", href: "/hall/archive", ariaLabel: "Hall Archive", icon: "/assets/icons/translucent/hall-archive.webp" },
+  { className: "mobile-marker mobile-marker-academy", href: "/hall/academy", ariaLabel: "The Academy", icon: "/assets/icons/translucent/academy.webp" },
+  { className: "mobile-marker mobile-marker-library", href: "/hall/library", ariaLabel: "The Library", icon: "/assets/icons/translucent/library.webp" },
+  { className: "mobile-marker mobile-marker-bespoke", href: "/hall/bespoke", ariaLabel: "Bespoke Atelier", icon: "/assets/icons/translucent/bespoke-atelier.webp" },
   { className: "mobile-marker mobile-marker-register", href: "/artisan-register", ariaLabel: "Artisan Register", icon: "/assets/icons/translucent/artisan-register.webp" }
 ];
 

@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import GlobalHeader from "../components/GlobalHeader";
+import { useAuth } from "../contexts/AuthContext";
 import type { ArchiveRecord } from "../data/archiveRecords";
-import { archiveCatalogService } from "../features/archive/archiveCatalogService";
-import { supabase } from "../lib/supabase";
+import { archiveCatalogService, type ArchiveCatalogCard } from "../features/archive/archiveCatalogService";
 import "../styles/hallArchive.css";
 
 type ArchiveScope = "public" | "mine";
@@ -12,13 +12,13 @@ type ViewMode = "grid" | "list";
 
 export default function HallArchive() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [query, setQuery] = useState("");
   const [scope, setScope] = useState<ArchiveScope>("public");
   const [sortOrder, setSortOrder] = useState<SortOrder>("latest");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [activeRecord, setActiveRecord] = useState<ArchiveRecord | null>(null);
-  const [records, setRecords] = useState<ArchiveRecord[]>([]);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [records, setRecords] = useState<ArchiveCatalogCard[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,12 +35,8 @@ export default function HallArchive() {
   }, []);
 
   useEffect(() => {
-    void Promise.all([
-      archiveCatalogService.listPublic(),
-      supabase?.auth.getUser() ?? Promise.resolve({ data: { user: null } }),
-    ]).then(([catalog, auth]) => {
+    void archiveCatalogService.listPublic().then((catalog) => {
       setRecords(catalog);
-      setUserId(auth.data.user?.id ?? null);
     }).finally(() => setLoading(false));
   }, []);
 
@@ -57,7 +53,7 @@ export default function HallArchive() {
   const visibleRecords = useMemo(() => {
     const term = query.trim().toLowerCase();
     const filtered = records.filter((record) => {
-      if (scope === "mine" && (!userId || record.ownerId !== userId)) return false;
+      if (scope === "mine" && (!user?.id || record.ownerId !== user.id)) return false;
       if (!term) return true;
       return [record.archiveNumber, record.title, record.creator, ...record.mood]
         .some((value) => value.toLowerCase().includes(term));
@@ -69,11 +65,20 @@ export default function HallArchive() {
       if (sortOrder === "creator") return a.creator.localeCompare(b.creator);
       return b.archiveNumber.localeCompare(a.archiveNumber);
     });
-  }, [records, query, scope, sortOrder, userId]);
+  }, [records, query, scope, sortOrder, user?.id]);
 
   const changeScope = (nextScope: ArchiveScope) => {
     setScope(nextScope);
     setQuery("");
+  };
+
+  const openRecord = async (record: ArchiveCatalogCard) => {
+    try {
+      const detail = await archiveCatalogService.getPublicDetail(record.id);
+      if (detail) setActiveRecord(detail);
+    } catch {
+      // Preserve the existing empty-state behavior if a public record disappears before it is opened.
+    }
   };
 
   return <>
@@ -106,7 +111,7 @@ export default function HallArchive() {
       </section>
 
       {loading ? <section className="archive-empty"><span aria-hidden="true">HA</span><h2>Opening the archive…</h2></section> : visibleRecords.length ? <section className={`archive-grid archive-grid--${viewMode}`} aria-label="Official archived perfume creations">
-        {visibleRecords.map((record) => <button className="archive-card inner-panel" type="button" key={record.archiveNumber} onClick={() => setActiveRecord(record)} aria-label={`Open ${record.title} archive record`}>
+        {visibleRecords.map((record) => <button className="archive-card inner-panel" type="button" key={record.archiveNumber} onClick={() => void openRecord(record)} aria-label={`Open ${record.title} archive record`}>
           <span className="archive-card-number">{record.archiveNumber}</span>
           <span className="archive-bottle-stage"><img src={record.image} alt={record.imageAlt ?? `${record.title} perfume bottle`} /></span>
           <span className="archive-card-title">{record.title}</span>

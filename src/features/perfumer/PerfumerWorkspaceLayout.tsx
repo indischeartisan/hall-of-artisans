@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
-import { staffService, type StaffAccess } from "../admin/staffService";
+import { getReviewStaffAccess, type ReviewStaffAccess } from "../reviews/reviewWorkflowService";
 import { perfumerService, type PerfumerWorkspaceData } from "./perfumerService";
 
 export interface PerfumerOutletContext {
-  access: StaffAccess;
+  access: ReviewStaffAccess;
   data: PerfumerWorkspaceData | null;
   loading: boolean;
   error: string;
@@ -13,7 +13,7 @@ export interface PerfumerOutletContext {
 
 export default function PerfumerWorkspaceLayout() {
   const navigate = useNavigate();
-  const [access, setAccess] = useState<StaffAccess | null>(null);
+  const [access, setAccess] = useState<ReviewStaffAccess | null>(null);
   const [data, setData] = useState<PerfumerWorkspaceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -24,7 +24,7 @@ export default function PerfumerWorkspaceLayout() {
     catch (cause) { setError(cause instanceof Error ? cause.message : "Artisan data could not be loaded."); }
     finally { setLoading(false); }
   };
-  useEffect(() => { void staffService.getAccess().then(result => { setAccess(result); if (result.role === "reviewer") return refresh(result.userId); setLoading(false); }).catch(cause => { setError(cause instanceof Error ? cause.message : "Access could not be checked."); setLoading(false); }); }, []);
+  useEffect(() => { void getReviewStaffAccess().then(result => { setAccess(result); if (result.role === "reviewer") return refresh(result.userId); setLoading(false); }).catch(cause => { setError(cause instanceof Error ? cause.message : "Access could not be checked."); setLoading(false); }); }, []);
   if (!access || loading && !data) return <div className="perfumer-loading">Opening your Artisan Workspace…</div>;
   if (access.role !== "reviewer") return <main className="perfumer-gate"><span>Artisan Workspace</span><h1>Perfumer access is required.</h1><p>{access.signedIn ? `${access.email} is not registered as a reviewer.` : "Sign in with the account assigned by The Hall."}</p><button onClick={() => navigate("/perfumer/login?returnTo=/perfumer")}>Perfumer Sign In</button></main>;
   return <div className="perfumer-shell">
