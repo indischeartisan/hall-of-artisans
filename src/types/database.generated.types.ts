@@ -1034,10 +1034,14 @@ export type Database = {
           review_request_id: string | null
           sale_type_snapshot: string | null
           shipping_status: string
+          sku_snapshot: string | null
           submission_id: string | null
           submission_snapshot: Json | null
           tracking_number: string | null
+          unit_price_snapshot: number | null
           user_id: string
+          variant_id: string | null
+          variant_label_snapshot: string | null
         }
         Insert: {
           amount?: number
@@ -1057,10 +1061,14 @@ export type Database = {
           review_request_id?: string | null
           sale_type_snapshot?: string | null
           shipping_status?: string
+          sku_snapshot?: string | null
           submission_id?: string | null
           submission_snapshot?: Json | null
           tracking_number?: string | null
+          unit_price_snapshot?: number | null
           user_id: string
+          variant_id?: string | null
+          variant_label_snapshot?: string | null
         }
         Update: {
           amount?: number
@@ -1080,10 +1088,14 @@ export type Database = {
           review_request_id?: string | null
           sale_type_snapshot?: string | null
           shipping_status?: string
+          sku_snapshot?: string | null
           submission_id?: string | null
           submission_snapshot?: Json | null
           tracking_number?: string | null
+          unit_price_snapshot?: number | null
           user_id?: string
+          variant_id?: string | null
+          variant_label_snapshot?: string | null
         }
         Relationships: [
           {
@@ -1107,6 +1119,104 @@ export type Database = {
             referencedRelation: "review_requests"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "order_items_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_webhook_events: {
+        Row: {
+          id: string
+          order_id: string
+          payload: Json
+          processed_at: string | null
+          provider: string
+          provider_event_id: string
+          received_at: string
+          transaction_status: string | null
+        }
+        Insert: {
+          id?: string
+          order_id: string
+          payload: Json
+          processed_at?: string | null
+          provider: string
+          provider_event_id: string
+          received_at?: string
+          transaction_status?: string | null
+        }
+        Update: {
+          id?: string
+          order_id?: string
+          payload?: Json
+          processed_at?: string | null
+          provider?: string
+          provider_event_id?: string
+          received_at?: string
+          transaction_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_webhook_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "customer_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_variants: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string
+          price: number
+          product_id: string
+          size_ml: number | null
+          sku: string
+          stock_quantity: number | null
+          updated_at: string
+          weight_grams: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label: string
+          price: number
+          product_id: string
+          size_ml?: number | null
+          sku: string
+          stock_quantity?: number | null
+          updated_at?: string
+          weight_grams: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          price?: number
+          product_id?: string
+          size_ml?: number | null
+          sku?: string
+          stock_quantity?: number | null
+          updated_at?: string
+          weight_grams?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
         ]
       }
       products: {
@@ -1118,6 +1228,7 @@ export type Database = {
           estimated_ready_at: string | null
           id: string
           name: string
+          notes: Json | null
           preorder_closes_at: string | null
           price: number
           sale_type: Database["public"]["Enums"]["product_sale_type"]
@@ -1126,6 +1237,7 @@ export type Database = {
           stock_quantity: number | null
           thumbnail_url: string | null
           updated_at: string
+          weight_grams: number | null
         }
         Insert: {
           brand_line: string
@@ -1135,6 +1247,7 @@ export type Database = {
           estimated_ready_at?: string | null
           id?: string
           name: string
+          notes?: Json | null
           preorder_closes_at?: string | null
           price: number
           sale_type: Database["public"]["Enums"]["product_sale_type"]
@@ -1143,6 +1256,7 @@ export type Database = {
           stock_quantity?: number | null
           thumbnail_url?: string | null
           updated_at?: string
+          weight_grams?: number | null
         }
         Update: {
           brand_line?: string
@@ -1152,6 +1266,7 @@ export type Database = {
           estimated_ready_at?: string | null
           id?: string
           name?: string
+          notes?: Json | null
           preorder_closes_at?: string | null
           price?: number
           sale_type?: Database["public"]["Enums"]["product_sale_type"]
@@ -1160,6 +1275,7 @@ export type Database = {
           stock_quantity?: number | null
           thumbnail_url?: string | null
           updated_at?: string
+          weight_grams?: number | null
         }
         Relationships: []
       }
@@ -1936,6 +2052,15 @@ export type Database = {
         Returns: undefined
       }
       next_artisan_public_id: { Args: never; Returns: string }
+      process_doku_payment_event: {
+        Args: {
+          event_payload: Json
+          provider_status: string
+          target_event_id: string
+          target_order_id: string
+        }
+        Returns: Json
+      }
       resolve_aftercare_case: {
         Args: { target_case_id: string }
         Returns: {

@@ -4,6 +4,7 @@ import AcademyRouteFallback from "./features/academy/components/AcademyRouteFall
 import BetaBadge from "./components/BetaBadge";
 import IndischeLayout from "./app/indische/IndischeLayout";
 import IndischePlaceholderPage from "./app/indische/IndischePlaceholderPage";
+import DokuPaymentReturnPage from "./app/indische/DokuPaymentReturnPage";
 import HallLayout from "./app/hall/HallLayout";
 
 const EntranceHallPage = lazy(() => import("./pages/EntranceHallPage"));
@@ -53,7 +54,7 @@ function LocalAftercarePreview() { const isLocal = window.location.hostname === 
 export default function App() {
   return <><a className="skip-link" href="#main-content">Skip to main content</a><BetaBadge /><div id="main-content" tabIndex={-1}><Suspense fallback={<AcademyRouteFallback />}><Routes>
     <Route element={<IndischeLayout />}>
-      <Route index element={<IndischePlaceholderPage kind="home" />} /><Route path="shop" element={<IndischePlaceholderPage kind="shop" />} /><Route path="product/:slug" element={<IndischePlaceholderPage kind="product" />} /><Route path="cart" element={<IndischePlaceholderPage kind="cart" />} /><Route path="checkout" element={<IndischePlaceholderPage kind="checkout" />} /><Route path="account" element={<IndischePlaceholderPage kind="account" />} />
+      <Route index element={<IndischePlaceholderPage kind="home" />} /><Route path="shop" element={<IndischePlaceholderPage kind="shop" />} /><Route path="product/:slug" element={<IndischePlaceholderPage kind="product" />} /><Route path="cart" element={<IndischePlaceholderPage kind="cart" />} /><Route path="checkout/doku/return" element={<DokuPaymentReturnPage />} /><Route path="checkout" element={<IndischePlaceholderPage kind="checkout" />} /><Route path="account" element={<IndischePlaceholderPage kind="account" />} />
     </Route>
     <Route element={<HallLayout />}>
       <Route path="hall" element={<EntranceHallPage />} /><Route path="hall/lobby" element={<LobbyPage />} /><Route path="hall/entrance" element={<LegacyRedirect to="/hall" />} /><Route path="hall/chamber" element={<ChamberOfCreationPage />} /><Route path="hall/create" element={<ArtisanBenchPage />} /><Route path="hall/describe" element={<DescribeCreationPage />} /><Route path="hall/drafts" element={<MyDraftsPage />} /><Route path="hall/orders/:requestId" element={<OrderDetailPage />} /><Route path="hall/creations/:requestId" element={<OrderDetailPage />} /><Route path="hall/checkout/:requestId" element={<HallCheckoutPage />} /><Route path="hall/bespoke" element={<BespokeAtelierPage />} /><Route path="hall/library" element={<LibraryPage />} />
