@@ -1,6 +1,22 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import GlobalHeader from "../components/GlobalHeader";
-import { loadLibraryCatalog, type LibraryMaterial } from "../features/library/libraryCatalogService";
+type LibraryMaterial = {
+  id: string;
+  name: string;
+  category: string;
+  type: string;
+  families: string[];
+  mood: string[];
+  suggestedRole: string[];
+  description: string;
+  bestUsedFor: string[];
+  pairsWellWith: string[];
+  avoidIf: string[];
+  status: "active" | "coming-soon";
+  iconImage?: string;
+  imageAlt?: string;
+  icon: string;
+};
 
 const libraryStyles = [
   "/assets/css/styles.css?v=17",
@@ -97,21 +113,8 @@ export default function LibraryPage() {
         if (cancelled) return;
       }
 
-      try {
-        const catalog = await loadLibraryCatalog();
-        if (catalog && !cancelled) {
-          const libraryWindow = window as LibraryWindow;
-          libraryWindow.LIBRARY_CATEGORIES = catalog.categories;
-          libraryWindow.LIBRARY_FEATURED_IDS = catalog.featuredIds;
-          libraryWindow.LIBRARY_MATERIALS = catalog.materials;
-          document.body.dataset.libraryCatalogSource = "supabase";
-        } else {
-          document.body.dataset.libraryCatalogSource = "legacy";
-        }
-      } catch (error) {
-        document.body.dataset.libraryCatalogSource = "legacy";
-        console.warn("Supabase material catalog unavailable; using the local Library catalog.", error);
-      }
+      // library-data.js is the repository-managed public catalog source.
+      document.body.dataset.libraryCatalogSource = "static";
 
       if (cancelled) return;
       const uiScript = await loadScript(libraryUiScript);

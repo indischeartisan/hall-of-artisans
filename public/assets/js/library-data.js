@@ -366,19 +366,19 @@ const libraryCategoryIcons = {
 };
 
 const libraryCitrusIconImages = {
-  "bergamot": "assets/library/citrus-icons/citrus-bergamot.webp",
-  "lemon": "assets/library/citrus-icons/citrus-lemon.webp",
-  "lime": "assets/library/citrus-icons/citrus-lime.webp",
-  "sweet-orange": "assets/library/citrus-icons/citrus-sweet-orange.webp",
-  "mandarin": "assets/library/citrus-icons/citrus-mandarin.webp",
-  "blood-orange": "assets/library/citrus-icons/citrus-blood-orange.webp",
-  "grapefruit": "assets/library/citrus-icons/citrus-grapefruit.webp",
-  "yuzu": "assets/library/citrus-icons/citrus-yuzu.webp",
-  "citron": "assets/library/citrus-icons/citrus-citron.webp",
-  "tangerine": "assets/library/citrus-icons/citrus-tangerine.webp",
-  "kaffir-lime": "assets/library/citrus-icons/citrus-kaffir-lime.webp",
-  "neroli": "assets/library/citrus-icons/citrus-neroli.webp",
-  "petitgrain": "assets/library/citrus-icons/citrus-petitgrain.webp"
+  "bergamot": "/assets/hall/materials/citrus-icons/citrus-bergamot.webp",
+  "lemon": "/assets/hall/materials/citrus-icons/citrus-lemon.webp",
+  "lime": "/assets/hall/materials/citrus-icons/citrus-lime.webp",
+  "sweet-orange": "/assets/hall/materials/citrus-icons/citrus-sweet-orange.webp",
+  "mandarin": "/assets/hall/materials/citrus-icons/citrus-mandarin.webp",
+  "blood-orange": "/assets/hall/materials/citrus-icons/citrus-blood-orange.webp",
+  "grapefruit": "/assets/hall/materials/citrus-icons/citrus-grapefruit.webp",
+  "yuzu": "/assets/hall/materials/citrus-icons/citrus-yuzu.webp",
+  "citron": "/assets/hall/materials/citrus-icons/citrus-citron.webp",
+  "tangerine": "/assets/hall/materials/citrus-icons/citrus-tangerine.webp",
+  "kaffir-lime": "/assets/hall/materials/citrus-icons/citrus-kaffir-lime.webp",
+  "neroli": "/assets/hall/materials/citrus-icons/citrus-neroli.webp",
+  "petitgrain": "/assets/hall/materials/citrus-icons/citrus-petitgrain.webp"
 };
 
 function librarySlugify(text) {

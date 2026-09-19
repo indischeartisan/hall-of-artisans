@@ -29,8 +29,6 @@ export default function AdminHeader({ access, portalSection, onPortalSectionChan
     <nav className={open ? "open" : ""} aria-label="Admin navigation">
       <button className={location.pathname === "/admin" && activeSection === "operations" ? "active" : ""} onClick={() => goPortal("operations")}>Order Operations</button>
       {canManageContent && <button className={location.pathname === "/admin" && activeSection === "content" ? "active" : ""} onClick={() => goPortal("content")}>Content Manager</button>}
-      {canManageContent && <a className={location.pathname === "/admin/library" ? "active" : ""} href="/admin/library" onClick={() => setOpen(false)}>Library Catalog</a>}
-      {canManageContent && <a className={location.pathname === "/admin/hall-archive" ? "active" : ""} href="/admin/hall-archive" onClick={() => setOpen(false)}>Hall Archive</a>}
       <a href="/" onClick={() => setOpen(false)}>View Website</a>
     </nav>
     <div className="admin-header-identity"><span>{resolvedAccess?.role?.replaceAll("_", " ") ?? "Staff Portal"}</span><strong>{resolvedAccess?.email ?? "The Hall of Artisans"}</strong></div>

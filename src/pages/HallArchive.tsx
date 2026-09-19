@@ -2,8 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import GlobalHeader from "../components/GlobalHeader";
 import { useAuth } from "../contexts/AuthContext";
-import type { ArchiveRecord } from "../data/archiveRecords";
-import { archiveCatalogService, type ArchiveCatalogCard } from "../features/archive/archiveCatalogService";
+import { archiveRecords, type ArchiveRecord } from "../data/archiveRecords";
 import "../styles/hallArchive.css";
 
 type ArchiveScope = "public" | "mine";
@@ -18,7 +17,7 @@ export default function HallArchive() {
   const [sortOrder, setSortOrder] = useState<SortOrder>("latest");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [activeRecord, setActiveRecord] = useState<ArchiveRecord | null>(null);
-  const [records, setRecords] = useState<ArchiveCatalogCard[]>([]);
+  const [records, setRecords] = useState<ArchiveRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,9 +34,8 @@ export default function HallArchive() {
   }, []);
 
   useEffect(() => {
-    void archiveCatalogService.listPublic().then((catalog) => {
-      setRecords(catalog);
-    }).finally(() => setLoading(false));
+    setRecords(archiveRecords);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -72,14 +70,7 @@ export default function HallArchive() {
     setQuery("");
   };
 
-  const openRecord = async (record: ArchiveCatalogCard) => {
-    try {
-      const detail = await archiveCatalogService.getPublicDetail(record.id);
-      if (detail) setActiveRecord(detail);
-    } catch {
-      // Preserve the existing empty-state behavior if a public record disappears before it is opened.
-    }
-  };
+  const openRecord = (record: ArchiveRecord) => setActiveRecord(record);
 
   return <>
     <GlobalHeader activeLabel="Hall Archive" variant="light" />
@@ -111,7 +102,7 @@ export default function HallArchive() {
       </section>
 
       {loading ? <section className="archive-empty"><span aria-hidden="true">HA</span><h2>Opening the archive…</h2></section> : visibleRecords.length ? <section className={`archive-grid archive-grid--${viewMode}`} aria-label="Official archived perfume creations">
-        {visibleRecords.map((record) => <button className="archive-card inner-panel" type="button" key={record.archiveNumber} onClick={() => void openRecord(record)} aria-label={`Open ${record.title} archive record`}>
+        {visibleRecords.map((record) => <button className="archive-card inner-panel" type="button" key={record.archiveNumber} onClick={() => openRecord(record)} aria-label={`Open ${record.title} archive record`}>
           <span className="archive-card-number">{record.archiveNumber}</span>
           <span className="archive-bottle-stage"><img src={record.image} alt={record.imageAlt ?? `${record.title} perfume bottle`} /></span>
           <span className="archive-card-title">{record.title}</span>
