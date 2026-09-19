@@ -12,32 +12,125 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
+  private: {
+    Tables: {
+      shipping_quotes: {
+        Row: {
+          address_snapshot: Json | null
+          cart_fingerprint: string
+          courier_code: string
+          created_at: string
+          destination_id: string
+          expires_at: string
+          id: string
+          service_code: string
+          shipping_amount: number
+          total_weight_grams: number
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          address_snapshot?: Json | null
+          cart_fingerprint: string
+          courier_code: string
+          created_at?: string
+          destination_id: string
+          expires_at: string
+          id?: string
+          service_code: string
+          shipping_amount: number
+          total_weight_grams: number
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          address_snapshot?: Json | null
+          cart_fingerprint?: string
+          courier_code?: string
+          created_at?: string
+          destination_id?: string
+          expires_at?: string
+          id?: string
+          service_code?: string
+          shipping_amount?: number
+          total_weight_grams?: number
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      can_read_academy_lesson: {
+        Args: { target_lesson_id: string }
+        Returns: boolean
+      }
+      has_active_academy_enrollment: {
+        Args: { target_lesson_id: string; target_user_id: string }
+        Returns: boolean
+      }
+      has_role: {
+        Args: { required_role: Database["public"]["Enums"]["app_role"] }
+        Returns: boolean
+      }
+      is_admin: { Args: never; Returns: boolean }
+      is_reviewer_or_admin: { Args: never; Returns: boolean }
+      jsonb_to_text_array: { Args: { value: Json }; Returns: string[] }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       academy_course_translations: {
         Row: {
+          audience: Json
           content: Json
           course_id: string
+          created_at: string
+          full_description: string | null
           id: string
+          learning_outcomes: Json
           locale: string
+          short_description: string | null
           summary: string | null
           title: string
+          updated_at: string
         }
         Insert: {
+          audience?: Json
           content?: Json
           course_id: string
+          created_at?: string
+          full_description?: string | null
           id?: string
+          learning_outcomes?: Json
           locale: string
+          short_description?: string | null
           summary?: string | null
           title: string
+          updated_at?: string
         }
         Update: {
+          audience?: Json
           content?: Json
           course_id?: string
+          created_at?: string
+          full_description?: string | null
           id?: string
+          learning_outcomes?: Json
           locale?: string
+          short_description?: string | null
           summary?: string | null
           title?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -51,28 +144,49 @@ export type Database = {
       }
       academy_courses: {
         Row: {
+          access_type: string
+          cover_path: string | null
           created_at: string
+          created_by: string | null
+          estimated_minutes: number
+          hero_path: string | null
           id: string
+          level: string
           published_at: string | null
           slug: string
           status: string
           updated_at: string
+          updated_by: string | null
         }
         Insert: {
+          access_type?: string
+          cover_path?: string | null
           created_at?: string
+          created_by?: string | null
+          estimated_minutes?: number
+          hero_path?: string | null
           id?: string
+          level?: string
           published_at?: string | null
           slug: string
           status?: string
           updated_at?: string
+          updated_by?: string | null
         }
         Update: {
+          access_type?: string
+          cover_path?: string | null
           created_at?: string
+          created_by?: string | null
+          estimated_minutes?: number
+          hero_path?: string | null
           id?: string
+          level?: string
           published_at?: string | null
           slug?: string
           status?: string
           updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -81,7 +195,10 @@ export type Database = {
           course_id: string
           created_at: string
           enrolled_at: string
+          expires_at: string | null
           id: string
+          revoked_at: string | null
+          source: string
           status: string
           updated_at: string
           user_id: string
@@ -90,7 +207,10 @@ export type Database = {
           course_id: string
           created_at?: string
           enrolled_at?: string
+          expires_at?: string | null
           id?: string
+          revoked_at?: string | null
+          source?: string
           status?: string
           updated_at?: string
           user_id: string
@@ -99,7 +219,10 @@ export type Database = {
           course_id?: string
           created_at?: string
           enrolled_at?: string
+          expires_at?: string | null
           id?: string
+          revoked_at?: string | null
+          source?: string
           status?: string
           updated_at?: string
           user_id?: string
@@ -118,20 +241,26 @@ export type Database = {
         Row: {
           block_id: string
           content: Json
+          created_at: string
           id: string
           locale: string
+          updated_at: string
         }
         Insert: {
           block_id: string
           content?: Json
+          created_at?: string
           id?: string
           locale: string
+          updated_at?: string
         }
         Update: {
           block_id?: string
           content?: Json
+          created_at?: string
           id?: string
           locale?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -151,6 +280,7 @@ export type Database = {
           id: string
           lesson_id: string
           position: number
+          settings: Json
           status: string
           updated_at: string
         }
@@ -161,6 +291,7 @@ export type Database = {
           id?: string
           lesson_id: string
           position?: number
+          settings?: Json
           status?: string
           updated_at?: string
         }
@@ -171,6 +302,7 @@ export type Database = {
           id?: string
           lesson_id?: string
           position?: number
+          settings?: Json
           status?: string
           updated_at?: string
         }
@@ -234,27 +366,45 @@ export type Database = {
       academy_lesson_translations: {
         Row: {
           content: Json
+          created_at: string
           id: string
+          introduction: string | null
+          learning_objectives: Json
           lesson_id: string
           locale: string
+          materials_needed: Json
+          opening_line: string | null
           summary: string | null
           title: string
+          updated_at: string
         }
         Insert: {
           content?: Json
+          created_at?: string
           id?: string
+          introduction?: string | null
+          learning_objectives?: Json
           lesson_id: string
           locale: string
+          materials_needed?: Json
+          opening_line?: string | null
           summary?: string | null
           title: string
+          updated_at?: string
         }
         Update: {
           content?: Json
+          created_at?: string
           id?: string
+          introduction?: string | null
+          learning_objectives?: Json
           lesson_id?: string
           locale?: string
+          materials_needed?: Json
+          opening_line?: string | null
           summary?: string | null
           title?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -269,30 +419,54 @@ export type Database = {
       academy_lessons: {
         Row: {
           created_at: string
+          created_by: string | null
           id: string
+          is_preview: boolean
+          lesson_type: string
           module_id: string
           position: number
+          practice_minutes: number
+          published_at: string | null
+          reading_minutes: number
+          requires_previous_lesson: boolean
           slug: string
           status: string
           updated_at: string
+          updated_by: string | null
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
           id?: string
+          is_preview?: boolean
+          lesson_type?: string
           module_id: string
           position?: number
+          practice_minutes?: number
+          published_at?: string | null
+          reading_minutes?: number
+          requires_previous_lesson?: boolean
           slug: string
           status?: string
           updated_at?: string
+          updated_by?: string | null
         }
         Update: {
           created_at?: string
+          created_by?: string | null
           id?: string
+          is_preview?: boolean
+          lesson_type?: string
           module_id?: string
           position?: number
+          practice_minutes?: number
+          published_at?: string | null
+          reading_minutes?: number
+          requires_previous_lesson?: boolean
           slug?: string
           status?: string
           updated_at?: string
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -306,25 +480,37 @@ export type Database = {
       }
       academy_module_translations: {
         Row: {
+          created_at: string
+          description: string | null
           id: string
+          learning_outcome: string | null
           locale: string
           module_id: string
           summary: string | null
           title: string
+          updated_at: string
         }
         Insert: {
+          created_at?: string
+          description?: string | null
           id?: string
+          learning_outcome?: string | null
           locale: string
           module_id: string
           summary?: string | null
           title: string
+          updated_at?: string
         }
         Update: {
+          created_at?: string
+          description?: string | null
           id?: string
+          learning_outcome?: string | null
           locale?: string
           module_id?: string
           summary?: string | null
           title?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -340,7 +526,9 @@ export type Database = {
         Row: {
           course_id: string
           created_at: string
+          estimated_minutes: number
           id: string
+          illustration_path: string | null
           position: number
           status: string
           updated_at: string
@@ -348,7 +536,9 @@ export type Database = {
         Insert: {
           course_id: string
           created_at?: string
+          estimated_minutes?: number
           id?: string
+          illustration_path?: string | null
           position?: number
           status?: string
           updated_at?: string
@@ -356,7 +546,9 @@ export type Database = {
         Update: {
           course_id?: string
           created_at?: string
+          estimated_minutes?: number
           id?: string
+          illustration_path?: string | null
           position?: number
           status?: string
           updated_at?: string
@@ -471,7 +663,7 @@ export type Database = {
       }
       archive_records: {
         Row: {
-          archive_number: number
+          archive_number: string
           created_at: string
           creator: string | null
           display_order: number
@@ -479,7 +671,7 @@ export type Database = {
           image_alt: string | null
           image_path: string | null
           is_featured: boolean
-          moods: Json
+          moods: string[]
           owner_id: string | null
           slug: string | null
           status: string
@@ -488,7 +680,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          archive_number: number
+          archive_number: string
           created_at?: string
           creator?: string | null
           display_order?: number
@@ -496,7 +688,7 @@ export type Database = {
           image_alt?: string | null
           image_path?: string | null
           is_featured?: boolean
-          moods?: Json
+          moods?: string[]
           owner_id?: string | null
           slug?: string | null
           status?: string
@@ -505,7 +697,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          archive_number?: number
+          archive_number?: string
           created_at?: string
           creator?: string | null
           display_order?: number
@@ -513,7 +705,7 @@ export type Database = {
           image_alt?: string | null
           image_path?: string | null
           is_featured?: boolean
-          moods?: Json
+          moods?: string[]
           owner_id?: string | null
           slug?: string | null
           status?: string
@@ -680,11 +872,11 @@ export type Database = {
           created_at: string
           draft_name: string
           id: string
-          mode: string
+          mode: Database["public"]["Enums"]["creation_mode"]
           payload: Json
           perfume_name: string | null
           schema_version: number
-          status: string
+          status: Database["public"]["Enums"]["creation_draft_status"]
           updated_at: string
           user_id: string
         }
@@ -692,11 +884,11 @@ export type Database = {
           created_at?: string
           draft_name: string
           id?: string
-          mode: string
+          mode: Database["public"]["Enums"]["creation_mode"]
           payload?: Json
           perfume_name?: string | null
           schema_version?: number
-          status?: string
+          status?: Database["public"]["Enums"]["creation_draft_status"]
           updated_at?: string
           user_id: string
         }
@@ -704,11 +896,11 @@ export type Database = {
           created_at?: string
           draft_name?: string
           id?: string
-          mode?: string
+          mode?: Database["public"]["Enums"]["creation_mode"]
           payload?: Json
           perfume_name?: string | null
           schema_version?: number
-          status?: string
+          status?: Database["public"]["Enums"]["creation_draft_status"]
           updated_at?: string
           user_id?: string
         }
@@ -848,8 +1040,8 @@ export type Database = {
       }
       materials: {
         Row: {
-          avoid_if: Json | null
-          best_used_for: Json | null
+          avoid_if: string[] | null
+          best_used_for: string[] | null
           category_id: string | null
           clean: number | null
           created_at: string
@@ -866,29 +1058,29 @@ export type Database = {
           image_path: string | null
           intensity: number | null
           is_featured: boolean
-          layers: Json | null
+          layers: string[] | null
           legacy_bench_id: string | null
           legacy_library_id: string | null
           longevity: number | null
           material_type: string | null
           media_id: string | null
-          moods: Json | null
+          moods: string[] | null
           name: string
-          pairs_well_with: Json | null
+          pairs_well_with: string[] | null
           powdery: number | null
           slug: string
           status: string
           strangeness: number | null
           sweetness: number | null
-          tags: Json | null
+          tags: string[] | null
           updated_at: string
           updated_by: string | null
           warmth: number | null
           woody: number | null
         }
         Insert: {
-          avoid_if?: Json | null
-          best_used_for?: Json | null
+          avoid_if?: string[] | null
+          best_used_for?: string[] | null
           category_id?: string | null
           clean?: number | null
           created_at?: string
@@ -905,29 +1097,29 @@ export type Database = {
           image_path?: string | null
           intensity?: number | null
           is_featured?: boolean
-          layers?: Json | null
+          layers?: string[] | null
           legacy_bench_id?: string | null
           legacy_library_id?: string | null
           longevity?: number | null
           material_type?: string | null
           media_id?: string | null
-          moods?: Json | null
+          moods?: string[] | null
           name: string
-          pairs_well_with?: Json | null
+          pairs_well_with?: string[] | null
           powdery?: number | null
           slug: string
           status?: string
           strangeness?: number | null
           sweetness?: number | null
-          tags?: Json | null
+          tags?: string[] | null
           updated_at?: string
           updated_by?: string | null
           warmth?: number | null
           woody?: number | null
         }
         Update: {
-          avoid_if?: Json | null
-          best_used_for?: Json | null
+          avoid_if?: string[] | null
+          best_used_for?: string[] | null
           category_id?: string | null
           clean?: number | null
           created_at?: string
@@ -944,21 +1136,21 @@ export type Database = {
           image_path?: string | null
           intensity?: number | null
           is_featured?: boolean
-          layers?: Json | null
+          layers?: string[] | null
           legacy_bench_id?: string | null
           legacy_library_id?: string | null
           longevity?: number | null
           material_type?: string | null
           media_id?: string | null
-          moods?: Json | null
+          moods?: string[] | null
           name?: string
-          pairs_well_with?: Json | null
+          pairs_well_with?: string[] | null
           powdery?: number | null
           slug?: string
           status?: string
           strangeness?: number | null
           sweetness?: number | null
-          tags?: Json | null
+          tags?: string[] | null
           updated_at?: string
           updated_by?: string | null
           warmth?: number | null
@@ -1590,7 +1782,10 @@ export type Database = {
           course_id: string
           created_at: string
           enrolled_at: string
+          expires_at: string | null
           id: string
+          revoked_at: string | null
+          source: string
           status: string
           updated_at: string
           user_id: string
@@ -2315,6 +2510,8 @@ export type Database = {
     Enums: {
       app_role: "customer" | "reviewer" | "admin" | "super_admin"
       artisan_id_status: "active" | "suspended" | "revoked"
+      creation_draft_status: "draft" | "ready"
+      creation_mode: "artisan_bench" | "described"
       product_sale_type: "READY_STOCK" | "PREORDER"
       product_status: "DRAFT" | "ACTIVE" | "SOLD_OUT" | "ARCHIVED"
     }
@@ -2442,13 +2639,17 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  private: {
+    Enums: {},
+  },
   public: {
     Enums: {
       app_role: ["customer", "reviewer", "admin", "super_admin"],
       artisan_id_status: ["active", "suspended", "revoked"],
+      creation_draft_status: ["draft", "ready"],
+      creation_mode: ["artisan_bench", "described"],
       product_sale_type: ["READY_STOCK", "PREORDER"],
       product_status: ["DRAFT", "ACTIVE", "SOLD_OUT", "ARCHIVED"],
     },
   },
 } as const
-
