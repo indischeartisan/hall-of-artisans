@@ -8,6 +8,12 @@ export type ReviewActivityRow = Pick<Tables<"request_activity">, "id" | "request
 
 export const cloneReviewJson = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
 
+
+// JSON columns from older or partially-completed requests may be null (or may
+// contain a malformed value). Keep the read model safe so a review can still
+// be previewed while the request is completed.
+const stringListFromJson = (value: unknown): string[] =>
+  Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
 export function reviewRequestFromRow(row: ReviewRequestRow): ReviewRequest {
   return {
     id: row.id, userId: row.user_id, creationId: row.creation_id, requestNumber: row.request_number,
@@ -25,7 +31,7 @@ export function reviewRequestFromRow(row: ReviewRequestRow): ReviewRequest {
     finalPrice: row.final_price, selectedPackageId: row.selected_package_id,
     packageSnapshot: row.package_snapshot ? cloneReviewJson(row.package_snapshot) as unknown as CommissionPackage : null,
     artisanReview: row.artisan_review ? cloneReviewJson(row.artisan_review) as unknown as ReviewRequest["artisanReview"] : null,
-    recommendedAdjustments: [...row.recommended_adjustments], includedItems: [...row.included_items],
+    recommendedAdjustments: stringListFromJson(row.recommended_adjustments), includedItems: stringListFromJson(row.included_items),
     estimatedProduction: row.estimated_production, revisionsIncluded: row.revisions_included,
     submittedAt: row.submitted_at, reviewedAt: row.reviewed_at, approvedAt: row.approved_at,
     consultationStartedAt: row.consultation_started_at, consultationCompletedAt: row.consultation_completed_at,
@@ -46,7 +52,7 @@ export function reviewRequestSummaryFromRow(row: ReviewRequestSummaryRow): Revie
     countryCode: row.country_code ?? "", pricingRegion: row.pricing_region ?? "", currency: row.currency ?? "IDR",
     estimatedPriceMin: row.estimated_price_min ?? 0, estimatedPriceMax: row.estimated_price_max ?? 0, finalPrice: row.final_price ?? null,
     selectedPackageId: row.selected_package_id ?? null, packageSnapshot: null, artisanReview: null,
-    recommendedAdjustments: row.recommended_adjustments ?? [], includedItems: row.included_items ?? [], estimatedProduction: row.estimated_production ?? null,
+    recommendedAdjustments: stringListFromJson(row.recommended_adjustments), includedItems: stringListFromJson(row.included_items), estimatedProduction: row.estimated_production ?? null,
     revisionsIncluded: row.revisions_included ?? null, submittedAt: row.submitted_at ?? null, reviewedAt: row.reviewed_at ?? null,
     approvedAt: row.approved_at ?? null, consultationStartedAt: row.consultation_started_at ?? null,
     consultationCompletedAt: row.consultation_completed_at ?? null, readyForPaymentAt: row.ready_for_payment_at ?? null,
